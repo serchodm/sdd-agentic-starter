@@ -49,3 +49,25 @@ Para auditar en cualquier momento la integridad de las reglas y directorios del 
 ```bash
 python .agents/scripts/sdd_healthcheck.py
 ```
+
+---
+
+## 🔄 Sincronización Bidireccional con la Plantilla (`sdd_sync.py`)
+
+A medida que desarrolles proyectos, es natural que descubras mejoras en las reglas (`.agents/rules/`), en las skills de auditoría (`.agents/skills/`) o en los scripts de guardia (`.agents/scripts/`). Para evitar la divergencia del framework sin contaminar la plantilla con código de negocio:
+
+### 1. Ver el estado de divergencia del framework:
+```bash
+python scripts/sdd_sync.py --status
+```
+
+### 2. Exportar mejoras de este proyecto hacia la plantilla:
+```bash
+python scripts/sdd_sync.py --push-to-template C:/Projects/sdd-agentic-starter
+```
+*(Sincroniza quirúrgicamente sólo el core agéntico, sanitizando referencias a nombres propios y protegiendo tu código en `src/`).*
+
+### 3. Traer actualizaciones de la plantilla hacia este proyecto:
+```bash
+python scripts/sdd_sync.py --pull-from-template C:/Projects/sdd-agentic-starter
+```
