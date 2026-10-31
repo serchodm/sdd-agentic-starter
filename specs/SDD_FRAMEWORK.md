@@ -59,7 +59,7 @@ El framework unifica los conceptos clave de gestión ágil (Scrum) con el rigor 
 ### 2.2. Jerarquía de Autoridad y Gobernanza de Contratos
 Para evitar que los modelos de IA o las instrucciones textuales vulneren la seguridad o inventen permisos, rige la siguiente **Jerarquía Estricta de 6 Niveles**:
 1. **Nivel 1: Controles de Seguridad Externos y Permisos del SO/Backend:** Aplican fuera del razonamiento del LLM (código determinista, RBAC, validación de schemas, límites de sistema, sandboxing). Ningún prompt ni salida de modelo puede eludirlos.
-2. **Nivel 2: Principios y Límites Aprobados del Producto:** Documentados en [`specs/SYSTEM_VISION.md`](file:///c:/Projects/P.A.C.O/specs/SYSTEM_VISION.md) (P01–P10) y decisiones formales vigentes. Inmutables mediante autoaprendizaje ordinario.
+2. **Nivel 2: Principios y Límites Aprobados del Producto:** Documentados en [`specs/SYSTEM_VISION.md`](file:///c:/Projects/sdd-agentic-starter/specs/SYSTEM_VISION.md) (P01–P10) y decisiones formales vigentes. Inmutables mediante autoaprendizaje ordinario.
 3. **Nivel 3: Políticas Operativas Versionadas:** Reglas explícitas de autonomía, privacidad, matrices de riesgo, allowlists de herramientas y aprobaciones previas.
 4. **Nivel 4: Identidad, Personalidad y Preferencias:** Definidas en `SOUL.md`, `IDENTITY.md` y `USER.md`. Modulan el estilo, honestidad y foco de relación ("leal, no complaciente"), pero jamás otorgan permisos ejecutivos por sí mismas.
 5. **Nivel 5: Instrucciones de Tarea, Workflows y Skills:** Procedimientos operativos acotados (`skills/**/SKILL.md`) que operan estrictamente dentro de los permisos concedidos en los niveles superiores.

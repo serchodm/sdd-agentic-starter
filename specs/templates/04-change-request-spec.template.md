@@ -19,7 +19,7 @@
 
 | Dimensión / Contrato | Estado Original en `FEAT-XXX` (Baseline Inmutable) | Nuevo Estado en `CR-XXX` (Delta Propuesto) |
 | :--- | :--- | :--- |
-| **Motor / Librería** | [Ej. Shaders GLSL propios en `frontend/src/...`] | [Ej. Paquete cerrado `@paco/avatar-engine` V18.6.0] |
+| **Motor / Librería** | [Ej. Implementación propia previa] | [Ej. Nueva librería externa / paquete optimizado V2.0] |
 | **Contratos / Eventos** | [Ej. Estado interno en store] | [Ej. Adaptador hacia `avatar.*`] |
 | **Código Obsoleto a Eliminar** | [Archivos antiguos en uso] | [Archivos antiguos eliminados al 100% en esta entrega] |
 
