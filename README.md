@@ -36,6 +36,19 @@ The `@orchestrator` will:
 
 ---
 
+### 👥 Agent Squad Topologies (Configured in Gate 00)
+The template supports two operational topologies depending on project complexity:
+- **Specialised Granular Squad (High-Specialisation)**: 12 atomic roles with strict boundary isolation (`@back-domain`, `@back-infra`, `@back-api`, `@db-specialist`, `@back-test`, `@front-logic`, `@front-ui`, `@front-test`, `@devops`, `@documentator`, `@architect`, `@orchestrator`).
+- **Compact Squad**: 7 core roles for leaner projects or MVPs (`@orchestrator`, `@architect`, `@back-engineer`, `@front-engineer`, `@qa-tester`, `@devops`, `@documentator`).
+
+Generated conversationally by `@orchestrator` or inspected via CLI:
+```bash
+python scripts/sdd_agent_generator.py --list
+python scripts/sdd_agent_generator.py --mode granular  # or --mode compact
+```
+
+---
+
 ### 🏛️ The SDD Lifecycle (Gate 00 to Gate 5)
 
 ```text
@@ -110,6 +123,19 @@ El `@orchestrator`:
    - **Entorno Local**: Genera la configuración inicial de `docker-compose.yml` o `vercel.json`.
 2. Rellenará formalmente **`specs/STACK.md`** y te solicitará tu firma humana expresa: `[x] Gate 00 Approved (Human Sign-off)`.
 3. Una vez aprobada, el código en `src/` se desbloqueará y comenzará el ciclo normal de desarrollo (Gate 0 -> Gate 5).
+
+---
+
+### 👥 Topologías de Escuadrón Agéntico (Configurables en Gate 00)
+La plantilla soporta dos modalidades operativas según la escala y complejidad del proyecto:
+- **Escuadrón Especializado Granular (Alta Especialización)**: 12 roles atómicos con fronteras estrictas de aislamiento (`@back-domain`, `@back-infra`, `@back-api`, `@db-specialist`, `@back-test`, `@front-logic`, `@front-ui`, `@front-test`, `@devops`, `@documentator`, `@architect`, `@orchestrator`).
+- **Escuadrón Compacto**: 7 roles core para proyectos ágiles o MVPs (`@orchestrator`, `@architect`, `@back-engineer`, `@front-engineer`, `@qa-tester`, `@devops`, `@documentator`).
+
+Generable de forma conversacional por el `@orchestrator` o inspeccionable por consola:
+```bash
+python scripts/sdd_agent_generator.py --list
+python scripts/sdd_agent_generator.py --mode granular  # o --mode compact
+```
 
 ---
 
