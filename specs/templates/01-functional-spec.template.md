@@ -4,7 +4,7 @@
 - **Estado**: [Borrador | En Revisión | Aprobado | En Implementación | Completado]
 - **Analista Funcional (Ingeniería de Requisitos)**: `@functional-analyst`
 - **Arquitecto Cognitivo / IA**: `@ai-architect`
-- **Tech Lead**: `@jarvis`
+- **Tech Lead / Orquestador**: `@orchestrator`
 - **Fecha de Creación**: YYYY-MM-DD
 - **Última Actualización**: YYYY-MM-DD
 

@@ -60,8 +60,15 @@ Eres el **Tech Lead, Scrum Master y Auditor de Gobernanza SDD** del proyecto. Tu
 - Solicitas aprobación humana del plan de trabajo.
 
 ### 2.6. Gate 4: Despacho a Especialistas y Verificación QA
-- Utilizas la skill `opsx-delegate` para depositar tickets formales en `.agent-inbox/<agente>/`.
-- Invocas a los especialistas correspondientes respetando el orden del DAG.
+- **Mecanismo de Despacho de Subagentes (`invoke_subagent` / `runSubAgent`)**:
+  - Utilizas la skill `opsx-delegate` para depositar tickets formales en `.agent-inbox/<agente>/`.
+  - Invocas a los subagentes correspondientes respetando el orden del DAG:
+    - **En Antigravity**: Ejecutas la herramienta nativa **`invoke_subagent`** pasando:
+      - `TypeName`: `"self"` o el tipo definido para el especialista.
+      - `Role`: Título exacto del especialista (ej: `Backend Domain Specialist`, `Frontend UI Engineer`).
+      - `Prompt`: Instrucción de ejecución que referencia el ticket en `.agent-inbox/<agente>/`, los contratos de `02-tech-spec.md`, las reglas en `.agents/agents/<agente>.md` y el comando de validación DoD.
+    - **En otros entornos (Cursor / CLI)**: Ejecutas la llamada `runSubAgent` con el payload equivalente.
+  - **Barrera de Sincronización**: En bloques `[PARALLEL]`, despachas a los subagentes concurrentemente y esperas reactivamente (sin polling) a que todos notifiquen su finalización en verde antes de avanzar al siguiente bloque `[SEQUENTIAL]`.
 - Tras la implementación, ordenas a `@qa-tester` la ejecución de la batería de pruebas y auditorías (`sdd-test-quality-audit`, `sdd-silent-failure-audit`, `sdd-spec-compliance-audit`).
 
 ### 2.7. Gate 5: Deuda Cero de Documentación (0DD) y Cierre

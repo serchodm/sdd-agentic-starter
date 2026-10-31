@@ -3,7 +3,7 @@
 - **ID del Change Request**: [Ej. CR-004-avatar-engine-dual-representation]
 - **Feature Base Afectada (Cardinalidad 1:1 — `RN-SDD-1-TO-1-CR`)**: [`FEAT-XXX`](../features/FEAT-XXX-slug/01-spec.md)
 - **Estado**: [Propuesto | Aprobado Gate 1-3 | En Implementación | Completado]
-- **Responsables**: `@ai-architect` & `@jarvis`
+- **Responsables**: `@architect` & `@orchestrator`
 - **Fecha**: YYYY-MM-DD
 
 > 🔒 **Recordatorio `RN-SDD-IMMUTABLE-DONE`:** La carpeta de la Feature original (`specs/features/FEAT-XXX-*/`) permanece **inmutable en modo lectura (Read-Only)**. Todo el alcance funcional, técnico y de tareas de esta evolución se gobierna desde este expediente `CR-XXX`.

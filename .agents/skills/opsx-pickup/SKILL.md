@@ -23,7 +23,7 @@ Executed by any specialist agent on the development team to process the assigned
 3. **Implementation**:
    - With DoR verified, write code strictly within your permitted architectural boundary.
 4. **Automated Definition of Done (DoD) Validation**:
-   - Run the verification command assigned to your role (e.g., `pytest`, `npx tsc --noEmit`, `npm test -- --run`, `npm run build`, `docker compose config`).
+   - Run the verification command assigned to your role (e.g., `dotnet test`, `pytest`, `npm run lint`, `npm test`, `docker compose config`).
    - If it fails, self-correct autonomously (up to 3 attempts).
 5. **Inconsistency Check**:
    - If an unresolvable contradiction with the spec arises, write `BLOCKED_{work-item-id}.md` and stop execution (Stop-the-Line).
@@ -31,4 +31,4 @@ Executed by any specialist agent on the development team to process the assigned
    - With 100% green validation:
      - Mark completed tasks with `[x]` in `<spec-dir>/03-tasks.md` (never modifying a `Done` feature's `03-tasks.md`).
      - Remove the ticket `.agent-inbox/{agent-name}/<work-item-id>.md`.
-     - Report completion to `@jarvis`.
+     - Report completion to `@orchestrator`.

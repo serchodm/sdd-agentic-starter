@@ -2,7 +2,7 @@
 
 - **ID del Expediente**: [Ej. FEAT-006-declarative-agents | CR-012-hands-free-wake-word | BUG-010-voice-channel-auto-mute]
 - **Feature Base**: [Ej. FEAT-010 / FEAT-008B]
-- **Orquestador Principal**: `@jarvis`
+- **Orquestador Principal**: `@orchestrator`
 - **Agentes Especialistas Asignados**: [`@db-specialist`, `@back-domain`, `@back-infra`, `@back-api`, `@front-logic`, `@front-ui`, `@back-test`, `@front-test`, `@documentator`, `@qa-auditor`]
 - **Especificaciones de Referencia**:
   - Funcional (Qué): [`01-spec.md`](01-spec.md) (Gate 1 Passed)
