@@ -1,0 +1,13 @@
+{
+  "active_work_item_id": null,
+  "type": null,
+  "spec_dir": null,
+  "gate_00_approved": false,
+  "gate_0_approved": false,
+  "gate_1_approved": false,
+  "gate_2_approved": false,
+  "gate_3_approved": false,
+  "approved_by_human": false,
+  "assigned_agent": null,
+  "phase": "STACK_BOOTSTRAP"
+}

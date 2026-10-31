@@ -1,0 +1,18 @@
+{
+  "description": "SDD Quality & Gate Enforcement Hooks",
+  "pre_tool_use": [
+    {
+      "tool": "edit_file",
+      "command": "python .agents/scripts/sdd_code_gate_guard.py"
+    },
+    {
+      "tool": "write_file",
+      "command": "python .agents/scripts/sdd_code_gate_guard.py"
+    }
+  ],
+  "post_task": [
+    {
+      "command": "python .agents/scripts/sdd_healthcheck.py"
+    }
+  ]
+}
