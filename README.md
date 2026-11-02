@@ -107,12 +107,15 @@ python .agents/scripts/sdd_token_usage.py
 ### ⚡ Token-Optimised Deterministic Tooling
 Minimise context token consumption by 90%+ with zero discovery overhead:
 
-#### 1. AST Repo-Map Generator (`sdd_repo_map.py`)
-Extracts class hierarchies, method signatures, types, interfaces, and component definitions without dumping full implementation bodies:
-- **Python**: Parsed via native `ast` module.
-- **TypeScript / JavaScript**: Parsed via deterministic regex AST.
+#### 1. Universal Multi-Language AST Repo-Map Generator (`sdd_repo_map.py`)
+Extracts class hierarchies, method signatures, types, interfaces, and component definitions without dumping full implementation bodies. Fully language-agnostic, supporting 20+ top languages with zero external dependencies:
+- **Web & Fullstack**: TypeScript (`.ts`, `.tsx`), JavaScript (`.js`, `.jsx`), Python (`.py`), PHP (`.php`), Ruby (`.rb`).
+- **Enterprise & Backend**: C# (.NET, `.cs`), Java (`.java`), Kotlin (`.kt`, `.kts`), Go (`.go`), Rust (`.rs`), Scala (`.scala`).
+- **Mobile**: Dart / Flutter (`.dart`), Swift (`.swift`), Kotlin (`.kt`).
+- **Systems & Low-Level**: C & C++ (`.c`, `.h`, `.cpp`, `.hpp`, `.cc`), Zig (`.zig`).
+- **Data, Contracts & Scripts**: SQL schemas (`.sql`), Shell / Bash (`.sh`), PowerShell (`.ps1`), Solidity (`.sol`), Elixir (`.ex`), Lua (`.lua`).
 ```bash
-# Generate compact signature map for a directory or specific file
+# Generate compact signature map for any language in your stack
 python .agents/scripts/sdd_repo_map.py src/
 ```
 
@@ -263,12 +266,15 @@ python .agents/scripts/sdd_token_usage.py
 ### ⚡ Herramientas Deterministas Optimizadas para Ahorro de Tokens
 Reduce el consumo de tokens de contexto en más de un 90% con cero sobrecarga de descubrimiento (*zero discovery overhead*):
 
-#### 1. Generador de Mapa de Repositorio AST (`sdd_repo_map.py`)
-Extrae jerarquías de clases, firmas de métodos, tipos, interfaces y componentes sin cargar el cuerpo completo de los ficheros:
-- **Python**: Analizado mediante el módulo nativo `ast`.
-- **TypeScript / JavaScript**: Analizado mediante AST basado en expresiones regulares deterministas.
+#### 1. Generador Universal Multi-Lenguaje de Mapa AST (`sdd_repo_map.py`)
+Extrae jerarquías de clases, firmas de métodos, tipos, interfaces y componentes sin cargar el cuerpo completo de los ficheros. 100% agnóstico al stack, soportando más de 20 lenguajes sin dependencias externas:
+- **Web & Fullstack**: TypeScript (`.ts`, `.tsx`), JavaScript (`.js`, `.jsx`), Python (`.py`), PHP (`.php`), Ruby (`.rb`).
+- **Empresarial & Backend**: C# (.NET, `.cs`), Java (`.java`), Kotlin (`.kt`, `.kts`), Go (`.go`), Rust (`.rs`), Scala (`.scala`).
+- **Mobile**: Dart / Flutter (`.dart`), Swift (`.swift`), Kotlin (`.kt`).
+- **Sistemas & Bajo Nivel**: C y C++ (`.c`, `.h`, `.cpp`, `.hpp`, `.cc`), Zig (`.zig`).
+- **Datos, Contratos & Scripts**: Esquemas SQL (`.sql`), Shell / Bash (`.sh`), PowerShell (`.ps1`), Solidity (`.sol`), Elixir (`.ex`), Lua (`.lua`).
 ```bash
-# Generar mapa compacto de firmas para un directorio o archivo
+# Generar mapa compacto de firmas para cualquier lenguaje de tu stack
 python .agents/scripts/sdd_repo_map.py src/
 ```
 
