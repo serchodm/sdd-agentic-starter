@@ -26,6 +26,17 @@
 8. **`RN-SDD-ORCHESTRATOR-SUBAGENTS` (Orquestación DAG y Desacoplamiento de Roles):**
    - El `@orchestrator` (Tech Lead) **tiene terminantemente prohibido programar código directamente** en el hilo principal.
    - Su labor es estructurar el grafo de tareas (DAG) y despachar cada tarea a su especialista correspondiente (`@architect`, `@back-engineer`, `@front-engineer`, `@qa-tester`, `@documentator`).
+9. **`RN-SDD-SESSION-LIFECYCLE` (Límites Estrictos de Sesión y Control de Contexto):**
+   - Un único hilo de conversación **NUNCA DEBE** abarcar múltiples Features (`FEAT-XXX`), Change Requests (`CR-XXX`) o Bugs (`BUG-XXX`).
+   - El ciclo de vida máximo de un hilo del `@orchestrator` es de estrictamente **1 Work Item**. Una vez completado el Gate 5 (`git push`), el hilo finaliza y se abre uno nuevo.
+   - **División de Fases para Features Grandes (Phase Splitting):**
+     - **Sesión A (Arquitectura & Specs — Gates 0 a 3):** Usar modelos de alto razonamiento exclusivamente para redactar y validar `01-spec.md`, `02-tech-spec.md` y `03-tasks.md`.
+     - **Sesión B (Ejecución & Cierre — Gates 4 y 5):** Abrir un hilo nuevo y limpio cargando sólo `02-tech-spec.md`, `03-tasks.md` y `docs/knowledge/` para despachar subagentes y ejecutar `@documentator` (Gate 5) con modelos rápidos y coste-eficientes.
+10. **`RN-SDD-SELECTIVE-CONTEXT` (Cero Exploración Ciega y Lecturas Acotadas):**
+    - Antes de ejecutar comandos de búsqueda masiva (`grep` / exploraciones recursivas), los agentes **DEBEN** consultar `docs/knowledge/SYSTEM_TOPOLOGY.md`, `API_CATALOG.md` y `DATA_MODELS.md` para localizar los ficheros objetivo exactos.
+    - Al actualizar `TRACEABILITY-MATRIX.md` o ficheros en `docs/knowledge/*` durante Gate 5, usar lecturas y ediciones acotadas por rangos en lugar de volcar ficheros completos al contexto si superan las 200 líneas.
+11. **`RN-SDD-GIT-SYNC` (Sincronización Git Obligatoria tras Validación):**
+    - Cada vez que una Feature (`FEAT-XXX`), Change Request (`CR-XXX`), Bug (`BUG-XXX`) o actualización de gobernanza sea validada y aprobada por el usuario, **ejecutar siempre `git add`, `git commit` (Conventional Commits) y `git push origin main`** para mantener el repositorio remoto permanentemente sincronizado.
 
 ---
 
@@ -66,3 +77,29 @@ El equipo se organiza por responsabilidades de ingeniería de software. Cada age
 | **`@front-engineer`** | Diseñador de componentes visuales, maquetación, reactividad y experiencia de usuario. | `specs/STACK.md`, Gate 2 contracts |
 | **`@qa-tester`** | Ingeniero de pruebas unitarias, integración, BDD y auditor de calidad de tests. | `specs/STACK.md`, Criterios Given-When-Then |
 | **`@documentator`** | Custodio de la documentación viva bilingüe (0DD) y catálogo técnico unificado. | `docs/`, `specs/` |
+
+---
+
+## 🏛️ 4. Matriz de Carga Perezosa de Reglas (Conditional Lazy-Loading Matrix)
+
+**DIRECTIVA CRÍTICA DE AHORRO DE TOKENS:** NUNCA cargar todos los archivos de `.agents/rules/*` simultáneamente en el contexto. Los agentes y subagentes DEBEN leer ÚNICAMENTE los archivos de reglas que correspondan a su Gate activo o capa técnica:
+
+- **Gate 00 (`specs/STACK.md`):** Leer únicamente `.agents/rules/00-stack-lock.md`.
+- **Gate 1 (`01-spec.md`):** Leer únicamente `.agents/rules/02-ears-requirements.md` y `.agents/rules/01-sdd-lifecycle.md`.
+- **Gates 2 y 3 (`02-tech-spec.md` y `03-tasks.md`):** Leer únicamente `.agents/rules/04-multiagent-dag.md` + las directivas técnicas fijadas en `specs/STACK.md`.
+- **Gate 4 (Subagentes de Código):** Cada especialista lee exclusivamente su contrato de `02-tech-spec.md`, su regla de rol (`.agents/agents/<agente>.md`) y el archivo de seguridad `.agents/rules/05-security-and-secrets.md` si maneja credenciales o I/O externa.
+- **Gate 5 (`@documentator`):** Leer únicamente `.agents/rules/03-functional-doc-0dd.md`.
+
+---
+
+## ⚡ 5. Comandos Deterministas de Verificación DoD (Zero Discovery Overhead)
+
+Queda terminantemente prohibido que los subagentes ejecuten comandos exploratorios, inspeccionen archivos de configuración a ciegas o ejecuten suites completas de tests sin necesidad.
+
+1. **Definición en Gate 00:** En la Sección 2.5 de `specs/STACK.md` se congelan los comandos exactos y pre-probados del proyecto para:
+   - **Lint & Typecheck**
+   - **Prueba Unitaria Acotada** (en memoria, mocks, sin BD/red externa — ejecución < 1s)
+   - **Prueba de Integración** (con servicios auxiliares levantados)
+   - **Build de Producción**
+   - **Verificación de Entorno / Infraestructura**
+2. **Asignación en Gate 3:** Cada tarea atómica en `03-tasks.md` DEBE incluir su campo `- *Comando de verificación DoD*: <comando exacto>`, garantizando cero overhead de descubrimiento y cero tokens malgastados en fallos de ejecución.

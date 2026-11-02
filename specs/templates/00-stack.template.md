@@ -49,6 +49,15 @@
   5. `[Escaneo de seguridad SAST / Dependabot]`
 - **Gestión de Secretos**: `[ej: Vercel Environment Variables / .env con .env.example tipado / Azure Key Vault / AWS Secrets Manager]`
 
+### 2.5. Comandos Deterministas de Verificación DoD (Zero Discovery Overhead)
+*(Definir obligatoriamente en Gate 00 para que ningún subagente queme tokens descubriendo comandos o explorando configuraciones)*:
+- **Lint & Typecheck:** `[ej: cd backend && ruff check . && mypy . | cd frontend && npx tsc --noEmit]`
+- **Prueba Unitaria Acotada (In-memory, mocks, 0 DB externa):** `[ej: pytest <path/to/test.py> -q | npx vitest run <path/to/test.ts>]`
+- **Prueba de Integración (Con servicios auxiliares/BD levantada):** `[ej: pytest tests/integration/<path/to/test.py> -q]`
+- **Suite Completa de Tests:** `[ej: pytest tests/unit/ | npm test]`
+- **Build de Producción:** `[ej: npm run build | cargo build --release | dotnet publish]`
+- **Verificación de Entorno / Infraestructura:** `[ej: docker compose config | terraform validate]`
+
 ---
 
 ## 👥 3. Escuadrón Agéntico: Asignación y Características Operativas
