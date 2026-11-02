@@ -37,6 +37,17 @@
     - Al actualizar `TRACEABILITY-MATRIX.md` o ficheros en `docs/knowledge/*` durante Gate 5, usar lecturas y ediciones acotadas por rangos en lugar de volcar ficheros completos al contexto si superan las 200 líneas.
 11. **`RN-SDD-GIT-SYNC` (Sincronización Git Obligatoria tras Validación):**
     - Cada vez que una Feature (`FEAT-XXX`), Change Request (`CR-XXX`), Bug (`BUG-XXX`) o actualización de gobernanza sea validada y aprobada por el usuario, **ejecutar siempre `git add`, `git commit` (Conventional Commits) y `git push origin main`** para mantener el repositorio remoto permanentemente sincronizado.
+12. **`RN-SDD-CONTEXT-SEMAPHORE & AUTO-HANDOFF` (Higiene de Sesión y Gobernanza de Tokens):**
+    - El `@orchestrator` **DEBE** incluir obligatoriamente el pie de telemetría de contexto al final de cada respuesta con el formato exacto:
+      ```markdown
+      ---
+      🟢/🟡/🔴 **Context Health:** Turn X/15 | Blocks: Y/2 | Gate: Z<br>
+      &emsp;&emsp;↳ **Tokens (Last Turn):** In X.Xk · Out X.Xk · Cache X.Xk<br>
+      &emsp;&emsp;↳ **Tokens (Session Total):** In X.Xk · Out X.Xk · Cache X.Xk (Hit: XX.X%)
+      ```
+    - El `@orchestrator` **DEBE** actualizar automáticamente `.agents/ACTIVE_STATE.md` al: (a) aprobar Gate 3 (sign-off de `03-tasks.md`), (b) completar cualquier bloque de ejecución en Gate 4, o (c) alcanzar los umbrales Amarillo (`Turno >= 11` o `Bloques == 2`) o Rojo (`Turno >= 15` o `Bloques >= 3`).
+    - Al pasar de Gate 3 (Diseño/Specs) a Gate 4 (Implementación), o de Gate 4 a Gate 5 (`@documentator`), el `@orchestrator` **DEBE** actualizar `.agents/ACTIVE_STATE.md` e instruir al usuario a abrir una sesión nueva con `/continue` o `/gate5` para cambiar de modelos de alto razonamiento a modelos rápidos de ejecución.
+    - Al alcanzar el umbral Rojo (🔴), el `@orchestrator` **DEBE** aplicar un *Stop-the-Line* estricto, actualizar `.agents/ACTIVE_STATE.md` y negarse a despachar más subagentes hasta que el usuario ejecute `/continue` en un hilo limpio.
 
 ---
 
@@ -82,7 +93,7 @@ El equipo se organiza por responsabilidades de ingeniería de software. Cada age
 
 ## 🏛️ 4. Matriz de Carga Perezosa de Reglas (Conditional Lazy-Loading Matrix)
 
-**DIRECTIVA CRÍTICA DE AHORRO DE TOKENS:** NUNCA cargar todos los archivos de `.agents/rules/*` simultáneamente en el contexto. Los agentes y subagentes DEBEN leer ÚNICAMENTE los archivos de reglas que correspondan a su Gate activo o capa técnica:
+**DIRECTIVA CRÍTICA DE AHORRO DE TOKENS & GOBERNANZA DE CONTEXTO:** PROHIBIDO cargar globalmente todos los archivos de `.agents/rules/*` simultáneamente en el contexto. El `@orchestrator` y los subagentes solo deben cargar en memoria las reglas listadas explícitamente en `Mandatory Context Files` de `.agents/ACTIVE_STATE.md` o las que correspondan estrictamente a su Gate activo o capa técnica:
 
 - **Gate 00 (`specs/STACK.md`):** Leer únicamente `.agents/rules/00-stack-lock.md`.
 - **Gate 1 (`01-spec.md`):** Leer únicamente `.agents/rules/02-ears-requirements.md` y `.agents/rules/01-sdd-lifecycle.md`.

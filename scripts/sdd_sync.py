@@ -25,6 +25,7 @@ FRAMEWORK_PATHS = [
     ".agents/rules",
     ".agents/scripts",
     ".agents/skills",
+    ".agents/workflows",
     ".agents/hooks.json",
     "docs/standards",
     "specs/templates",
