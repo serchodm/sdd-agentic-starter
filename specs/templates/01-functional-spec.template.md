@@ -4,7 +4,7 @@
 - **Estado**: [Borrador | En Revisión | Aprobado | En Implementación | Completado]
 - **Analista Funcional (Ingeniería de Requisitos)**: `@functional-analyst`
 - **Arquitecto Cognitivo / IA**: `@ai-architect`
-- **Tech Lead / Orquestador**: `@orchestrator`
+- **Tech Lead**: `@orchestrator`
 - **Fecha de Creación**: YYYY-MM-DD
 - **Última Actualización**: YYYY-MM-DD
 
@@ -63,7 +63,7 @@
 ---
 
 ## 4. Requisitos del Sistema bajo Protocolo EARS (Easy Approach to Requirements Syntax)
-> ⚠️ **Obligatorio para `@architect` y el analista**: Todo requisito y regla de negocio debe formularse siguiendo uno de los patrones canónicos EARS ([`.agents/rules/02-ears-requirements.md`](file:///c:/Projects/sdd-agentic-starter/.agents/rules/02-ears-requirements.md)). `@orchestrator` auditará esta tabla como Definition of Ready antes de autorizar Gate 2.
+> ⚠️ **Obligatorio para `@functional-analyst` y `@ai-architect`**: Todo requisito y regla de negocio debe formularse siguiendo uno de los patrones canónicos EARS ([`.agents/rules/08-ears-requirements-standard.md`](file:///c:/Projects/sdd-agentic-starter/.agents/rules/08-ears-requirements-standard.md)). `@orchestrator` auditará esta tabla como Definition of Ready antes de autorizar Gate 2.
 
 | ID Requisito | Fuente | Patrón EARS | Cláusula EARS (Sintaxis Formal Canónica) | Componente Afectado |
 |---|---|---|---|---|

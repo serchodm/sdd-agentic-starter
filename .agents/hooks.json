@@ -1,18 +1,21 @@
 {
-  "description": "SDD Quality & Gate Enforcement Hooks",
-  "pre_tool_use": [
-    {
-      "tool": "edit_file",
-      "command": "python .agents/scripts/sdd_code_gate_guard.py"
-    },
-    {
-      "tool": "write_file",
-      "command": "python .agents/scripts/sdd_code_gate_guard.py"
-    }
-  ],
-  "post_task": [
-    {
-      "command": "python .agents/scripts/sdd_healthcheck.py"
-    }
-  ]
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "edit_file|write_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c:\\Projects\\P.A.C.O\\backend\\.venv\\Scripts\\python.exe c:\\Projects\\P.A.C.O\\.agents\\scripts\\sdd_immutable_feature_guard.py",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "c:\\Projects\\P.A.C.O\\backend\\.venv\\Scripts\\python.exe c:\\Projects\\P.A.C.O\\.agents\\scripts\\sdd_code_gate_guard.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
 }

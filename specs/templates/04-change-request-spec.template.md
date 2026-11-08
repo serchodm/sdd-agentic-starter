@@ -3,7 +3,7 @@
 - **ID del Change Request**: [Ej. CR-004-avatar-engine-dual-representation]
 - **Feature Base Afectada (Cardinalidad 1:1 — `RN-SDD-1-TO-1-CR`)**: [`FEAT-XXX`](../features/FEAT-XXX-slug/01-spec.md)
 - **Estado**: [Propuesto | Aprobado Gate 1-3 | En Implementación | Completado]
-- **Responsables**: `@architect` & `@orchestrator`
+- **Responsables**: `@ai-architect` & `@orchestrator`
 - **Fecha**: YYYY-MM-DD
 
 > 🔒 **Recordatorio `RN-SDD-IMMUTABLE-DONE`:** La carpeta de la Feature original (`specs/features/FEAT-XXX-*/`) permanece **inmutable en modo lectura (Read-Only)**. Todo el alcance funcional, técnico y de tareas de esta evolución se gobierna desde este expediente `CR-XXX`.
@@ -19,7 +19,7 @@
 
 | Dimensión / Contrato | Estado Original en `FEAT-XXX` (Baseline Inmutable) | Nuevo Estado en `CR-XXX` (Delta Propuesto) |
 | :--- | :--- | :--- |
-| **Motor / Librería** | [Ej. Implementación propia previa] | [Ej. Nueva librería externa / paquete optimizado V2.0] |
+| **Motor / Librería** | [Ej. Shaders GLSL propios en `frontend/src/...`] | [Ej. Paquete cerrado `@paco/avatar-engine` V18.6.0] |
 | **Contratos / Eventos** | [Ej. Estado interno en store] | [Ej. Adaptador hacia `avatar.*`] |
 | **Código Obsoleto a Eliminar** | [Archivos antiguos en uso] | [Archivos antiguos eliminados al 100% en esta entrega] |
 

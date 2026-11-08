@@ -3,7 +3,7 @@
 - **ID de la Feature**: [Ej. FEAT-006-declarative-agents]
 - **Estado**: [Borrador | En Revisión | Aprobado | En Implementación | Completado]
 - **Especificación Funcional Asociada**: `01-spec.md`
-- **Tech Lead / Arquitecto**: `@orchestrator` & `@architect`
+- **Tech Lead / Arquitecto**: `@orchestrator`
 - **Fecha de Creación**: YYYY-MM-DD
 - **Última Actualización**: YYYY-MM-DD
 

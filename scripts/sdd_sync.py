@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 SDD Framework Bi-Directional Synchronizer (sdd_sync.py)
-Permite mantener sincronizado el framework agéntico (reglas, skills, scripts, estándares)
+Permite mantener sincronizado el framework agéntico (reglas, skills, scripts, estándares, agentes, contextos)
 entre proyectos derivados y el repositorio plantilla (sdd-agentic-starter).
 """
 
@@ -22,6 +22,8 @@ if hasattr(sys.stdout, "reconfigure"):
 
 # Componentes exactos que forman el "Core Agéntico"
 FRAMEWORK_PATHS = [
+    ".agents/agents",
+    ".agents/contexts",
     ".agents/rules",
     ".agents/scripts",
     ".agents/skills",
@@ -29,10 +31,19 @@ FRAMEWORK_PATHS = [
     ".agents/hooks.json",
     "docs/standards",
     "specs/templates",
-    "specs/SDD_FRAMEWORK.md"
+    "specs/SDD_FRAMEWORK.md",
 ]
 
+# Archivos específicos de proyecto a excluir de la sincronización de plantilla
+EXCLUDE_RELATIVE_FILES = {
+    ".agents/agents/jarvis.md",
+    ".agents/agents/audio-voice.md",
+    ".agents/ACTIVE_STATE.md",
+    ".agents/active_work_item.json",
+}
+
 DEFAULT_TEMPLATE_PATH = pathlib.Path("C:/Projects/sdd-agentic-starter")
+
 
 def get_all_relative_files(base_dir: pathlib.Path, rel_subpaths: list[str]) -> set[str]:
     files = set()
@@ -41,13 +52,17 @@ def get_all_relative_files(base_dir: pathlib.Path, rel_subpaths: list[str]) -> s
         if not p.exists():
             continue
         if p.is_file():
-            files.add(sub.replace("\\", "/"))
+            rel = sub.replace("\\", "/")
+            if rel not in EXCLUDE_RELATIVE_FILES:
+                files.add(rel)
         elif p.is_dir():
             for item in p.rglob("*"):
                 if item.is_file() and not item.name.endswith(".pyc") and "__pycache__" not in str(item):
                     rel = item.relative_to(base_dir).as_posix()
-                    files.add(rel)
+                    if rel not in EXCLUDE_RELATIVE_FILES:
+                        files.add(rel)
     return files
+
 
 def compare_framework(source_root: pathlib.Path, template_root: pathlib.Path):
     src_files = get_all_relative_files(source_root, FRAMEWORK_PATHS)
@@ -98,8 +113,11 @@ def compare_framework(source_root: pathlib.Path, template_root: pathlib.Path):
     if not modified and not only_in_source and not only_in_template:
         print("[OK] Todos los componentes del framework estan 100% sincronizados.\n")
     else:
-        print(f"Total: {len(identical)} identicos, {len(modified)} modificados, "
-              f"{len(only_in_source)} solo en proyecto, {len(only_in_template)} solo en plantilla.\n")
+        print(
+            f"Total: {len(identical)} identicos, {len(modified)} modificados, "
+            f"{len(only_in_source)} solo en proyecto, {len(only_in_template)} solo en plantilla.\n"
+        )
+
 
 def push_to_template(source_root: pathlib.Path, template_root: pathlib.Path):
     print(f"Sincronizando mejoras del Framework: {source_root} -> {template_root}")
@@ -111,13 +129,18 @@ def push_to_template(source_root: pathlib.Path, template_root: pathlib.Path):
         dst_file = template_root / rel
         dst_file.parent.mkdir(parents=True, exist_ok=True)
 
-        # Leer y sanitizar nombres propios si aplica
         content = src_file.read_bytes()
-        # Si es texto, aseguramos limpieza de variables
         try:
             text = content.decode("utf-8")
-            # Proteger contra filtración de nombres de proyectos específicos en plantillas
-            sanitized = text.replace("P.A.C.O.", "Project").replace("PACO", "Project")
+            sanitized = (
+                text.replace("P.A.C.O.", "Project")
+                .replace("PACO", "Project")
+                .replace("@jarvis", "@orchestrator")
+                .replace("c:/Projects/P.A.C.O", "c:/Projects/sdd-agentic-starter")
+                .replace("C:/Projects/P.A.C.O", "C:/Projects/sdd-agentic-starter")
+                .replace("c:\\Projects\\P.A.C.O", "c:\\Projects\\sdd-agentic-starter")
+                .replace("C:\\Projects\\P.A.C.O", "C:\\Projects\\sdd-agentic-starter")
+            )
             content = sanitized.encode("utf-8")
         except UnicodeDecodeError:
             pass
@@ -129,6 +152,7 @@ def push_to_template(source_root: pathlib.Path, template_root: pathlib.Path):
 
     print(f"\n[OK] Sincronizacion completada: {copied} fichero(s) actualizados en la plantilla.")
     print("Recuerda entrar a la plantilla, revisar git diff y hacer git commit / push si procede.")
+
 
 def pull_from_template(source_root: pathlib.Path, template_root: pathlib.Path):
     print(f"Incorporando mejoras de la Plantilla al Proyecto: {template_root} -> {source_root}")
@@ -148,14 +172,25 @@ def pull_from_template(source_root: pathlib.Path, template_root: pathlib.Path):
 
     print(f"\n[OK] Actualizacion completada: {copied} fichero(s) incorporados desde la plantilla.")
 
+
 def main():
     parser = argparse.ArgumentParser(description="SDD Framework Bi-Directional Synchronizer")
-    parser.add_argument("--template-dir", type=str, default=str(DEFAULT_TEMPLATE_PATH),
-                        help="Ruta a la carpeta local del repositorio plantilla sdd-agentic-starter")
+    parser.add_argument(
+        "--template-dir",
+        type=str,
+        default=str(DEFAULT_TEMPLATE_PATH),
+        help="Ruta a la carpeta local del repositorio plantilla sdd-agentic-starter",
+    )
     group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument("--status", action="store_true", help="Compara el framework entre el proyecto y la plantilla (por defecto)")
-    group.add_argument("--push-to-template", action="store_true", help="Copia mejoras del framework del proyecto hacia la plantilla")
-    group.add_argument("--pull-from-template", action="store_true", help="Trae actualizaciones de la plantilla hacia este proyecto")
+    group.add_argument(
+        "--status", action="store_true", help="Compara el framework entre el proyecto y la plantilla (por defecto)"
+    )
+    group.add_argument(
+        "--push-to-template", action="store_true", help="Copia mejoras del framework del proyecto hacia la plantilla"
+    )
+    group.add_argument(
+        "--pull-from-template", action="store_true", help="Trae actualizaciones de la plantilla hacia este proyecto"
+    )
 
     args = parser.parse_args()
 
@@ -172,6 +207,7 @@ def main():
         pull_from_template(project_root, template_root)
     else:
         compare_framework(project_root, template_root)
+
 
 if __name__ == "__main__":
     main()
