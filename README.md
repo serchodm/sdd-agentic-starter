@@ -1,12 +1,19 @@
 # SDD Agentic Starter Template
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](THIRD_PARTY_NOTICES.md)
+[![SDD Governance](https://img.shields.io/badge/SDD-Spec--Driven%20Development-success.svg)](#-the-sdd-lifecycle-gate-00-to-gate-5)
+[![Multi-Agent Squad](https://img.shields.io/badge/Agents-49%20Specialists-indigo.svg)](#-complete-catalog-of-agents--specialists-49-specialists)
+[![AST Engine](https://img.shields.io/badge/Repo--Map-20%2B%20Languages-sky.svg)](#-deterministic-tooling-zero-discovery-overhead)
+[![PreToolUse Hooks](https://img.shields.io/badge/Mechanical%20Hooks-Active%20Guardrails-rose.svg)](#-the-ownership-map--zero-write-collision-parallel-execution)
+[![Multi-IDE](https://img.shields.io/badge/Multi--IDE-Antigravity%20%7C%20Claude%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Codex-violet.svg)](#-system-architecture-overview)
+
 [ 🇬🇧 English (EN-GB)](#-english-en-gb) | [ 🇪🇸 Español (ES-ES)](#-español-es-es)
 
 ---
 
 ## 🇬🇧 English (EN-GB)
 
-Universal, production-ready software development starter template governed by **Spec-Driven Development (SDD)** and multi-agent orchestration. Integrates high-rigour software engineering patterns from **Everything Claude Code (ECC)** under the MIT License.
+Universal, production-ready software engineering starter template governed by **Spec-Driven Development (SDD)** and multi-agent orchestration. Integrates high-rigour engineering patterns from **Everything Claude Code (ECC)** under the MIT License.
 
 ---
 
@@ -16,97 +23,119 @@ The framework structures software development into a clean, layered architecture
 
 ```mermaid
 flowchart TD
-    %% Global Styling
-    classDef coreStyle fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
-    classDef builderStyle fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
-    classDef specStyle fill:#312e81,stroke:#818cf8,stroke-width:2px,color:#e0e7ff;
-    classDef guardStyle fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
-    classDef toolStyle fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#f1f5f9;
-    classDef stackStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    %% Modern Aesthetic ProcessOn-Style Card Classes
+    classDef ideCard fill:#ffffff,stroke:#64748b,stroke-width:1.5px,color:#0f172a,rx:5px,font-size:12px;
+    classDef coreCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef buildCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+    classDef specCard fill:#ffffff,stroke:#0d9488,stroke-width:1.5px,color:#134e4a,rx:5px,font-size:11px;
+    classDef stackCard fill:#ffffff,stroke:#f59e0b,stroke-width:1.5px,color:#78350f,rx:5px,font-size:11px;
+    classDef catCard fill:#ffffff,stroke:#8b5cf6,stroke-width:1.5px,color:#4c1d95,rx:5px,font-size:11px;
+    classDef toolCard fill:#ffffff,stroke:#0284c7,stroke-width:1.5px,color:#0369a1,rx:5px,font-size:11px;
+    classDef guardCard fill:#ffffff,stroke:#e11d48,stroke-width:2px,color:#881337,rx:5px,font-weight:bold,font-size:11px;
 
-    subgraph SYSTEM ["SDD Universal Agentic Architecture"]
+    subgraph SYSTEM ["SDD Universal Agentic Architecture · Layered Box Blueprint"]
         direction TB
 
-        subgraph L1 ["Layer 1: Core Governance Squad (Fixed & Stack-Agnostic)"]
-            ORCH["@orchestrator<br>(Tech Lead & SDD Master)"]:::coreStyle
-            FA["@functional-analyst<br>(Gate 1 EARS & BDD)"]:::coreStyle
-            ARCH["@architect<br>(Gate 2 API & ADRs)"]:::coreStyle
-            QA["@qa-tester<br>(Gate 4 Verification)"]:::coreStyle
-            DOC["@documentator<br>(Gate 5 Living Docs 0DD)"]:::coreStyle
-            DEVOPS["@devops<br>(CI/CD & Deploy)"]:::coreStyle
-        end
-
-        subgraph L2 ["Layer 2: Builders & Ownership Map (Write Authority)"]
+        subgraph L0_IDE ["Client Interfaces & Multi-IDE Runtime"]
             direction LR
-            DOM["@back-domain<br>Domain & Use Cases"]:::builderStyle
-            INFRA["@back-infra<br>Adapters & I/O"]:::builderStyle
-            API["@back-api<br>Routers & DTOs"]:::builderStyle
-            DB["@db-specialist<br>DDL & Migrations"]:::builderStyle
-            FUI["@front-ui<br>Components & Styling"]:::builderStyle
-            FLOG["@front-logic<br>State & API Client"]:::builderStyle
-            TEST["@back-test / @front-test<br>Automated Suites"]:::builderStyle
-            TIER["@back-engineer / @front-engineer<br>(Compact Preset Tiers)"]:::builderStyle
+            IDE1["Antigravity IDE"]:::ideCard
+            IDE2["Claude Code CLI"]:::ideCard
+            IDE3["Cursor Editor"]:::ideCard
+            IDE4["Windsurf IDE"]:::ideCard
+            IDE5["OpenAI Codex"]:::ideCard
+            IDE6["Roo Code / Cline"]:::ideCard
         end
 
-        subgraph L3 ["Layer 3: Ultra-Specialists (Read-Only Reviewers & Surgical Resolvers)"]
-            direction TB
-            subgraph L3A ["Universal Specialists (20 Always Available)"]
-                SEC["@security-reviewer"]:::specStyle
-                FAIL["@silent-failure-hunter"]:::specStyle
-                EXP["@code-explorer"]:::specStyle
-                MINE["@spec-miner"]:::specStyle
-                CARCH["@code-architect"]:::specStyle
-                TYPE["@type-design-analyzer"]:::specStyle
-                TDD["@tdd-guide"]:::specStyle
-                OPT["@performance-optimizer"]:::specStyle
-                SIMP["@code-simplifier"]:::specStyle
-                CLEAN["@refactor-cleaner"]:::specStyle
-                GAN["@gan-planner · @gan-generator · @gan-evaluator"]:::specStyle
-                E2E["@e2e-runner"]:::specStyle
-                LOOK["@docs-lookup"]:::specStyle
-                PRT["@pr-test-analyzer"]:::specStyle
-                COM["@comment-analyzer"]:::specStyle
-                CONV["@conversation-analyzer"]:::specStyle
-                SAN["@opensource-sanitizer"]:::specStyle
-                BFIX["@build-error-resolver"]:::specStyle
-            end
+        subgraph L1_CORE ["Layer 1: Core Governance Squad (Fixed & Stack-Agnostic)"]
+            direction LR
+            ORCH["@orchestrator<br>Tech Lead & SDD Master"]:::coreCard
+            FA["@functional-analyst<br>Gate 1 EARS & BDD"]:::coreCard
+            ARCH["@architect<br>Gate 2 API & ADRs"]:::coreCard
+            QA["@qa-tester<br>Gate 4 Verification"]:::coreCard
+            DOC["@documentator<br>Gate 5 Living Docs 0DD"]:::coreCard
+            DEVOPS["@devops<br>CI/CD & Containers"]:::coreCard
+        end
 
-            subgraph L3B ["Dynamic Stack Specialists (29 Across 18 Packs)"]
+        subgraph L2_BUILD ["Layer 2: Builders & Ownership Map (Exclusive Write Authority)"]
+            direction LR
+            DOM["@back-domain<br>Domain & Use Cases"]:::buildCard
+            INFRA["@back-infra<br>Adapters & I/O"]:::buildCard
+            API["@back-api<br>Routers & DTOs"]:::buildCard
+            DB["@db-specialist<br>DDL & Migrations"]:::buildCard
+            FUI["@front-ui<br>Components & CSS"]:::buildCard
+            FLOG["@front-logic<br>State & API Client"]:::buildCard
+            TEST["@back-test / @front-test<br>Automated Suites"]:::buildCard
+        end
+
+        subgraph L3_SPEC ["Layer 3: Ultra-Specialists (Read-Only Reviewers & Surgical Resolvers)"]
+            direction TB
+            subgraph L3A_UNIV ["20 Universal Specialists (Always Available)"]
                 direction LR
-                PY["Python / FastAPI / Django<br>@python-reviewer · @fastapi-reviewer<br>@django-reviewer · @django-build-resolver"]:::stackStyle
-                TS["TypeScript / React / Vue<br>@typescript-reviewer · @react-reviewer<br>@vue-reviewer · @react-build-resolver"]:::stackStyle
-                CS["C# / .NET 9<br>@csharp-reviewer"]:::stackStyle
-                GO_RS["Go / Rust<br>@go-reviewer · @go-build-resolver<br>@rust-reviewer · @rust-build-resolver"]:::stackStyle
-                JVM["Java / Kotlin<br>@java-reviewer · @java-build-resolver<br>@kotlin-reviewer · @kotlin-build-resolver"]:::stackStyle
-                MOB["Swift / Dart Flutter<br>@swift-reviewer · @swift-build-resolver<br>@flutter-reviewer · @dart-build-resolver"]:::stackStyle
-                CPP["C / C++<br>@cpp-reviewer · @cpp-build-resolver"]:::stackStyle
-                CAP["Capacities: DB, Web, AI<br>@database-reviewer · @a11y-architect<br>@seo-specialist · @rag-pipeline-reviewer<br>@mle-reviewer · @pytorch-build-resolver"]:::stackStyle
+                SEC["@security-reviewer<br>OWASP & Zero-Secrets"]:::specCard
+                FAIL["@silent-failure-hunter<br>Catch/Except Audits"]:::specCard
+                TYPE["@type-design-analyzer<br>Strict Type System"]:::specCard
+                TDD["@tdd-guide<br>Red-Green-Refactor"]:::specCard
+                OPT["@performance-optimizer<br>Memory & Profiling"]:::specCard
+                BFIX["@build-error-resolver<br>Minimal Diff Repairs"]:::specCard
+                GAN["@gan-planner · @gan-evaluator<br>Adversarial Quality (>=8.5)"]:::specCard
+            end
+
+            subgraph L3B_STACK ["29 Dynamic Stack Specialists Across 18 Packs (Activated on Demand)"]
+                direction LR
+                PY["Python / FastAPI / Django<br>@python-reviewer<br>@fastapi-reviewer"]:::stackCard
+                TS["TypeScript / React / Vue<br>@typescript-reviewer<br>@react-reviewer"]:::stackCard
+                CS["C# / .NET 9<br>@csharp-reviewer"]:::stackCard
+                GO["Go / Rust<br>@go-reviewer<br>@rust-reviewer"]:::stackCard
+                JVM["Java / Kotlin<br>@java-reviewer<br>@kotlin-reviewer"]:::stackCard
+                CAP["DB / Web / AI<br>@database-reviewer<br>@rag-pipeline-reviewer"]:::stackCard
             end
         end
 
-        subgraph CROSS ["Cross-Cutting SDD Governance & Mechanical Enforcement"]
-            direction TB
-            HOOKS["Mechanical Hooks (PreToolUse)<br>sdd_code_gate_guard.py<br>sdd_immutable_feature_guard.py"]:::guardStyle
-            LIMITS["Strict Modularity Limits<br>Ceiling: 800 lines/file<br>Warning: 500 lines/file"]:::guardStyle
-            LOCKS["Gate Locks & Fail-Closed<br>RN-SDD-GATE00-STACK-LOCK<br>RN-SDD-GATE2-CODE-LOCK<br>RN-SDD-IMMUTABLE-DONE"]:::guardStyle
-            MAP["Ownership Map (specs/STACK.md)<br>Strict 1:1 Path Assignment<br>Forbidden Import Audits"]:::guardStyle
+        subgraph L4_CAT ["Layer 4: Inactive Catalog & Knowledge Base (.sdd/catalog/ & docs/knowledge/)"]
+            direction LR
+            CAT_ARC["18 Layer Archetypes<br>domain, infra, api, db, ui..."]:::catCard
+            CAT_SPC["20 Universal Specialists<br>ECC Prompt-Defense Wrappers"]:::catCard
+            CAT_PCK["18 Dynamic Stack Packs<br>Rules, Agents & Skills Recipes"]:::catCard
+            CAT_KB["Living Knowledge Base<br>SYSTEM_TOPOLOGY & API_CATALOG"]:::catCard
         end
 
-        subgraph TOOLS ["Deterministic Tooling (Zero Discovery Overhead)"]
+        subgraph L5_TOOL ["Layer 5: Deterministic Tools & AST Engine (Zero Discovery Overhead)"]
             direction LR
-            AST["sdd_repo_map.py<br>(20+ Languages AST)"]:::toolStyle
-            TRIM["sdd_trim_exec.py<br>(Terminal Trimmer)"]:::toolStyle
-            TOK["sdd_token_usage.py<br>(Multi-IDE Telemetry)"]:::toolStyle
-            BOUND["verify_architecture_boundaries.py<br>(Boundary Verifier)"]:::toolStyle
+            AST["sdd_repo_map.py<br>AST Skeleton (20+ Langs)"]:::toolCard
+            TRIM["sdd_trim_exec.py<br>Terminal Output Trimmer"]:::toolCard
+            TOK["sdd_token_usage.py<br>Multi-IDE Token Telemetry"]:::toolCard
+            BOUND["verify_architecture_boundaries.py<br>AST Forbidden Import Verifier"]:::toolCard
+        end
+
+        subgraph CROSS_GUARD ["Cross-Cutting SDD Governance & Mechanical Guardrails"]
+            direction LR
+            HOOKS["PreToolUse Mechanical Hooks<br>sdd_code_gate_guard.py<br>sdd_immutable_feature_guard.py"]:::guardCard
+            LOCKS["Gate Locks (Fail-Closed)<br>RN-SDD-GATE00-STACK-LOCK<br>RN-SDD-GATE2-CODE-LOCK<br>RN-SDD-IMMUTABLE-DONE"]:::guardCard
+            LIMITS["Strict Modularity Limits<br>Hard Ceiling: 800 lines/file<br>Warning: 500 lines/file"]:::guardCard
+            SEMA["Context Health Semaphore<br>Max 15 Turns / 2 DAG Blocks<br>Turn & Session Telemetry"]:::guardCard
         end
     end
 
-    %% Relationships
-    ORCH ==>|"1. Plans DAG & Dispatches Tasks"| L2
-    CROSS -.-|"Enforces Boundaries & Locks"| L2
-    L2 -.->|"2. Requests Code Review & Fixes"| L3
-    L3B -.->|"3. Validates with DoD Commands"| TOOLS
-    QA ==>|"4. Holistic Audit & Sign-off"| L1
+    %% Process Flow & Governance Links
+    L0_IDE ==>|"Prompt & Context"| L1_CORE
+    L1_CORE ==>|"1. Plans DAG & Dispatches Tasks"| L2_BUILD
+    L2_BUILD -.->|"2. Code Review Requests"| L3_SPEC
+    L3_SPEC -.->|"3. DoD Verification Commands"| L5_TOOL
+    CROSS_GUARD -.-|"Mechanical Interception on Every Tool Call"| L2_BUILD
+    CROSS_GUARD -.-|"Gate Enforcement"| L1_CORE
+    L4_CAT -.->|"Materializes on Bootstrap"| L2_BUILD
+
+    %% Aesthetic Layer Container Background Styles
+    style SYSTEM fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,color:#0f172a
+    style L0_IDE fill:#f1f5f9,stroke:#cbd5e1,stroke-width:1.5px,color:#334155
+    style L1_CORE fill:#eef2ff,stroke:#a5b4fc,stroke-width:2px,color:#312e81
+    style L2_BUILD fill:#ecfdf5,stroke:#6ee7b7,stroke-width:2px,color:#065f46
+    style L3_SPEC fill:#f0fdfa,stroke:#5eead4,stroke-width:2px,color:#115e59
+    style L3A_UNIV fill:#ffffff,stroke:#99f6e4,stroke-width:1px,color:#134e4a
+    style L3B_STACK fill:#ffffff,stroke:#fde68a,stroke-width:1px,color:#78350f
+    style L4_CAT fill:#f5f3ff,stroke:#c4b5fd,stroke-width:2px,color:#5b21b6
+    style L5_TOOL fill:#f0f9ff,stroke:#7dd3fc,stroke-width:2px,color:#075985
+    style CROSS_GUARD fill:#fff1f2,stroke:#fda4af,stroke-width:2px,color:#9f1239
 ```
 
 ---
@@ -147,23 +176,23 @@ Development follows a strict, step-by-step quality gate progression. No code is 
 
 ```mermaid
 flowchart TD
-    classDef gateStyle fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
-    classDef humanStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
-    classDef execStyle fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
-    classDef doneStyle fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef gateCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef humanCard fill:#ffffff,stroke:#f59e0b,stroke-width:2px,color:#78350f,rx:5px,font-weight:bold,font-size:12px;
+    classDef execCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+    classDef doneCard fill:#ffffff,stroke:#e11d48,stroke-width:2px,color:#881337,rx:5px,font-weight:bold,font-size:12px;
 
-    G00["Gate 00: Stack Lock (specs/STACK.md)<br>• Topology & Hosting<br>• Ownership Map & DoD Commands<br>• Stack Packs Materialization"]:::gateStyle
-    H00{"Human Sign-off<br>[x] Gate 00 Approved"}:::humanStyle
-    G0["Gate 0: Backlog Intake<br>• Register FEAT-XXX in specs/BACKLOG.md<br>• Initialize specs/features/FEAT-XXX/"]:::gateStyle
-    G1["Gate 1: Functional Spec (01-spec.md)<br>• Written by @functional-analyst<br>• Strict formal EARS syntax<br>• Given-When-Then BDD Acceptance Criteria"]:::gateStyle
-    H1{"Human Sign-off<br>[x] Gate 1 Approved"}:::humanStyle
-    G2["Gate 2: Technical Spec (02-tech-spec.md)<br>• Designed by @architect<br>• Symmetric API & DTO Contracts<br>• Architecture Decision Records (ADRs)"]:::gateStyle
-    H2{"Human Sign-off<br>[x] Gate 2 Approved"}:::humanStyle
-    G3["Gate 3: Atomic Task DAG (03-tasks.md)<br>• Planned by @orchestrator<br>• [PARALLEL] & [SEQUENTIAL] blocks<br>• Strict DoR: Agent, Zone Path, DoD command"]:::gateStyle
-    H3{"Human Sign-off<br>[x] Gate 3 Approved"}:::humanStyle
-    G4["Gate 4: Execution & Verification<br>• Despatched via .agent-inbox/<br>• Builders implement code in assigned zones<br>• ECC Specialists review & resolve errors<br>• @qa-tester runs regression suites"]:::execStyle
-    G5["Gate 5: Zero Document Debt (0DD)<br>• Executed by @documentator<br>• Bilingual living docs (docs/es/ & docs/en/)<br>• API Catalog & Data Models updated<br>• TRACEABILITY-MATRIX.md synchronized"]:::gateStyle
-    DONE["DONE: Feature Completed<br>• specs/features/FEAT-XXX/ locked as READ-ONLY<br>• RN-SDD-IMMUTABLE-DONE baseline<br>• git push origin main (RN-SDD-GIT-SYNC)"]:::doneStyle
+    G00["Gate 00: Stack Lock (specs/STACK.md)<br>• Topology & Hosting Defined<br>• Ownership Map & DoD Commands Configured<br>• Stack Packs Materialized into .agents/"]:::gateCard
+    H00{"Human Sign-off<br>[x] Gate 00 Approved"}:::humanCard
+    G0["Gate 0: Backlog Intake<br>• Register FEAT-XXX in specs/BACKLOG.md<br>• Initialize specs/features/FEAT-XXX/ directory"]:::gateCard
+    G1["Gate 1: Functional Spec (01-spec.md)<br>• Drafted by @functional-analyst<br>• Formal EARS syntax (Ubiquitous, Event, State)<br>• Given-When-Then BDD Acceptance Criteria"]:::gateCard
+    H1{"Human Sign-off<br>[x] Gate 1 Approved"}:::humanCard
+    G2["Gate 2: Technical Spec (02-tech-spec.md)<br>• Designed by @architect<br>• Symmetric API & DTO Schemas<br>• Architecture Decision Records (ADRs)"]:::gateCard
+    H2{"Human Sign-off<br>[x] Gate 2 Approved"}:::humanCard
+    G3["Gate 3: Atomic Task DAG (03-tasks.md)<br>• Structured by @orchestrator<br>• [PARALLEL] & [SEQUENTIAL] dependency graph<br>• Definition of Ready (DoR): Agent, Zone, DoD command"]:::gateCard
+    H3{"Human Sign-off<br>[x] Gate 3 Approved"}:::humanCard
+    G4["Gate 4: Execution & Verification<br>• Dispatched via .agent-inbox/<agent>/<br>• Builders implement code in exclusive zones<br>• ECC Specialists review code & fix build errors<br>• @qa-tester executes regression test batteries"]:::execCard
+    G5["Gate 5: Zero Document Debt (0DD)<br>• Executed by @documentator<br>• Bilingual living docs updated (docs/es/ & docs/en/)<br>• API Catalog & Data Models synchronized<br>• TRACEABILITY-MATRIX.md audit completed"]:::gateCard
+    DONE["DONE: Feature Baseline Invariant<br>• specs/features/FEAT-XXX/ locked as READ-ONLY<br>• RN-SDD-IMMUTABLE-DONE baseline established<br>• git push origin main (RN-SDD-GIT-SYNC)"]:::doneCard
 
     G00 --> H00 --> G0 --> G1 --> H1 --> G2 --> H2 --> G3 --> H3 --> G4 --> G5 --> DONE
 ```
@@ -176,29 +205,33 @@ To protect the model's context window from token exhaustion while retaining acce
 
 ```mermaid
 flowchart LR
-    classDef catStyle fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#94a3b8;
-    classDef genStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
-    classDef liveStyle fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef catCard fill:#ffffff,stroke:#8b5cf6,stroke-width:1.5px,color:#4c1d95,rx:5px,font-size:12px;
+    classDef genCard fill:#ffffff,stroke:#f59e0b,stroke-width:2px,color:#78350f,rx:5px,font-weight:bold,font-size:12px;
+    classDef liveCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
 
-    subgraph INERT [".sdd/catalog/ (INACTIVE CATALOG - 0 TOKENS)"]
+    subgraph INERT [".sdd/catalog/ (INACTIVE CATALOG · 0 TOKENS CONSUMED)"]
         direction TB
-        ARQC["18 Layer Archetypes<br>(domain, infra, api, db, test, tier, mobile, cli)"]:::catStyle
-        SPECC["20 Universal ECC Specialists<br>(security, silent failures, TDD, explorers, GAN)"]:::catStyle
-        PACKC["18 Stack Packs<br>(Python, TS, C#, Go, Rust, Java, React, Vue, DB, AI)"]:::catStyle
+        ARQC["18 Layer Archetypes<br>(domain, infra, api, db, test, tier, mobile, cli)"]:::catCard
+        SPECC["20 Universal ECC Specialists<br>(security, silent-failures, TDD, explorers, GAN)"]:::catCard
+        PACKC["18 Stack Packs<br>(Python, TS, C#, Go, Rust, Java, React, Vue, DB, AI)"]:::catCard
+        SKILLSC["314+ Specialized Skills<br>(fastapi, react-perf, postgres, testing...)"]:::catCard
     end
 
-    GEN["sdd_agent_generator.py<br>--materialize"]:::genStyle
+    GEN["sdd_agent_generator.py<br>--materialize<br>Ownership Map Compiler"]:::genCard
 
-    subgraph RUNTIME [".agents/ (ACTIVE RUNTIME - DISCOVERED BY IDE)"]
+    subgraph RUNTIME [".agents/ (ACTIVE RUNTIME · DISCOVERED BY IDE)"]
         direction TB
-        COREA["Layer 1 Core Agents<br>(orchestrator, functional-analyst, architect, qa-tester, documentator, devops)"]:::liveStyle
-        BUILDA["Layer 2 Materialized Builders<br>(compiled strictly from Ownership Map)"]:::liveStyle
-        SPECA["Layer 3 Active Specialists<br>(universals + selected stack pack reviewers)"]:::liveStyle
-        OVERA[".agents/overrides/<br>(project-specific domain rules)"]:::liveStyle
+        COREA["Layer 1: Core Squad<br>(orchestrator, functional-analyst, architect,<br>qa-tester, documentator, devops)"]:::liveCard
+        BUILDA["Layer 2: Materialized Builders<br>(compiled strictly from Ownership Map zones)"]:::liveCard
+        SPECA["Layer 3: Active Specialists<br>(universals + project stack reviewers)"]:::liveCard
+        OVERA[".agents/overrides/<br>(project-specific domain rules & overrides)"]:::liveCard
     end
 
-    INERT -->|"Reads Recipes"| GEN
-    GEN -->|"Generates & Locks (squad.lock.json)"| RUNTIME
+    INERT -->|"1. Reads Catalog Recipes"| GEN
+    GEN -->|"2. Emits squad.lock.json & Agents"| RUNTIME
+
+    style INERT fill:#f5f3ff,stroke:#c4b5fd,stroke-width:2px,color:#5b21b6
+    style RUNTIME fill:#ecfdf5,stroke:#6ee7b7,stroke-width:2px,color:#065f46
 ```
 
 1. **`.sdd/catalog/` (Inactive Catalog)**: Resides outside `.agents/`. AI assistants (Antigravity, Cursor, Claude Code) do not discover it, meaning **0 tokens** are consumed in your chat turns.
@@ -266,9 +299,9 @@ flowchart LR
 
 ---
 
-### 🗺️ The Ownership Map (Mechanical Boundary Isolation)
+### 🗺️ The Ownership Map & Zero Write-Collision Parallel Execution
 
-Configured in `specs/STACK.md §3.2`, the Ownership Map is the **single source of truth** for code permissions. It maps code directories to single builder owners:
+Configured in `specs/STACK.md §3.2`, the Ownership Map is the **single source of truth** for code permissions. It maps code directories to single builder owners, enabling parallel multi-agent task execution without write collisions:
 
 ```yaml
 ownership:
@@ -299,8 +332,181 @@ ownership:
   unowned_policy: fail-closed
 ```
 
+```mermaid
+flowchart TD
+    classDef orchCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef taskCard fill:#ffffff,stroke:#0284c7,stroke-width:1.5px,color:#0369a1,rx:5px,font-size:12px;
+    classDef agentCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+    classDef zoneCard fill:#ffffff,stroke:#f59e0b,stroke-width:1.5px,color:#78350f,rx:5px,font-size:12px;
+    classDef guardCard fill:#ffffff,stroke:#e11d48,stroke-width:2px,color:#881337,rx:5px,font-weight:bold,font-size:12px;
+
+    ORCH["@orchestrator<br>Parses 03-tasks.md [PARALLEL] Block"]:::orchCard
+
+    subgraph INBOX [".agent-inbox/ Concurrency Dispatch"]
+        direction LR
+        T1["Task 4.1: Domain Models<br>Assigned: @back-domain"]:::taskCard
+        T2["Task 4.2: DB Migrations<br>Assigned: @db-specialist"]:::taskCard
+        T3["Task 4.3: UI Components<br>Assigned: @front-ui"]:::taskCard
+    end
+
+    subgraph BUILDERS ["Specialist Builders Executing Concurrently"]
+        direction LR
+        A1["@back-domain"]:::agentCard
+        A2["@db-specialist"]:::agentCard
+        A3["@front-ui"]:::agentCard
+    end
+
+    subgraph ZONES ["Exclusive Ownership Map Zones (specs/STACK.md)"]
+        direction LR
+        Z1["Zone: backend-domain<br>src/backend/domain/**<br>Forbid: fastapi, sqlalchemy"]:::zoneCard
+        Z2["Zone: backend-db<br>src/backend/infrastructure/db/**<br>migrations/**"]:::zoneCard
+        Z3["Zone: frontend-ui<br>src/frontend/components/**<br>Forbid: backend imports"]:::zoneCard
+    end
+
+    subgraph GUARD ["Mechanical PreToolUse Interception (sdd_code_gate_guard.py)"]
+        direction TB
+        CHK{"Agent allowed<br>in target path?"}:::guardCard
+        ALLOW["✅ Tool Call Allowed<br>Edit Applied Cleanly"]:::agentCard
+        DENY["🛑 Tool Call Denied (Exit 1)<br>Fail-Closed Boundary Protection"]:::guardCard
+    end
+
+    ORCH ==>|"Dispatches parallel tickets"| INBOX
+    T1 --> A1
+    T2 --> A2
+    T3 --> A3
+    A1 ==>|"Writes exclusively to"| Z1
+    A2 ==>|"Writes exclusively to"| Z2
+    A3 ==>|"Writes exclusively to"| Z3
+    Z1 -.->|"Tool Call Event"| CHK
+    Z2 -.->|"Tool Call Event"| CHK
+    Z3 -.->|"Tool Call Event"| CHK
+    CHK -->|"Matches Zone"| ALLOW
+    CHK -->|"Out of Zone / Unowned"| DENY
+
+    style INBOX fill:#f0f9ff,stroke:#7dd3fc,stroke-width:2px,color:#075985
+    style BUILDERS fill:#ecfdf5,stroke:#6ee7b7,stroke-width:2px,color:#065f46
+    style ZONES fill:#fef3c7,stroke:#fcd34d,stroke-width:2px,color:#78350f
+    style GUARD fill:#fff1f2,stroke:#fda4af,stroke-width:2px,color:#9f1239
+```
+
 - **Mechanical Hook Guard**: PreToolUse hook `sdd_code_gate_guard.py` checks `.agents/active_work_item.json`. If an agent attempts to edit files outside its assigned zone, the operation is **immediately denied**.
 - **Architectural Boundary Verification**: Run `python .agents/scripts/verify_architecture_boundaries.py` to audit forbidden imports across layers via AST inspection.
+
+---
+
+### 🧪 Dual Quality Verification Engines: Santa Method & GAN Harness
+
+To eliminate "suspicious green tests", confirmation bias, and complacency in complex deliveries, the framework incorporates two high-rigour verification engines adapted from Everything Claude Code:
+
+```mermaid
+flowchart TD
+    classDef startCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef revCard fill:#ffffff,stroke:#0d9488,stroke-width:1.5px,color:#134e4a,rx:5px,font-size:12px;
+    classDef checkCard fill:#ffffff,stroke:#f59e0b,stroke-width:2px,color:#78350f,rx:5px,font-weight:bold,font-size:12px;
+    classDef passCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+    classDef failCard fill:#ffffff,stroke:#e11d48,stroke-width:2px,color:#881337,rx:5px,font-weight:bold,font-size:12px;
+
+    subgraph SANTA ["Engine A: The Santa Method ('Checking It Twice' · /santa-loop)"]
+        direction TB
+        DELIV_A["Task Deliverable Submitted"]:::startCard
+        subgraph ISOLATED ["Dual Isolated Reviewers (Independent & Parallel)"]
+            direction LR
+            REV1["Reviewer 1<br>(Security & Correctness)"]:::revCard
+            REV2["Reviewer 2<br>(Types & Error Handling)"]:::revCard
+        end
+        VERDICT{"Unanimous Consensus?<br>Both Verdicts == NICE"}:::checkCard
+        CERT_A["✅ Deliverable Certified<br>Gate 4 Check Passed"]:::passCard
+        REWORK_A["❌ Changes Requested<br>Loop Back to Builder Specialist"]:::failCard
+
+        DELIV_A --> ISOLATED
+        REV1 --> VERDICT
+        REV2 --> VERDICT
+        VERDICT -->|"Both NICE"| CERT_A
+        VERDICT -->|"Any Issue"| REWORK_A
+        REWORK_A -.->|"Fixed Deliverable"| DELIV_A
+    end
+
+    subgraph GAN ["Engine B: GAN-Style Adversarial Harness (/gan-build)"]
+        direction TB
+        PLAN["@gan-planner<br>Formulates Deliverable Blueprint<br>& Weighted Evaluation Rubric"]:::startCard
+        GEN["@gan-generator<br>Produces Hardened Code<br>Under Adversarial Critique"]:::revCard
+        EVAL["@gan-evaluator<br>Scores Deliverable Objectively<br>Rubric: Arch, Security, DoD, Edge Cases"]:::checkCard
+        SCORE{"Evaluation Score<br>>= 8.5 / 10.0?"}:::checkCard
+        CERT_B["✅ Deliverable Accepted<br>High-Rigour Standard Achieved"]:::passCard
+        CRITIQUE["❌ Adversarial Critique<br>Actionable Defect Feedback"]:::failCard
+
+        PLAN --> GEN
+        GEN --> EVAL
+        EVAL --> SCORE
+        SCORE -->|"Pass (Score >= 8.5)"| CERT_B
+        SCORE -->|"Fail (Score < 8.5)"| CRITIQUE
+        CRITIQUE -.->|"Refine Code"| GEN
+    end
+
+    style SANTA fill:#f0fdfa,stroke:#5eead4,stroke-width:2px,color:#115e59
+    style ISOLATED fill:#ffffff,stroke:#99f6e4,stroke-width:1px,color:#134e4a
+    style GAN fill:#eef2ff,stroke:#a5b4fc,stroke-width:2px,color:#312e81
+```
+
+1. **The Santa Method (`/santa-loop`)**: Inspired by the Santa Claus rhyme ("Making a list, checking it twice"). A deliverable must receive a unanimous **`NICE`** verdict from two independent, isolated reviewers before Gate 4 sign-off.
+2. **GAN-Style Adversarial Harness (`/gan-build`)**: Deploys a Generator-Evaluator adversarial architecture. `@gan-planner` creates an objective rubric, `@gan-generator` produces the code, and `@gan-evaluator` scores it objectively until reaching a passing mark of **>= 8.5 / 10.0**.
+
+---
+
+### 🧠 Continuous Learning v2 & Instinct Evolution Engine
+
+The framework features an autonomous learning loop based on ECC's Atomic Instincts engine (`continuous-learning-v2`), transforming developer interactions and problem-solving sessions into permanent institutional knowledge:
+
+```mermaid
+flowchart LR
+    classDef sessCard fill:#ffffff,stroke:#64748b,stroke-width:1.5px,color:#0f172a,rx:5px,font-size:12px;
+    classDef learnCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef instCard fill:#ffffff,stroke:#f59e0b,stroke-width:1.5px,color:#78350f,rx:5px,font-size:12px;
+    classDef ruleCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+
+    subgraph SESSION ["Engineering Session"]
+        S1["Debugging, Refactoring<br>or Architecture Discovery"]:::sessCard
+        S2["Reusable Pattern or<br>Framework Fix Identified"]:::sessCard
+        S1 --> S2
+    end
+
+    subgraph LEARN ["/learn Trigger"]
+        ANALYZER["@conversation-analyzer<br>Extracts Atomic Pattern"]:::learnCard
+    end
+
+    subgraph INSTINCTS ["Instinct Pool (continuous-learning-v2)"]
+        direction TB
+        I1["Instinct #1<br>Confidence: 0.3 (Candidate)"]:::instCard
+        I2["Instinct #2<br>Confidence: 0.6 (Reinforced)"]:::instCard
+        I3["Instinct #3<br>Confidence: 0.9 (Proven)"]:::instCard
+        I1 -.->|"Repeated Success"| I2
+        I2 -.->|"Cross-Session Validation"| I3
+    end
+
+    subgraph EVOLVE ["/evolve Trigger"]
+        EVOLVER["Instinct Evolution Engine<br>Clusters Related High-Confidence Patterns"]:::learnCard
+    end
+
+    subgraph PERM ["Permanent Repository Assets"]
+        R1[".agents/rules/*.md<br>Enforced Project Rules"]:::ruleCard
+        R2[".agents/skills/*.md<br>Autonomous Reusable Skills"]:::ruleCard
+    end
+
+    S2 ==>|"Triggers /learn"| ANALYZER
+    ANALYZER ==>|"Persists atomic instinct"| I1
+    I3 ==>|"Confidence >= 0.75"| EVOLVER
+    EVOLVER ==>|"Generates"| R1
+    EVOLVER ==>|"Packages"| R2
+
+    style SESSION fill:#f8fafc,stroke:#cbd5e1,stroke-width:1.5px,color:#334155
+    style LEARN fill:#eef2ff,stroke:#a5b4fc,stroke-width:2px,color:#312e81
+    style INSTINCTS fill:#fef3c7,stroke:#fcd34d,stroke-width:2px,color:#78350f
+    style EVOLVE fill:#eef2ff,stroke:#a5b4fc,stroke-width:2px,color:#312e81
+    style PERM fill:#ecfdf5,stroke:#6ee7b7,stroke-width:2px,color:#065f46
+```
+
+- **Confidence Scoring (`0.3` to `0.9`)**: Candidate patterns enter at confidence `0.3`. As patterns succeed across sessions, confidence increases to `0.6` and `0.9`.
+- **Automatic Evolution (`/evolve`)**: When related instincts reach confidence `>= 0.75`, the engine clusters them and synthesizes permanent `.agents/rules/*.md` or modular `.agents/skills/*.md`.
 
 ---
 
@@ -361,6 +567,11 @@ python .agents/scripts/sdd_token_usage.py
    python .agents/scripts/sdd_trim_exec.py pytest tests/unit/
    python .agents/scripts/sdd_trim_exec.py npm test
    ```
+3. **Architectural Boundary Verifier (`verify_architecture_boundaries.py`)**:
+   Audits code imports against forbidden layer boundaries declared in `specs/STACK.md §3.2`.
+   ```bash
+   python .agents/scripts/verify_architecture_boundaries.py
+   ```
 
 ---
 
@@ -394,97 +605,119 @@ El framework estructura el desarrollo de software en una arquitectura por capas 
 
 ```mermaid
 flowchart TD
-    %% Estilos Globales
-    classDef coreStyle fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
-    classDef builderStyle fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
-    classDef specStyle fill:#312e81,stroke:#818cf8,stroke-width:2px,color:#e0e7ff;
-    classDef guardStyle fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
-    classDef toolStyle fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#f1f5f9;
-    classDef stackStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    %% Clases Estilo Moderno ProcessOn
+    classDef ideCard fill:#ffffff,stroke:#64748b,stroke-width:1.5px,color:#0f172a,rx:5px,font-size:12px;
+    classDef coreCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef buildCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+    classDef specCard fill:#ffffff,stroke:#0d9488,stroke-width:1.5px,color:#134e4a,rx:5px,font-size:11px;
+    classDef stackCard fill:#ffffff,stroke:#f59e0b,stroke-width:1.5px,color:#78350f,rx:5px,font-size:11px;
+    classDef catCard fill:#ffffff,stroke:#8b5cf6,stroke-width:1.5px,color:#4c1d95,rx:5px,font-size:11px;
+    classDef toolCard fill:#ffffff,stroke:#0284c7,stroke-width:1.5px,color:#0369a1,rx:5px,font-size:11px;
+    classDef guardCard fill:#ffffff,stroke:#e11d48,stroke-width:2px,color:#881337,rx:5px,font-weight:bold,font-size:11px;
 
-    subgraph SYSTEM ["Arquitectura Universal Agéntica SDD"]
+    subgraph SYSTEM ["Arquitectura Universal Agéntica SDD · Blueprint Modular por Capas"]
         direction TB
 
-        subgraph L1 ["Capa 1: Escuadrón Core de Gobernanza (Fijo y Agnóstico al Stack)"]
-            ORCH["@orchestrator<br>(Tech Lead & Master SDD)"]:::coreStyle
-            FA["@functional-analyst<br>(Gate 1 EARS & BDD)"]:::coreStyle
-            ARCH["@architect<br>(Gate 2 API & ADRs)"]:::coreStyle
-            QA["@qa-tester<br>(Gate 4 Verificación)"]:::coreStyle
-            DOC["@documentator<br>(Gate 5 Living Docs 0DD)"]:::coreStyle
-            DEVOPS["@devops<br>(CI/CD & Despliegue)"]:::coreStyle
-        end
-
-        subgraph L2 ["Capa 2: Constructores y Ownership Map (Autoridad de Escritura)"]
+        subgraph L0_IDE ["Interfaces de Cliente y Runtime Multi-IDE"]
             direction LR
-            DOM["@back-domain<br>Dominio y Casos de Uso"]:::builderStyle
-            INFRA["@back-infra<br>Adaptadores e I/O"]:::builderStyle
-            API["@back-api<br>Routers y DTOs"]:::builderStyle
-            DB["@db-specialist<br>DDL y Migraciones"]:::builderStyle
-            FUI["@front-ui<br>Componentes y Maquetación"]:::builderStyle
-            FLOG["@front-logic<br>Estado y Cliente API"]:::builderStyle
-            TEST["@back-test / @front-test<br>Suites Automatizadas"]:::builderStyle
-            TIER["@back-engineer / @front-engineer<br>(Tiers en Preset Compacto)"]:::builderStyle
+            IDE1["Antigravity IDE"]:::ideCard
+            IDE2["Claude Code CLI"]:::ideCard
+            IDE3["Cursor Editor"]:::ideCard
+            IDE4["Windsurf IDE"]:::ideCard
+            IDE5["OpenAI Codex"]:::ideCard
+            IDE6["Roo Code / Cline"]:::ideCard
         end
 
-        subgraph L3 ["Capa 3: Ultra-Especialistas (Revisores de Solo Lectura y Resolvers Quirúrgicos)"]
-            direction TB
-            subgraph L3A ["Especialistas Universales (20 Siempre Disponibles)"]
-                SEC["@security-reviewer"]:::specStyle
-                FAIL["@silent-failure-hunter"]:::specStyle
-                EXP["@code-explorer"]:::specStyle
-                MINE["@spec-miner"]:::specStyle
-                CARCH["@code-architect"]:::specStyle
-                TYPE["@type-design-analyzer"]:::specStyle
-                TDD["@tdd-guide"]:::specStyle
-                OPT["@performance-optimizer"]:::specStyle
-                SIMP["@code-simplifier"]:::specStyle
-                CLEAN["@refactor-cleaner"]:::specStyle
-                GAN["@gan-planner · @gan-generator · @gan-evaluator"]:::specStyle
-                E2E["@e2e-runner"]:::specStyle
-                LOOK["@docs-lookup"]:::specStyle
-                PRT["@pr-test-analyzer"]:::specStyle
-                COM["@comment-analyzer"]:::specStyle
-                CONV["@conversation-analyzer"]:::specStyle
-                SAN["@opensource-sanitizer"]:::specStyle
-                BFIX["@build-error-resolver"]:::specStyle
-            end
+        subgraph L1_CORE ["Capa 1: Escuadrón Core de Gobernanza (Fijo y Agnóstico al Stack)"]
+            direction LR
+            ORCH["@orchestrator<br>Tech Lead & Master SDD"]:::coreCard
+            FA["@functional-analyst<br>Gate 1 EARS & BDD"]:::coreCard
+            ARCH["@architect<br>Gate 2 API & ADRs"]:::coreCard
+            QA["@qa-tester<br>Gate 4 Verificación"]:::coreCard
+            DOC["@documentator<br>Gate 5 Living Docs 0DD"]:::coreCard
+            DEVOPS["@devops<br>CI/CD y Despliegue"]:::coreCard
+        end
 
-            subgraph L3B ["Especialistas Dinámicos de Stack (29 en 18 Packs)"]
+        subgraph L2_BUILD ["Capa 2: Constructores y Ownership Map (Autoridad Exclusiva de Escritura)"]
+            direction LR
+            DOM["@back-domain<br>Dominio y Casos de Uso"]:::buildCard
+            INFRA["@back-infra<br>Adaptadores e I/O"]:::buildCard
+            API["@back-api<br>Routers y DTOs"]:::buildCard
+            DB["@db-specialist<br>DDL y Migraciones"]:::buildCard
+            FUI["@front-ui<br>Componentes y CSS"]:::buildCard
+            FLOG["@front-logic<br>Estado y Cliente API"]:::buildCard
+            TEST["@back-test / @front-test<br>Suites Automatizadas"]:::buildCard
+        end
+
+        subgraph L3_SPEC ["Capa 3: Ultra-Especialistas (Revisores de Solo Lectura y Resolvers Quirúrgicos)"]
+            direction TB
+            subgraph L3A_UNIV ["20 Especialistas Universales ECC (Siempre Disponibles)"]
                 direction LR
-                PY["Python / FastAPI / Django<br>@python-reviewer · @fastapi-reviewer<br>@django-reviewer · @django-build-resolver"]:::stackStyle
-                TS["TypeScript / React / Vue<br>@typescript-reviewer · @react-reviewer<br>@vue-reviewer · @react-build-resolver"]:::stackStyle
-                CS["C# / .NET 9<br>@csharp-reviewer"]:::stackStyle
-                GO_RS["Go / Rust<br>@go-reviewer · @go-build-resolver<br>@rust-reviewer · @rust-build-resolver"]:::stackStyle
-                JVM["Java / Kotlin<br>@java-reviewer · @java-build-resolver<br>@kotlin-reviewer · @kotlin-build-resolver"]:::stackStyle
-                MOB["Swift / Dart Flutter<br>@swift-reviewer · @swift-build-resolver<br>@flutter-reviewer · @dart-build-resolver"]:::stackStyle
-                CPP["C / C++<br>@cpp-reviewer · @cpp-build-resolver"]:::stackStyle
-                CAP["Capacidades: BD, Web, IA<br>@database-reviewer · @a11y-architect<br>@seo-specialist · @rag-pipeline-reviewer<br>@mle-reviewer · @pytorch-build-resolver"]:::stackStyle
+                SEC["@security-reviewer<br>OWASP y Cero Secretos"]:::specCard
+                FAIL["@silent-failure-hunter<br>Caza Errores Ocultos"]:::specCard
+                TYPE["@type-design-analyzer<br>Tipado Estricto"]:::specCard
+                TDD["@tdd-guide<br>Red-Green-Refactor"]:::specCard
+                OPT["@performance-optimizer<br>Memoria y Profiling"]:::specCard
+                BFIX["@build-error-resolver<br>Reparación Mínimo Diff"]:::specCard
+                GAN["@gan-planner · @gan-evaluator<br>Calidad Adversarial (>=8.5)"]:::specCard
+            end
+
+            subgraph L3B_STACK ["29 Especialistas Dinámicos de Stack en 18 Packs (Activados Bajo Demanda)"]
+                direction LR
+                PY["Python / FastAPI / Django<br>@python-reviewer<br>@fastapi-reviewer"]:::stackCard
+                TS["TypeScript / React / Vue<br>@typescript-reviewer<br>@react-reviewer"]:::stackCard
+                CS["C# / .NET 9<br>@csharp-reviewer"]:::stackCard
+                GO["Go / Rust<br>@go-reviewer<br>@rust-reviewer"]:::stackCard
+                JVM["Java / Kotlin<br>@java-reviewer<br>@kotlin-reviewer"]:::stackCard
+                CAP["BD / Web / IA<br>@database-reviewer<br>@rag-pipeline-reviewer"]:::stackCard
             end
         end
 
-        subgraph CROSS ["Gobernanza Transversal SDD y Guardias Mecánicas"]
-            direction TB
-            HOOKS["Hooks Mecánicos (PreToolUse)<br>sdd_code_gate_guard.py<br>sdd_immutable_feature_guard.py"]:::guardStyle
-            LIMITS["Límites Estrictos de Modularidad<br>Techo: 800 líneas/fichero<br>Alerta: 500 líneas/fichero"]:::guardStyle
-            LOCKS["Bloqueos de Puerta y Fail-Closed<br>RN-SDD-GATE00-STACK-LOCK<br>RN-SDD-GATE2-CODE-LOCK<br>RN-SDD-IMMUTABLE-DONE"]:::guardStyle
-            MAP["Ownership Map (specs/STACK.md)<br>Asignación Estricta 1:1 de Rutas<br>Auditoría de Imports Prohibidos"]:::guardStyle
+        subgraph L4_CAT ["Capa 4: Catálogo Inerte y Base de Conocimiento (.sdd/catalog/ y docs/knowledge/)"]
+            direction LR
+            CAT_ARC["18 Arquetipos de Capa<br>domain, infra, api, db, ui..."]:::catCard
+            CAT_SPC["20 Especialistas Universales<br>Wrappers de Prompt-Defense ECC"]:::catCard
+            CAT_PCK["18 Stack Packs Dinámicos<br>Reglas, Agentes y Skills"]:::catCard
+            CAT_KB["Base de Conocimiento Viva<br>SYSTEM_TOPOLOGY y API_CATALOG"]:::catCard
         end
 
-        subgraph TOOLS ["Herramientas Deterministas (Cero Overhead de Descubrimiento)"]
+        subgraph L5_TOOL ["Capa 5: Herramientas Deterministas y Motor AST (Cero Overhead de Descubrimiento)"]
             direction LR
-            AST["sdd_repo_map.py<br>(Mapa AST 20+ Lenguajes)"]:::toolStyle
-            TRIM["sdd_trim_exec.py<br>(Recortador de Terminal)"]:::toolStyle
-            TOK["sdd_token_usage.py<br>(Telemetría Multi-IDE)"]:::toolStyle
-            BOUND["verify_architecture_boundaries.py<br>(Verificador de Límites)"]:::toolStyle
+            AST["sdd_repo_map.py<br>Esqueleto AST (20+ Lenguajes)"]:::toolCard
+            TRIM["sdd_trim_exec.py<br>Recortador de Terminal"]:::toolCard
+            TOK["sdd_token_usage.py<br>Telemetría Multi-IDE"]:::toolCard
+            BOUND["verify_architecture_boundaries.py<br>Verificador AST de Imports"]:::toolCard
+        end
+
+        subgraph CROSS_GUARD ["Gobernanza Transversal SDD y Guardias Mecánicas"]
+            direction LR
+            HOOKS["Hooks Mecánicos PreToolUse<br>sdd_code_gate_guard.py<br>sdd_immutable_feature_guard.py"]:::guardCard
+            LOCKS["Bloqueos de Puerta (Fail-Closed)<br>RN-SDD-GATE00-STACK-LOCK<br>RN-SDD-GATE2-CODE-LOCK<br>RN-SDD-IMMUTABLE-DONE"]:::guardCard
+            LIMITS["Límites Estrictos de Modularidad<br>Techo Duro: 800 líneas/fichero<br>Alerta: 500 líneas/fichero"]:::guardCard
+            SEMA["Semáforo de Salud de Contexto<br>Máx 15 Turnos / 2 Bloques DAG<br>Telemetría de Turno y Sesión"]:::guardCard
         end
     end
 
-    %% Relaciones
-    ORCH ==>|"1. Planifica DAG y Despacha Tareas"| L2
-    CROSS -.-|"Aplica Límites y Bloqueos"| L2
-    L2 -.->|"2. Solicita Revisión de Código y Reparaciones"| L3
-    L3B -.->|"3. Valida con Comandos DoD"| TOOLS
-    QA ==>|"4. Auditoría Holística y Firma"| L1
+    %% Enlaces de Proceso y Gobernanza
+    L0_IDE ==>|"Prompt y Contexto"| L1_CORE
+    L1_CORE ==>|"1. Planifica DAG y Despacha Tareas"| L2_BUILD
+    L2_BUILD -.->|"2. Peticiones de Revisión de Código"| L3_SPEC
+    L3_SPEC -.->|"3. Comandos de Verificación DoD"| L5_TOOL
+    CROSS_GUARD -.-|"Intercepción Mecánica en Cada Tool Call"| L2_BUILD
+    CROSS_GUARD -.-|"Control de Puertas SDD"| L1_CORE
+    L4_CAT -.->|"Materializa en Bootstrap"| L2_BUILD
+
+    %% Estilos de Contenedores de Capa (ProcessOn Aesthetic)
+    style SYSTEM fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,color:#0f172a
+    style L0_IDE fill:#f1f5f9,stroke:#cbd5e1,stroke-width:1.5px,color:#334155
+    style L1_CORE fill:#eef2ff,stroke:#a5b4fc,stroke-width:2px,color:#312e81
+    style L2_BUILD fill:#ecfdf5,stroke:#6ee7b7,stroke-width:2px,color:#065f46
+    style L3_SPEC fill:#f0fdfa,stroke:#5eead4,stroke-width:2px,color:#115e59
+    style L3A_UNIV fill:#ffffff,stroke:#99f6e4,stroke-width:1px,color:#134e4a
+    style L3B_STACK fill:#ffffff,stroke:#fde68a,stroke-width:1px,color:#78350f
+    style L4_CAT fill:#f5f3ff,stroke:#c4b5fd,stroke-width:2px,color:#5b21b6
+    style L5_TOOL fill:#f0f9ff,stroke:#7dd3fc,stroke-width:2px,color:#075985
+    style CROSS_GUARD fill:#fff1f2,stroke:#fda4af,stroke-width:2px,color:#9f1239
 ```
 
 ---
@@ -525,23 +758,23 @@ El desarrollo sigue una progresión rigurosa de compuertas de calidad. Queda pro
 
 ```mermaid
 flowchart TD
-    classDef gateStyle fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
-    classDef humanStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
-    classDef execStyle fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
-    classDef doneStyle fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef gateCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef humanCard fill:#ffffff,stroke:#f59e0b,stroke-width:2px,color:#78350f,rx:5px,font-weight:bold,font-size:12px;
+    classDef execCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+    classDef doneCard fill:#ffffff,stroke:#e11d48,stroke-width:2px,color:#881337,rx:5px,font-weight:bold,font-size:12px;
 
-    G00["Gate 00: Stack Lock (specs/STACK.md)<br>• Topología y Hosting<br>• Ownership Map y Comandos DoD<br>• Materialización de Stack Packs"]:::gateStyle
-    H00{"Firma Humana<br>[x] Gate 00 Approved"}:::humanStyle
-    G0["Gate 0: Backlog Intake<br>• Registro de FEAT-XXX en specs/BACKLOG.md<br>• Creación de specs/features/FEAT-XXX/"]:::gateStyle
-    G1["Gate 1: Especificación Funcional (01-spec.md)<br>• Redactado por @functional-analyst<br>• Sintaxis formal EARS estricta<br>• Criterios de Aceptación BDD Given-When-Then"]:::gateStyle
-    H1{"Firma Humana<br>[x] Gate 1 Approved"}:::humanStyle
-    G2["Gate 2: Especificación Técnica (02-tech-spec.md)<br>• Diseñado por @architect<br>• Contratos simétricos API y DTOs<br>• Registro de Decisiones de Arquitectura (ADRs)"]:::gateStyle
-    H2{"Firma Humana<br>[x] Gate 2 Approved"}:::humanStyle
-    G3["Gate 3: Grafo de Tareas DAG (03-tasks.md)<br>• Planificado por @orchestrator<br>• Bloques [PARALLEL] y [SEQUENTIAL]<br>• DoR Estricto: Agente, Ruta de Zona, Comando DoD"]:::gateStyle
-    H3{"Firma Humana<br>[x] Gate 3 Approved"}:::humanStyle
-    G4["Gate 4: Ejecución y Verificación<br>• Despacho vía .agent-inbox/<br>• Constructores implementan en sus zonas exclusivas<br>• Especialistas ECC auditan y corrigen fallos<br>• @qa-tester ejecuta baterías de regresión"]:::execStyle
-    G5["Gate 5: Deuda Cero de Documentación (0DD)<br>• Ejecutado por @documentator<br>• Living docs bilingüe (docs/es/ y docs/en/)<br>• Catálogo de APIs y Modelos de Datos al día<br>• Sincronización de TRACEABILITY-MATRIX.md"]:::gateStyle
-    DONE["DONE: Funcionalidad Completada<br>• specs/features/FEAT-XXX/ queda en SOLO LECTURA<br>• Línea base inmutable RN-SDD-IMMUTABLE-DONE<br>• git push origin main (RN-SDD-GIT-SYNC)"]:::doneStyle
+    G00["Gate 00: Stack Lock (specs/STACK.md)<br>• Topología y Hosting Definidos<br>• Ownership Map y Comandos DoD Configurados<br>• Stack Packs Materializados en .agents/"]:::gateCard
+    H00{"Firma Humana<br>[x] Gate 00 Approved"}:::humanCard
+    G0["Gate 0: Backlog Intake<br>• Registro de FEAT-XXX en specs/BACKLOG.md<br>• Inicialización de specs/features/FEAT-XXX/"]:::gateCard
+    G1["Gate 1: Especificación Funcional (01-spec.md)<br>• Redactado por @functional-analyst<br>• Sintaxis formal EARS (Ubiquitous, Event, State)<br>• Criterios de Aceptación BDD Given-When-Then"]:::gateCard
+    H1{"Firma Humana<br>[x] Gate 1 Approved"}:::humanCard
+    G2["Gate 2: Especificación Técnica (02-tech-spec.md)<br>• Diseñado por @architect<br>• Contratos simétricos API y schemas DTO<br>• Registro de Decisiones de Arquitectura (ADRs)"]:::gateCard
+    H2{"Firma Humana<br>[x] Gate 2 Approved"}:::humanCard
+    G3["Gate 3: Grafo de Tareas DAG (03-tasks.md)<br>• Estructurado por @orchestrator<br>• Bloques de dependencia [PARALLEL] y [SEQUENTIAL]<br>• Definition of Ready (DoR): Agente, Zona, Comando DoD"]:::gateCard
+    H3{"Firma Humana<br>[x] Gate 3 Approved"}:::humanCard
+    G4["Gate 4: Ejecución y Verificación<br>• Despacho vía .agent-inbox/<agente>/<br>• Constructores implementan en sus zonas exclusivas<br>• Especialistas ECC auditan código y corrigen fallos<br>• @qa-tester ejecuta baterías de regresión"]:::execCard
+    G5["Gate 5: Deuda Cero de Documentación (0DD)<br>• Ejecutado por @documentator<br>• Living docs bilingüe al día (docs/es/ y docs/en/)<br>• Catálogo de APIs y Modelos de Datos sincronizados<br>• Auditoría completa de TRACEABILITY-MATRIX.md"]:::gateCard
+    DONE["DONE: Línea Base Inmutable<br>• specs/features/FEAT-XXX/ pasa a SOLO LECTURA<br>• Línea base RN-SDD-IMMUTABLE-DONE fijada<br>• git push origin main (RN-SDD-GIT-SYNC)"]:::doneCard
 
     G00 --> H00 --> G0 --> G1 --> H1 --> G2 --> H2 --> G3 --> H3 --> G4 --> G5 --> DONE
 ```
@@ -554,29 +787,33 @@ Para blindar la ventana de contexto del modelo frente al agotamiento de tokens y
 
 ```mermaid
 flowchart LR
-    classDef catStyle fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#94a3b8;
-    classDef genStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
-    classDef liveStyle fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef catCard fill:#ffffff,stroke:#8b5cf6,stroke-width:1.5px,color:#4c1d95,rx:5px,font-size:12px;
+    classDef genCard fill:#ffffff,stroke:#f59e0b,stroke-width:2px,color:#78350f,rx:5px,font-weight:bold,font-size:12px;
+    classDef liveCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
 
-    subgraph INERT [".sdd/catalog/ (CATÁLOGO INERTE - 0 TOKENS)"]
+    subgraph INERT [".sdd/catalog/ (CATÁLOGO INERTE · 0 TOKENS CONSUMIDOS)"]
         direction TB
-        ARQC["18 Arquetipos de Capa<br>(domain, infra, api, db, test, tier, mobile, cli)"]:::catStyle
-        SPECC["20 Especialistas Universales ECC<br>(seguridad, fallos silenciosos, TDD, explorers, GAN)"]:::catStyle
-        PACKC["18 Stack Packs<br>(Python, TS, C#, Go, Rust, Java, React, Vue, BD, IA)"]:::catStyle
+        ARQC["18 Arquetipos de Capa<br>(domain, infra, api, db, test, tier, mobile, cli)"]:::catCard
+        SPECC["20 Especialistas Universales ECC<br>(seguridad, fallos silenciosos, TDD, explorers, GAN)"]:::catCard
+        PACKC["18 Stack Packs<br>(Python, TS, C#, Go, Rust, Java, React, Vue, BD, IA)"]:::catCard
+        SKILLSC["314+ Skills Especializadas<br>(fastapi, react-perf, postgres, testing...)"]:::catCard
     end
 
-    GEN["sdd_agent_generator.py<br>--materialize"]:::genStyle
+    GEN["sdd_agent_generator.py<br>--materialize<br>Compilador de Ownership Map"]:::genCard
 
-    subgraph RUNTIME [".agents/ (RUNTIME ACTIVO - DESCUBIERTO POR EL IDE)"]
+    subgraph RUNTIME [".agents/ (RUNTIME ACTIVO · DESCUBIERTO POR EL IDE)"]
         direction TB
-        COREA["Agentes Core Capa 1<br>(orchestrator, functional-analyst, architect, qa-tester, documentator, devops)"]:::liveStyle
-        BUILDA["Constructores Materializados Capa 2<br>(compilados estrictamente según el Ownership Map)"]:::liveStyle
-        SPECA["Especialistas Activos Capa 3<br>(universales + revisores de packs seleccionados)"]:::liveStyle
-        OVERA[".agents/overrides/<br>(reglas de dominio específicas del proyecto)"]:::liveStyle
+        COREA["Capa 1: Escuadrón Core<br>(orchestrator, functional-analyst, architect,<br>qa-tester, documentator, devops)"]:::liveCard
+        BUILDA["Capa 2: Constructores Materializados<br>(compilados estrictamente según el Ownership Map)"]:::liveCard
+        SPECA["Capa 3: Especialistas Activos<br>(universales + revisores de packs seleccionados)"]:::liveCard
+        OVERA[".agents/overrides/<br>(reglas de dominio específicas y overrides)"]:::liveCard
     end
 
-    INERT -->|"Lee Recetas"| GEN
-    GEN -->|"Genera y Bloquea (squad.lock.json)"| RUNTIME
+    INERT -->|"1. Lee Recetas del Catálogo"| GEN
+    GEN -->|"2. Emite squad.lock.json y Agentes"| RUNTIME
+
+    style INERT fill:#f5f3ff,stroke:#c4b5fd,stroke-width:2px,color:#5b21b6
+    style RUNTIME fill:#ecfdf5,stroke:#6ee7b7,stroke-width:2px,color:#065f46
 ```
 
 1. **`.sdd/catalog/` (Catálogo Inerte)**: Reside fuera de `.agents/`. Los asistentes IA no lo inspeccionan de forma recursiva, consumiendo **0 tokens** durante las sesiones normales de trabajo.
@@ -644,9 +881,9 @@ flowchart LR
 
 ---
 
-### 🗺️ El Ownership Map (Aislamiento Mecánico de Fronteras)
+### 🗺️ El Ownership Map y Ejecución Paralela sin Colisiones de Escritura
 
-Definido en `specs/STACK.md §3.2`, el Ownership Map es la **fuente única de verdad** de permisos de código. Asigna cada directorio de código a un único agente constructor:
+Definido en `specs/STACK.md §3.2`, el Ownership Map es la **fuente única de verdad** de permisos de código. Asigna cada directorio de código a un único agente constructor, posibilitando la ejecución paralela en el DAG sin colisiones ni condiciones de carrera:
 
 ```yaml
 ownership:
@@ -677,8 +914,181 @@ ownership:
   unowned_policy: fail-closed
 ```
 
+```mermaid
+flowchart TD
+    classDef orchCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef taskCard fill:#ffffff,stroke:#0284c7,stroke-width:1.5px,color:#0369a1,rx:5px,font-size:12px;
+    classDef agentCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+    classDef zoneCard fill:#ffffff,stroke:#f59e0b,stroke-width:1.5px,color:#78350f,rx:5px,font-size:12px;
+    classDef guardCard fill:#ffffff,stroke:#e11d48,stroke-width:2px,color:#881337,rx:5px,font-weight:bold,font-size:12px;
+
+    ORCH["@orchestrator<br>Parsea Bloque [PARALLEL] en 03-tasks.md"]:::orchCard
+
+    subgraph INBOX [".agent-inbox/ Despacho Concurrente"]
+        direction LR
+        T1["Tarea 4.1: Modelos Dominio<br>Asignado: @back-domain"]:::taskCard
+        T2["Tarea 4.2: Migraciones BD<br>Asignado: @db-specialist"]:::taskCard
+        T3["Tarea 4.3: Componentes UI<br>Asignado: @front-ui"]:::taskCard
+    end
+
+    subgraph BUILDERS ["Especialistas Constructores Ejecutando en Paralelo"]
+        direction LR
+        A1["@back-domain"]:::agentCard
+        A2["@db-specialist"]:::agentCard
+        A3["@front-ui"]:::agentCard
+    end
+
+    subgraph ZONES ["Zonas Exclusivas del Ownership Map (specs/STACK.md)"]
+        direction LR
+        Z1["Zona: backend-domain<br>src/backend/domain/**<br>Prohíbe: fastapi, sqlalchemy"]:::zoneCard
+        Z2["Zona: backend-db<br>src/backend/infrastructure/db/**<br>migrations/**"]:::zoneCard
+        Z3["Zona: frontend-ui<br>src/frontend/components/**<br>Prohíbe: imports de backend"]:::zoneCard
+    end
+
+    subgraph GUARD ["Intercepción Mecánica PreToolUse (sdd_code_gate_guard.py)"]
+        direction TB
+        CHK{"¿Agente autorizado<br>en la ruta destino?"}:::guardCard
+        ALLOW["✅ Tool Call Permitido<br>Edición Aplicada con Éxito"]:::agentCard
+        DENY["🛑 Tool Call Denegado (Exit 1)<br>Protección de Frontera Fail-Closed"]:::guardCard
+    end
+
+    ORCH ==>|"Despacha tickets paralelos"| INBOX
+    T1 --> A1
+    T2 --> A2
+    T3 --> A3
+    A1 ==>|"Escribe exclusivamente en"| Z1
+    A2 ==>|"Escribe exclusivamente en"| Z2
+    A3 ==>|"Escribe exclusivamente en"| Z3
+    Z1 -.->|"Evento Tool Call"| CHK
+    Z2 -.->|"Evento Tool Call"| CHK
+    Z3 -.->|"Evento Tool Call"| CHK
+    CHK -->|"Coincide con Zona"| ALLOW
+    CHK -->|"Fuera de Zona / No Asignado"| DENY
+
+    style INBOX fill:#f0f9ff,stroke:#7dd3fc,stroke-width:2px,color:#075985
+    style BUILDERS fill:#ecfdf5,stroke:#6ee7b7,stroke-width:2px,color:#065f46
+    style ZONES fill:#fef3c7,stroke:#fcd34d,stroke-width:2px,color:#78350f
+    style GUARD fill:#fff1f2,stroke:#fda4af,stroke-width:2px,color:#9f1239
+```
+
 - **Guardia Mecánica por Hook**: El hook `PreToolUse` (`sdd_code_gate_guard.py`) consulta `.agents/active_work_item.json`. Si un agente intenta editar ficheros fuera de su zona asignada, la acción es **inmediatamente bloqueada**.
 - **Verificación de Fronteras Arquitectónicas**: Ejecuta `python .agents/scripts/verify_architecture_boundaries.py` para auditar imports prohibidos entre capas mediante inspección AST.
+
+---
+
+### 🧪 Motores Duales de Verificación de Calidad: Método Santa y Arnés GAN
+
+Para eliminar "tests verdes sospechosos", complacencia y sesgos de confirmación en entregas complejas, el framework incorpora dos motores de verificación de alta rigurosidad adaptados de Everything Claude Code:
+
+```mermaid
+flowchart TD
+    classDef startCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef revCard fill:#ffffff,stroke:#0d9488,stroke-width:1.5px,color:#134e4a,rx:5px,font-size:12px;
+    classDef checkCard fill:#ffffff,stroke:#f59e0b,stroke-width:2px,color:#78350f,rx:5px,font-weight:bold,font-size:12px;
+    classDef passCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+    classDef failCard fill:#ffffff,stroke:#e11d48,stroke-width:2px,color:#881337,rx:5px,font-weight:bold,font-size:12px;
+
+    subgraph SANTA ["Motor A: El Método Santa ('Checking It Twice' · /santa-loop)"]
+        direction TB
+        DELIV_A["Entregable de Tarea Enviado"]:::startCard
+        subgraph ISOLATED ["Revisores Duales Aislados (Independientes y Paralelos)"]
+            direction LR
+            REV1["Revisor 1<br>(Seguridad y Corrección)"]:::revCard
+            REV2["Revisor 2<br>(Tipado y Manejo de Errores)"]:::revCard
+        end
+        VERDICT{"¿Consenso Unánime?<br>Ambos Veredictos == NICE"}:::checkCard
+        CERT_A["✅ Entregable Certificado<br>Supera Gate 4"]:::passCard
+        REWORK_A["❌ Cambios Requeridos<br>Bucle de Vuelta al Constructor"]:::failCard
+
+        DELIV_A --> ISOLATED
+        REV1 --> VERDICT
+        REV2 --> VERDICT
+        VERDICT -->|"Ambos NICE"| CERT_A
+        VERDICT -->|"Cualquier Fallo"| REWORK_A
+        REWORK_A -.->|"Entregable Corregido"| DELIV_A
+    end
+
+    subgraph GAN ["Motor B: Arnés Adversarial Estilo GAN (/gan-build)"]
+        direction TB
+        PLAN["@gan-planner<br>Formula Blueprint del Entregable<br>y Rúbrica Ponderada de Evaluación"]:::startCard
+        GEN["@gan-generator<br>Produce Código Blindado<br>Bajo Crítica Adversarial"]:::revCard
+        EVAL["@gan-evaluator<br>Puntúa Objetivamente el Entregable<br>Rúbrica: Arquitectura, Seguridad, DoD"]:::checkCard
+        SCORE{"Puntuación de Evaluación<br>>= 8.5 / 10.0?"}:::checkCard
+        CERT_B["✅ Entregable Aceptado<br>Estándar Riguroso Alcanzado"]:::passCard
+        CRITIQUE["❌ Crítica Adversarial<br>Feedback Accionable de Defectos"]:::failCard
+
+        PLAN --> GEN
+        GEN --> EVAL
+        EVAL --> SCORE
+        SCORE -->|"Pasa (Puntuación >= 8.5)"| CERT_B
+        SCORE -->|"Falla (Puntuación < 8.5)"| CRITIQUE
+        CRITIQUE -.->|"Refinar Código"| GEN
+    end
+
+    style SANTA fill:#f0fdfa,stroke:#5eead4,stroke-width:2px,color:#115e59
+    style ISOLATED fill:#ffffff,stroke:#99f6e4,stroke-width:1px,color:#134e4a
+    style GAN fill:#eef2ff,stroke:#a5b4fc,stroke-width:2px,color:#312e81
+```
+
+1. **El Método Santa (`/santa-loop`)**: Inspirado en el proverbio ("Hacer la lista y revisarla dos veces"). Un entregable debe recibir un veredicto unánime **`NICE`** de dos revisores completamente independientes y aislados antes de superar Gate 4.
+2. **Arnés Adversarial Estilo GAN (`/gan-build`)**: Despliega una arquitectura generador-evaluador. `@gan-planner` establece una rúbrica objetiva, `@gan-generator` produce el código y `@gan-evaluator` lo puntúa rigurosamente hasta superar una nota de corte de **>= 8.5 / 10.0**.
+
+---
+
+### 🧠 Continuous Learning v2 y Motor de Evolución de Instintos
+
+El framework cuenta con un ciclo de aprendizaje continuo basado en el motor de Instintos Atómicos de ECC (`continuous-learning-v2`), convirtiendo descubrimientos y soluciones de sesión en conocimiento institucional permanente:
+
+```mermaid
+flowchart LR
+    classDef sessCard fill:#ffffff,stroke:#64748b,stroke-width:1.5px,color:#0f172a,rx:5px,font-size:12px;
+    classDef learnCard fill:#ffffff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b,rx:5px,font-weight:bold,font-size:12px;
+    classDef instCard fill:#ffffff,stroke:#f59e0b,stroke-width:1.5px,color:#78350f,rx:5px,font-size:12px;
+    classDef ruleCard fill:#ffffff,stroke:#10b981,stroke-width:2px,color:#064e3b,rx:5px,font-weight:bold,font-size:12px;
+
+    subgraph SESSION ["Sesión de Ingeniería"]
+        S1["Depuración, Refactorización<br>o Descubrimiento Arquitectónico"]:::sessCard
+        S2["Patrón Reutilizable o<br>Solución de Framework Detectada"]:::sessCard
+        S1 --> S2
+    end
+
+    subgraph LEARN ["Disparador /learn"]
+        ANALYZER["@conversation-analyzer<br>Extrae Patrón Atómico"]:::learnCard
+    end
+
+    subgraph INSTINCTS ["Pool de Instintos (continuous-learning-v2)"]
+        direction TB
+        I1["Instinto #1<br>Confianza: 0.3 (Candidato)"]:::instCard
+        I2["Instinto #2<br>Confianza: 0.6 (Reforzado)"]:::instCard
+        I3["Instinto #3<br>Confianza: 0.9 (Consolidado)"]:::instCard
+        I1 -.->|"Éxito Repetido"| I2
+        I2 -.->|"Validación Inter-Sesión"| I3
+    end
+
+    subgraph EVOLVE ["Disparador /evolve"]
+        EVOLVER["Motor de Evolución de Instintos<br>Agrupa Patrones Afines de Alta Confianza"]:::learnCard
+    end
+
+    subgraph PERM ["Activos Permanentes del Repositorio"]
+        R1[".agents/rules/*.md<br>Reglas de Proyecto de Obligado Cumplimiento"]:::ruleCard
+        R2[".agents/skills/*.md<br>Skills Autónomas Reutilizables"]:::ruleCard
+    end
+
+    S2 ==>|"Ejecuta /learn"| ANALYZER
+    ANALYZER ==>|"Persiste instinto atómico"| I1
+    I3 ==>|"Confianza >= 0.75"| EVOLVER
+    EVOLVER ==>|"Genera"| R1
+    EVOLVER ==>|"Empaqueta"| R2
+
+    style SESSION fill:#f8fafc,stroke:#cbd5e1,stroke-width:1.5px,color:#334155
+    style LEARN fill:#eef2ff,stroke:#a5b4fc,stroke-width:2px,color:#312e81
+    style INSTINCTS fill:#fef3c7,stroke:#fcd34d,stroke-width:2px,color:#78350f
+    style EVOLVE fill:#eef2ff,stroke:#a5b4fc,stroke-width:2px,color:#312e81
+    style PERM fill:#ecfdf5,stroke:#6ee7b7,stroke-width:2px,color:#065f46
+```
+
+- **Puntuación de Confianza (`0.3` a `0.9`)**: Los patrones candidatos se registran con confianza `0.3`. Conforme el patrón se valida en subsiguientes sesiones, su confianza asciende a `0.6` y `0.9`.
+- **Evolución Automática (`/evolve`)**: Al alcanzar confianza `>= 0.75`, el motor agrupa instintos semánticamente relacionados y sintetiza reglas `.agents/rules/*.md` o skills modulares `.agents/skills/*.md` de forma totalmente automatizada.
 
 ---
 
@@ -738,6 +1148,11 @@ python .agents/scripts/sdd_token_usage.py
    ```bash
    python .agents/scripts/sdd_trim_exec.py pytest tests/unit/
    python .agents/scripts/sdd_trim_exec.py npm test
+   ```
+3. **Verificador de Fronteras Arquitectónicas (`verify_architecture_boundaries.py`)**:
+   Audita imports prohibidos según las reglas declaradas en `specs/STACK.md §3.2`.
+   ```bash
+   python .agents/scripts/verify_architecture_boundaries.py
    ```
 
 ---
