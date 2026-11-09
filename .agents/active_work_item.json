@@ -6,8 +6,8 @@
     "base_branch": "develop",
     "branch_name": "release/v1.0.0",
     "worktree_path": null,
-    "pr_number": null,
-    "pr_url": null,
+    "pr_number": 1,
+    "pr_url": "https://github.com/serchodm/sdd-agentic-starter/pull/1",
     "status": "RELEASE_STAGING"
   },
   "gate_00_approved": false,
