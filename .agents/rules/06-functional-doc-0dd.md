@@ -25,7 +25,7 @@ Ninguna Feature (`FEAT-XXX`), Change Request (`CR-XXX`) o Bug (`BUG-XXX`) se con
 
 ---
 
-## 3. Cierre y Sincronización Remota (`RN-SDD-GIT-SYNC`)
+## 3. Cierre y Sincronización Remota (`RN-SDD-BRANCH-SYNC`)
 Una vez completado Gate 5 por el `@documentator`:
 - La Feature pasa a estado `Done` en `specs/BACKLOG.md` y su carpeta queda convertida en **Línea Base Inmutable** (`RN-SDD-IMMUTABLE-DONE`).
-- Se ejecuta la sincronización Git obligatoria (`git add`, `git commit`, `git push origin main`).
+- Se ejecuta la sincronización Git obligatoria en la rama de trabajo (`git add`, `git commit`, `git push origin <rama-activa>`) previa a la creación/fusión de la Pull Request hacia `develop`. Prohibido el push directo a `main`.

@@ -212,10 +212,10 @@ Una Feature o corrección solo se declara **terminada y aceptada** cuando satisf
 6. **Seguridad e Invariantes Preservadas:**
    - Sin secretos, claves o contraseñas expuestas en código ni en historiales.
    - Manejo explícito de accesos no autorizados, expiraciones y validaciones de entrada.
-7. **Trazabilidad Cerrada y Sincronización en GitHub (`RN-SDD-GIT-SYNC`):**
+7. **Trazabilidad Cerrada y Sincronización de Ramas (`RN-SDD-BRANCH-SYNC`):**
    - Estado actualizado en `specs/BACKLOG.md` a `Completado`.
    - Registro de cambios documentado con referencia a la especificación.
-   - **Commit y Push Obligatorios:** Una vez superadas las validaciones y aprobada la entrega, todos los cambios deben registrarse con `git commit` semántico y subirse inmediatamente al repositorio remoto (`git push origin main`). Ningún trabajo validado puede quedar sin subir a GitHub.
+   - **Commit y Push en Rama de Trabajo:** Una vez superadas las validaciones y aprobada la entrega, todos los cambios deben registrarse con `git commit` semántico y subirse a su rama de trabajo (`feat/*`, `change/*`, `fix/*`) o `develop`. La rama `main` permanece blindada contra commits directos y solo recibe cambios mediante PRs de Release o Hotfix aprobadas.
 
 ---
 

@@ -61,4 +61,4 @@ graph TD
 7. Upon confirming 100% compliance with the Definition of Done (DoD):
    - Update the status of `<work-item-id>` (`FEAT-XXX` or `CR-XXX`) to `Done` in `specs/BACKLOG.md` without mutating any historical `Done` feature baseline.
    - Reset `.agents/active_work_item.json` back to locked (`active_work_item_id: null`, `approved_by_human: false`).
-   - **Mandatory GitHub Sync (`RN-SDD-GIT-SYNC`):** Stage all changes (`git add -A`), create a semantic commit (`git commit -m "feat(<work-item-id>): ..."`), and push to remote (`git push origin main`).
+   - **Mandatory Branch Sync (`RN-SDD-BRANCH-SYNC`):** Stage all changes (`git add -A`), create a semantic commit (`git commit -m "feat(<work-item-id>): ..."`), and push to active work branch or develop (`git push origin <active-branch>`). Never commit or push directly to `main`.

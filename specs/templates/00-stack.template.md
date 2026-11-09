@@ -94,6 +94,30 @@
 - `[ej: lang-python, framework-fastapi, capability-database, capability-devops]`
 - *(Se materializan en la sesión mediante `python scripts/sdd_agent_generator.py --materialize`)*.
 
+### 3.4. Gobernanza Git y Aislamiento de Entorno (`git_governance`)
+*(Configuración agnóstica acordada en Gate 00 para la gestión de ramas, worktrees y fusiones automáticas)*:
+
+```yaml
+git_governance:
+  provider: "[github / gitlab / bitbucket / local]"
+  auth_mode: "[cli (gh/glab) / token (ENV) / none (local)]"
+  branching_model: "sdd-gitflow"
+  branches:
+    production: "main"
+    integration: "develop"
+    prefix_feature: "feat/"
+    prefix_change: "change/"
+    prefix_bug: "fix/"
+    prefix_release: "release/"
+    prefix_hotfix: "hotfix/"
+  worktrees:
+    enabled: true
+    directory: ".worktrees"
+  auto_merge:
+    develop: true           # Auto-merge condicionado a checks CI verdes + Santa/GAN >= 8.5
+    main: false             # main SIEMPRE requiere PR y firma humana explícita
+```
+
 ---
 
 ## 📁 4. Estructura Canónica de Directorios (`src/`)

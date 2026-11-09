@@ -35,8 +35,11 @@
 10. **`RN-SDD-SELECTIVE-CONTEXT` (Cero Exploración Ciega y Lecturas Acotadas):**
     - Antes de ejecutar comandos de búsqueda masiva (`grep` / exploraciones recursivas), los agentes **DEBEN** consultar `docs/knowledge/SYSTEM_TOPOLOGY.md`, `API_CATALOG.md` y `DATA_MODELS.md` para localizar los ficheros objetivo exactos.
     - Al actualizar `TRACEABILITY-MATRIX.md` o ficheros en `docs/knowledge/*` durante Gate 5, usar lecturas y ediciones acotadas por rangos en lugar de volcar ficheros completos al contexto si superan las 200 líneas.
-11. **`RN-SDD-GIT-SYNC` (Sincronización Git Obligatoria tras Validación):**
-    - Cada vez que una Feature (`FEAT-XXX`), Change Request (`CR-XXX`), Bug (`BUG-XXX`) o actualización de gobernanza sea validada y aprobada por el usuario, **ejecutar siempre `git add`, `git commit` (Conventional Commits) y `git push origin main`** para mantener el repositorio remoto permanentemente sincronizado.
+11. **`RN-SDD-BRANCH-SYNC` (Sincronización y Protección de Ramas Git):**
+    - **Protección Estricta de `main`**: Queda terminantemente prohibido comitear o pushear código de desarrollo directamente a la rama `main`.
+    - Cada vez que una Feature (`FEAT-XXX`), Change Request (`CR-XXX`), Bug (`BUG-XXX`) sea validada, **ejecutar siempre `git add`, `git commit` (Conventional Commits) y `git push origin <rama-activa>`** en su rama de trabajo (`feat/*`, `change/*`, `fix/*`).
+    - Las actualizaciones globales de gobernanza y framework se integran en la rama `develop`.
+    - La rama `main` se actualiza exclusivamente mediante Pull Request de Release (`release/*`) o Hotfix (`hotfix/*`) con aprobación humana explícita.
 12. **`RN-SDD-CONTEXT-SEMAPHORE & AUTO-HANDOFF` (Higiene de Sesión y Gobernanza de Tokens):**
     - El `@orchestrator` **DEBE** incluir obligatoriamente el pie de telemetría de contexto al final de cada respuesta con el formato exacto:
       ```markdown

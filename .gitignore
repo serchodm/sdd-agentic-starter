@@ -50,3 +50,7 @@ Thumbs.db
 
 # IDE compatibility shim
 .agents/.agents/
+
+# Git Worktrees para ejecucion concurrente de agentes
+.worktrees/
+
