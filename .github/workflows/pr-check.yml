@@ -1,0 +1,32 @@
+name: PR Semantic Title & Convention Check
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-title:
+    name: Validate Conventional Commits Title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Semantic PR Check
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+            release
+          requireScope: false
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: "El asunto de la PR debe comenzar en minúsculas (ej: 'feat(auth): implement login flow (FEAT-001)')"
