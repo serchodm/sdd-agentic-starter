@@ -15,6 +15,7 @@ Este comando es utilizado por `@orchestrator` (Tech Lead) para preparar y deposi
    - Resolver `<spec-dir>`: `specs/features/<work-item-id>/` (`FEAT-*`), `specs/changes/<work-item-id>/` (`CR-*`), o `specs/bugs/<work-item-id>/` (`BUG-*`).
    - Comprobar que existen `<spec-dir>/01-spec.md`, `02-tech-spec.md` y `03-tasks.md`.
    - Verificar que si es `FEAT-*`, NO esté en estado `Done` en `specs/BACKLOG.md` (`RN-SDD-IMMUTABLE-DONE`).
+   - **Preparación de Rama & Worktree Aislado**: Ejecutar `python scripts/sdd_git.py worktree-create --spec <work-item-id>` para preparar la rama de trabajo y su carpeta en `.worktrees/`.
 2. **Filtrar tareas del especialista** en `<spec-dir>/03-tasks.md` (`- [ ]`).
 3. **Garantizar Definition of Ready (DoR) en el Ticket**.
 4. **Generar Ticket en Buzón** `.agent-inbox/<agente>/<work-item-id>.md`.
