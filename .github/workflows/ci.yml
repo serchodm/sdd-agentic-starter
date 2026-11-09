@@ -20,11 +20,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install uv and Python 3.12
-        uses: astral-sh/setup-uv-action@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
           enable-cache: true
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
 
       - name: Verify Framework Integrity (sdd_healthcheck.py)
         run: |
