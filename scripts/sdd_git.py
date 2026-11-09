@@ -501,6 +501,149 @@ def cmd_pr_create(args: argparse.Namespace, governance: Dict[str, Any]) -> int:
     return 0
 
 
+def cmd_release_start(args: argparse.Namespace, governance: Dict[str, Any]) -> int:
+    version = args.version.lstrip("v").strip()
+    if not re.match(r"^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$", version):
+        print(f"[ERROR] Versión inválida '{args.version}'. Debe seguir SemVer (ej: 1.1.0 o 1.1.0-rc.1).")
+        return 1
+
+    branch = f"{governance['branches'].get('prefix_release', 'release/')}v{version}"
+    base = governance["branches"].get("integration", "develop")
+
+    if GitRunner.branch_exists(branch):
+        print(f"[INFO] La rama de release '{branch}' ya existe.")
+        return 0
+
+    print(f"[+] Iniciando Release v{version}...")
+    print(f"  -> Creando rama '{branch}' desde '{base}'...")
+    GitRunner.run(["branch", branch, base])
+
+    if args.worktree:
+        manager = WorktreeManager(governance)
+        wt_path = manager.create(branch, base, f"release-v{version}")
+        sync_active_state_git(f"REL-{version}", branch, wt_path, "RELEASE_STAGING")
+        print(f"[SUCCESS] Worktree de release montado en: {wt_path}")
+    else:
+        sync_active_state_git(f"REL-{version}", branch, None, "RELEASE_STAGING")
+        print(f"[SUCCESS] Rama de release '{branch}' creada. Para cambiar a ella: git checkout {branch}")
+
+    return 0
+
+
+def cmd_release_finish(args: argparse.Namespace, governance: Dict[str, Any]) -> int:
+    version = args.version.lstrip("v").strip()
+    tag = f"v{version}"
+    branch = f"{governance['branches'].get('prefix_release', 'release/')}v{version}"
+    main_branch = governance["branches"].get("production", "main")
+    dev_branch = governance["branches"].get("integration", "develop")
+
+    if not GitRunner.branch_exists(branch):
+        print(f"[ERROR] La rama de release '{branch}' no existe.")
+        return 1
+
+    if not GitRunner.is_clean():
+        print("[ERROR] El árbol de trabajo tiene cambios sin commit. Limpia el árbol antes de finalizar la release.")
+        return 1
+
+    print(f"\n[+] Finalizando Release {tag}...")
+
+    # 1. Merge release into main
+    print(f"  -> Fusionando '{branch}' en '{main_branch}'...")
+    GitRunner.run(["checkout", main_branch])
+    GitRunner.run(["merge", "--no-ff", branch, "-m", f"chore(release): merge {tag} into {main_branch}"])
+
+    # 2. Tag version on main
+    print(f"  -> Creando tag Git '{tag}'...")
+    GitRunner.run(["tag", "-a", tag, "-m", f"Release {tag}"])
+
+    # 3. Back-merge release into develop
+    print(f"  -> Sincronizando '{branch}' de vuelta en '{dev_branch}'...")
+    GitRunner.run(["checkout", dev_branch])
+    GitRunner.run(["merge", "--no-ff", branch, "-m", f"chore(release): back-merge {tag} into {dev_branch}"])
+
+    # 4. Clean worktree and delete release branch
+    manager = WorktreeManager(governance)
+    manager.remove(f"release-v{version}", force=True)
+
+    print(f"  -> Eliminando rama local '{branch}'...")
+    GitRunner.run(["branch", "-d", branch], check=False)
+
+    # 5. Push if requested
+    if args.push:
+        print(f"  -> Empujando '{main_branch}', '{dev_branch}' y tags a origin...")
+        GitRunner.run(["push", "origin", main_branch, dev_branch, "--tags"])
+
+    sync_active_state_git("", dev_branch, None, "IDLE")
+    print(f"\n[SUCCESS] Release {tag} completada exitosamente.")
+    print(f"  -> Producción ({main_branch}): Actualizada con tag {tag}")
+    print(f"  -> Integración ({dev_branch}): Sincronizada con parches de la release")
+    return 0
+
+
+def cmd_hotfix_start(args: argparse.Namespace, governance: Dict[str, Any]) -> int:
+    bug_id = args.bug.strip().upper()
+    if not bug_id.startswith("BUG-"):
+        bug_id = f"BUG-{bug_id}"
+
+    branch = f"{governance['branches'].get('prefix_hotfix', 'hotfix/')}{bug_id}"
+    base = governance["branches"].get("production", "main")
+
+    if GitRunner.branch_exists(branch):
+        print(f"[INFO] La rama de hotfix '{branch}' ya existe.")
+        return 0
+
+    print(f"[+] Iniciando Hotfix de emergencia '{bug_id}' desde '{base}'...")
+    manager = WorktreeManager(governance)
+    wt_path = manager.create(branch, base, f"hotfix-{bug_id}")
+    sync_active_state_git(bug_id, branch, wt_path, "HOTFIX_IN_PROGRESS")
+
+    print(f"\n[SUCCESS] Worktree de Hotfix listo en: {wt_path}")
+    print(f"  -> Rama : {branch}")
+    return 0
+
+
+def cmd_hotfix_finish(args: argparse.Namespace, governance: Dict[str, Any]) -> int:
+    bug_id = args.bug.strip().upper()
+    if not bug_id.startswith("BUG-"):
+        bug_id = f"BUG-{bug_id}"
+
+    version = args.version.lstrip("v").strip()
+    tag = f"v{version}"
+    branch = f"{governance['branches'].get('prefix_hotfix', 'hotfix/')}{bug_id}"
+    main_branch = governance["branches"].get("production", "main")
+    dev_branch = governance["branches"].get("integration", "develop")
+
+    if not GitRunner.branch_exists(branch):
+        print(f"[ERROR] La rama de hotfix '{branch}' no existe.")
+        return 1
+
+    print(f"\n[+] Finalizando Hotfix {bug_id} con versión {tag}...")
+
+    # 1. Merge into main
+    print(f"  -> Fusionando '{branch}' en '{main_branch}'...")
+    GitRunner.run(["checkout", main_branch])
+    GitRunner.run(["merge", "--no-ff", branch, "-m", f"fix(hotfix): apply {bug_id} ({tag})"])
+    GitRunner.run(["tag", "-a", tag, "-m", f"Hotfix {tag} ({bug_id})"])
+
+    # 2. Back-merge into develop
+    print(f"  -> Sincronizando '{branch}' de vuelta en '{dev_branch}'...")
+    GitRunner.run(["checkout", dev_branch])
+    GitRunner.run(["merge", "--no-ff", branch, "-m", f"fix(hotfix): back-merge {bug_id} ({tag}) into {dev_branch}"])
+
+    # 3. Clean worktree and delete branch
+    manager = WorktreeManager(governance)
+    manager.remove(f"hotfix-{bug_id}", force=True)
+    GitRunner.run(["branch", "-d", branch], check=False)
+
+    if args.push:
+        print(f"  -> Empujando '{main_branch}', '{dev_branch}' y tags a origin...")
+        GitRunner.run(["push", "origin", main_branch, dev_branch, "--tags"])
+
+    sync_active_state_git("", dev_branch, None, "IDLE")
+    print(f"\n[SUCCESS] Hotfix {bug_id} completado con éxito con versión {tag}.")
+    return 0
+
+
 # ==============================================================================
 # 8. Entrypoint Principal
 # ==============================================================================
@@ -547,6 +690,26 @@ def main() -> int:
     p_pr.add_argument("--title", help="Título de la PR (Conventional Commits)")
     p_pr.add_argument("--body", help="Descripción de la PR")
 
+    # release-start
+    p_rel_s = subparsers.add_parser("release-start", help="Crea una rama de release desde develop")
+    p_rel_s.add_argument("--version", required=True, help="Versión SemVer objetivo (ej: 1.1.0 o v1.1.0)")
+    p_rel_s.add_argument("--worktree", action="store_true", help="Monta un worktree aislado para la release")
+
+    # release-finish
+    p_rel_f = subparsers.add_parser("release-finish", help="Finaliza la release fusionando en main (tag) y develop")
+    p_rel_f.add_argument("--version", required=True, help="Versión SemVer a finalizar (ej: 1.1.0)")
+    p_rel_f.add_argument("--push", action="store_true", help="Empuja main, develop y tags a origin automáticamente")
+
+    # hotfix-start
+    p_hot_s = subparsers.add_parser("hotfix-start", help="Inicia un hotfix de emergencia bifurcando de main")
+    p_hot_s.add_argument("--bug", required=True, help="Identificador del bug (ej: BUG-901)")
+
+    # hotfix-finish
+    p_hot_f = subparsers.add_parser("hotfix-finish", help="Finaliza un hotfix fusionando en main (tag) y develop")
+    p_hot_f.add_argument("--bug", required=True, help="Identificador del bug")
+    p_hot_f.add_argument("--version", required=True, help="Nueva versión PATCH (ej: 1.0.1)")
+    p_hot_f.add_argument("--push", action="store_true", help="Empuja main, develop y tags a origin")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -562,6 +725,10 @@ def main() -> int:
         "worktree-remove": cmd_worktree_remove,
         "worktree-prune": cmd_worktree_prune,
         "pr-create": cmd_pr_create,
+        "release-start": cmd_release_start,
+        "release-finish": cmd_release_finish,
+        "hotfix-start": cmd_hotfix_start,
+        "hotfix-finish": cmd_hotfix_finish,
     }
 
     handler = commands.get(args.command)
