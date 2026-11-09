@@ -192,7 +192,7 @@ flowchart TD
     H3{"Human Sign-off<br>[x] Gate 3 Approved"}:::humanCard
     G4["Gate 4: Execution & Verification<br>• Dispatched via .agent-inbox/<agent>/<br>• Builders implement code in exclusive zones<br>• ECC Specialists review code & fix build errors<br>• @qa-tester executes regression test batteries"]:::execCard
     G5["Gate 5: Zero Document Debt (0DD)<br>• Executed by @documentator<br>• Bilingual living docs updated (docs/es/ & docs/en/)<br>• API Catalog & Data Models synchronized<br>• TRACEABILITY-MATRIX.md audit completed"]:::gateCard
-    DONE["DONE: Feature Baseline Invariant<br>• specs/features/FEAT-XXX/ locked as READ-ONLY<br>• RN-SDD-IMMUTABLE-DONE baseline established<br>• git push origin main (RN-SDD-GIT-SYNC)"]:::doneCard
+    DONE["DONE: Feature Baseline Invariant<br>• specs/features/FEAT-XXX/ locked as READ-ONLY<br>• RN-SDD-IMMUTABLE-DONE baseline established<br>• Branch push & PR towards develop (RN-SDD-BRANCH-SYNC)"]:::doneCard
 
     G00 --> H00 --> G0 --> G1 --> H1 --> G2 --> H2 --> G3 --> H3 --> G4 --> G5 --> DONE
 ```
@@ -774,7 +774,7 @@ flowchart TD
     H3{"Firma Humana<br>[x] Gate 3 Approved"}:::humanCard
     G4["Gate 4: Ejecución y Verificación<br>• Despacho vía .agent-inbox/<agente>/<br>• Constructores implementan en sus zonas exclusivas<br>• Especialistas ECC auditan código y corrigen fallos<br>• @qa-tester ejecuta baterías de regresión"]:::execCard
     G5["Gate 5: Deuda Cero de Documentación (0DD)<br>• Ejecutado por @documentator<br>• Living docs bilingüe al día (docs/es/ y docs/en/)<br>• Catálogo de APIs y Modelos de Datos sincronizados<br>• Auditoría completa de TRACEABILITY-MATRIX.md"]:::gateCard
-    DONE["DONE: Línea Base Inmutable<br>• specs/features/FEAT-XXX/ pasa a SOLO LECTURA<br>• Línea base RN-SDD-IMMUTABLE-DONE fijada<br>• git push origin main (RN-SDD-GIT-SYNC)"]:::doneCard
+    DONE["DONE: Línea Base Inmutable<br>• specs/features/FEAT-XXX/ pasa a SOLO LECTURA<br>• Línea base RN-SDD-IMMUTABLE-DONE fijada<br>• Push de rama y PR a develop (RN-SDD-BRANCH-SYNC)"]:::doneCard
 
     G00 --> H00 --> G0 --> G1 --> H1 --> G2 --> H2 --> G3 --> H3 --> G4 --> G5 --> DONE
 ```

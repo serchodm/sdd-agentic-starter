@@ -1,0 +1,58 @@
+name: SDD Continuous Integration
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  governance-and-boundaries:
+    name: SDD Governance & Architecture Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Verify Framework Integrity (sdd_healthcheck.py)
+        run: |
+          uv run python .agents/scripts/sdd_healthcheck.py
+
+      - name: Verify Architecture Boundaries (verify_architecture_boundaries.py)
+        run: |
+          uv run python .agents/scripts/verify_architecture_boundaries.py
+
+      - name: Verify SDD Catalog Integrity (sdd_agent_generator.py --list)
+        run: |
+          uv run python scripts/sdd_agent_generator.py --list
+
+      - name: Verify Git & Worktrees Orchestrator (sdd_git.py status)
+        run: |
+          uv run python scripts/sdd_git.py status
+
+      - name: Verify Atomic Instincts Manager (sdd_instincts.py list)
+        run: |
+          uv run python scripts/sdd_instincts.py list
+
+      - name: Run Deterministic Unit Tests
+        run: |
+          if [ -d "tests" ]; then
+            echo "Running automated test suites..."
+            uv run python -m unittest discover tests -v
+          else
+            echo "No tests directory present yet (Template clean baseline)."
+          fi

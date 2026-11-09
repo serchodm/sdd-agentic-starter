@@ -18,7 +18,9 @@ Este comando es ejecutado por cualquier especialista del equipo de desarrollo pa
    - ¿Está claro el comando de validación?
    - ¿El `<work-item-id>` respeta `RN-SDD-IMMUTABLE-DONE` (no edita una `FEAT-*` ya cerrada en `Done`)?
    - *Si alguna respuesta es NO*: Detente de inmediato y genera `BLOCKED_DOR_{work-item-id}.md` en tu buzón.
-3. **Implementación**: Codifica exclusivamente dentro de tu ámbito permitido.
+3. **Implementación en Aislamiento**:
+   - Si existe un worktree activo asignado en `.agents/active_work_item.json`, opera dentro de `.worktrees/<slug>/`.
+   - Codifica exclusivamente dentro de tu ámbito permitido en el Ownership Map.
 4. **Validación Automática de Definition of Done (DoD)**: Ejecuta el comando de validación asignado a tu rol.
 5. **Comprobación de Incongruencias**: Si surge una contradicción no resoluble, genera `BLOCKED_{work-item-id}.md` y detén la ejecución.
 6. **Cierre de Tarea**: Marca con `[x]` las tareas completadas en `<spec-dir>/03-tasks.md`, elimina el ticket del buzón y reporta éxito a `@orchestrator`.

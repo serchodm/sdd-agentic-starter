@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+CLI_SCRIPT="$DIR/scripts/sdd_cli.py"
+
+if [ $# -eq 0 ] || [[ "$1" != *.py && "$1" != *"/"* ]]; then
+    ARGS=("$CLI_SCRIPT" "$@")
+else
+    ARGS=("$@")
+fi
+
+if command -v uv >/dev/null 2>&1; then
+    exec uv run python "${ARGS[@]}"
+elif [ -f "$DIR/.venv/bin/python" ]; then
+    exec "$DIR/.venv/bin/python" "${ARGS[@]}"
+else
+    exec python3 "${ARGS[@]}"
+fi

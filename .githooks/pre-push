@@ -1,0 +1,13 @@
+#!/bin/sh
+# SDD native pre-push hook
+if command -v uv >/dev/null 2>&1; then
+    exec uv run python scripts/sdd_hooks.py pre-push "$@"
+elif [ -f "./.venv/Scripts/python.exe" ]; then
+    exec "./.venv/Scripts/python.exe" scripts/sdd_hooks.py pre-push "$@"
+elif [ -f "./.venv/bin/python" ]; then
+    exec "./.venv/bin/python" scripts/sdd_hooks.py pre-push "$@"
+elif command -v py >/dev/null 2>&1; then
+    exec py -3 scripts/sdd_hooks.py pre-push "$@"
+else
+    exec python3 scripts/sdd_hooks.py pre-push "$@"
+fi

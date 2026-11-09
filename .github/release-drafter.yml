@@ -1,0 +1,35 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+change-template: '- $TITLE (#$NUMBER) by @$AUTHOR'
+
+version-resolver:
+  major:
+    labels:
+      - 'breaking'
+      - 'major'
+  minor:
+    labels:
+      - 'feat'
+      - 'minor'
+  default: patch
+
+categories:
+  - title: '🚀 Features & Capabilities'
+    labels:
+      - 'feat'
+  - title: '🐛 Bug Fixes & Hotfixes'
+    labels:
+      - 'fix'
+      - 'hotfix'
+  - title: '🛡️ Security & Dependencies'
+    labels:
+      - 'security'
+      - 'dependencies'
+  - title: '📚 Documentation & 0DD'
+    labels:
+      - 'docs'
+  - title: '🛠️ Maintenance & Refactoring'
+    labels:
+      - 'refactor'
+      - 'chore'
+      - 'ci'

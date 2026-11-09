@@ -114,6 +114,14 @@ def check_cr_backlog_registration(repo_root: pathlib.Path) -> list[str]:
 
 def check_git_sync_status(repo_root: pathlib.Path) -> list[str]:
     warnings: list[str] = []
+    res_curr_branch = subprocess.run(
+        ["git", "branch", "--show-current"],
+        cwd=str(repo_root),
+        capture_output=True,
+        text=True,
+    )
+    current_branch = res_curr_branch.stdout.strip() if res_curr_branch.returncode == 0 else "main"
+
     res_status = subprocess.run(
         ["git", "status", "--porcelain"],
         cwd=str(repo_root),
@@ -122,9 +130,10 @@ def check_git_sync_status(repo_root: pathlib.Path) -> list[str]:
     )
     if res_status.returncode == 0 and res_status.stdout.strip():
         count = len(res_status.stdout.strip().splitlines())
+        target_push = f"origin {current_branch}" if current_branch else "origin <branch>"
         warnings.append(
-            f"[RN-SDD-GIT-SYNC Reminder] Working tree has {count} uncommitted file(s)/folder(s). "
-            "Remember to run `git add`, `git commit`, and `git push origin main` once validated."
+            f"[RN-SDD-BRANCH-SYNC Reminder] Working tree has {count} uncommitted file(s)/folder(s). "
+            f"Remember to run `git add`, `git commit`, and `git push {target_push}` once validated."
         )
 
     res_branch = subprocess.run(
@@ -134,8 +143,9 @@ def check_git_sync_status(repo_root: pathlib.Path) -> list[str]:
         text=True,
     )
     if res_branch.returncode == 0 and "ahead" in res_branch.stdout:
+        target_push = f"origin {current_branch}" if current_branch else "origin <branch>"
         warnings.append(
-            "[RN-SDD-GIT-SYNC Reminder] Local branch is ahead of origin/main. Remember to run `git push origin main`."
+            f"[RN-SDD-BRANCH-SYNC Reminder] Local branch '{current_branch}' is ahead of remote. Remember to run `git push {target_push}`."
         )
     return warnings
 

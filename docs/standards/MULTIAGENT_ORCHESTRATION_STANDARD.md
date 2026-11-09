@@ -159,7 +159,7 @@ Todo requerimiento funcional transita obligatoriamente por estas 6 fases continu
 3. **Delegar:** `@orchestrator` genera `03-tasks.md` organizando las tareas en bloques `[PARALLEL]` y `[SEQUENTIAL]` con asignación estricta de agente (Gate 3 - Aprobación humana de tareas).
 4. **Implementar:** `@orchestrator` ejecuta `runSubAgent` bloque a bloque. Los subagentes operan en contextos aislados y ejecutan sus comandos de verificación locales.
 5. **Validar:** Verificación holística de regresión: tests unitarios, tests de componentes, typechecking, linter y auditoría de límites arquitectónicos.
-6. **Consolidar:** `@documentator` actualiza la documentación funcional viva y el directorio `docs/knowledge/` (Catálogo de APIs, Esquemas DB y ADRs). Sincronización obligatoria con GitHub (`git push origin main` - `RN-SDD-GIT-SYNC`).
+6. **Consolidar:** `@documentator` actualiza la documentación funcional viva y el directorio `docs/knowledge/` (Catálogo de APIs, Esquemas DB y ADRs). Sincronización obligatoria con la rama de trabajo o `develop` (`RN-SDD-BRANCH-SYNC`). Prohibido comitear directo a `main`.
 
 ---
 

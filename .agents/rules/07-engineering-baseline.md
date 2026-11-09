@@ -59,5 +59,9 @@
 
 1. **Conventional Commits**:
    - Todos los commits siguen el formato: `<tipo>(<alcance>): <descripción>` (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`).
-2. **Sincronización Git Obligatoria (`RN-SDD-GIT-SYNC`)**:
-   - Al cerrar formalmente cualquier Gate o actualización de gobernanza aprobada por el usuario, sincronizar inmediatamente con el repositorio remoto (`git add`, `git commit`, `git push origin main`).
+2. **Sincronización y Protección de Ramas (`RN-SDD-BRANCH-SYNC`)**:
+   - **`main` blindada**: Prohibido comitear o pushear directamente a `main`.
+   - Cada commit de desarrollo se efectúa en su rama de trabajo (`feat/*`, `change/*`, `fix/*`).
+   - Las actualizaciones de gobernanza e integración se consolidan en `develop`.
+   - `main` solo se actualiza mediante Pull Request de Release (`release/*`) o Hotfix (`hotfix/*`) con aprobación humana explícita.
+   - Sincronización obligatoria tras aprobación: `git add`, `git commit` y `git push origin <rama-activa>`.
