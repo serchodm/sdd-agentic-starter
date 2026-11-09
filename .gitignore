@@ -47,3 +47,6 @@ build/
 *.swo
 .DS_Store
 Thumbs.db
+
+# IDE compatibility shim
+.agents/.agents/
