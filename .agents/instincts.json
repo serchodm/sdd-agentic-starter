@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "standard": "affaan-m/ECC continuous-learning-v2",
+  "last_updated": "2026-11-09T02:00:34.073900+00:00",
+  "total_instincts": 4,
+  "instincts": [
+    {
+      "id": "inst-win-py-alias",
+      "trigger": "Al ejecutar scripts o comandos de Python en Windows donde el comando 'python' invoca el alias del Microsoft Store",
+      "action": "Usar siempre 'uv run python', '.venv/Scripts/python.exe' o 'py -3', y nunca invocar 'python' pelado sin verificar.",
+      "confidence": 0.95,
+      "scope": "global",
+      "category": "self_lesson",
+      "agent": "all",
+      "created_at": "2026-11-09T02:00:34.072251+00:00",
+      "evidence_count": 5
+    },
+    {
+      "id": "inst-anti-rubber-stamp",
+      "trigger": "Al auditar o validar Gate 00, Gate 1, Gate 2 o Gate 3",
+      "action": "Requerir sign-off humano explícito en el chat y jamás autoaprobar casillas [x] de validación humana (anti-rubber-stamping).",
+      "confidence": 0.95,
+      "scope": "global",
+      "category": "user_preference",
+      "agent": "@orchestrator",
+      "created_at": "2026-11-09T02:00:34.072251+00:00",
+      "evidence_count": 8
+    },
+    {
+      "id": "inst-branch-sync-main-lock",
+      "trigger": "Al preparar un commit o push hacia ramas remotas",
+      "action": "Verificar la rama activa mediante 'git branch --show-current' y bloquear terminantemente commits o pushes directos a 'main' (RN-SDD-BRANCH-SYNC).",
+      "confidence": 0.95,
+      "scope": "global",
+      "category": "self_lesson",
+      "agent": "all",
+      "created_at": "2026-11-09T02:00:34.072251+00:00",
+      "evidence_count": 6
+    },
+    {
+      "id": "inst-worktree-isolation",
+      "trigger": "Al despachar tareas concurrentes o agentes paralelos en Gate 4",
+      "action": "Crear y aislar la ejecución en un Git Worktree bajo .worktrees/ con puertos e instancias de test independientes.",
+      "confidence": 0.9,
+      "scope": "project",
+      "category": "self_lesson",
+      "agent": "@orchestrator",
+      "created_at": "2026-11-09T02:00:34.072251+00:00",
+      "evidence_count": 3
+    }
+  ]
+}

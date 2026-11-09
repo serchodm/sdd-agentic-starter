@@ -33,6 +33,8 @@ FRAMEWORK_PATHS = [
     ".agents/workflows",
     ".agents/hooks.json",
     ".github/workflows",
+    ".githooks",
+    "scripts",
     "docs/standards",
     "specs/templates",
     "specs/SDD_FRAMEWORK.md",

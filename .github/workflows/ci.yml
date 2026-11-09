@@ -42,11 +42,15 @@ jobs:
         run: |
           uv run python scripts/sdd_git.py status
 
-      - name: Run Deterministic Unit Tests (if tests exist)
+      - name: Verify Atomic Instincts Manager (sdd_instincts.py list)
+        run: |
+          uv run python scripts/sdd_instincts.py list
+
+      - name: Run Deterministic Unit Tests
         run: |
           if [ -d "tests" ]; then
             echo "Running automated test suites..."
-            uv run pytest tests/ -q || echo "No tests executed"
+            uv run python -m unittest discover tests -v
           else
             echo "No tests directory present yet (Template clean baseline)."
           fi
