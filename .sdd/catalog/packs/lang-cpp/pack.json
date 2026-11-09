@@ -1,0 +1,25 @@
+{
+  "id": "lang:cpp",
+  "family": "language",
+  "requires": [],
+  "description": "C++ 20 standards, memory safety, RAII, and testing patterns.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [],
+  "specialists": [
+    "agents/cpp-reviewer.md",
+    "agents/cpp-build-resolver.md"
+  ],
+  "skills": [
+    "skills/cpp-coding-standards",
+    "skills/cpp-testing"
+  ],
+  "workflows": [
+    "commands/cpp-build.md",
+    "commands/cpp-review.md",
+    "commands/cpp-test.md"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "lang:python",
+  "family": "language",
+  "requires": [],
+  "description": "Python 3.12+ engineering guidance, type safety, asyncio, and pytest patterns.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/python/coding-style.md",
+    "rules/python/hooks.md",
+    "rules/python/patterns.md",
+    "rules/python/security.md",
+    "rules/python/testing.md"
+  ],
+  "specialists": [
+    "agents/python-reviewer.md"
+  ],
+  "skills": [
+    "skills/python-patterns",
+    "skills/python-testing"
+  ],
+  "workflows": [
+    "commands/python-review.md"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "lang:rust",
+  "family": "language",
+  "requires": [],
+  "description": "Rust safety, memory model, cargo workflows, and build resolvers.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [],
+  "specialists": [
+    "agents/rust-reviewer.md",
+    "agents/rust-build-resolver.md"
+  ],
+  "skills": [
+    "skills/rust-patterns",
+    "skills/rust-testing"
+  ],
+  "workflows": [
+    "commands/rust-build.md",
+    "commands/rust-review.md",
+    "commands/rust-test.md"
+  ]
+}

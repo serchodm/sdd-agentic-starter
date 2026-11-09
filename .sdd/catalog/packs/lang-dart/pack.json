@@ -1,0 +1,25 @@
+{
+  "id": "lang:dart",
+  "family": "language",
+  "requires": [],
+  "description": "Dart & Flutter state management, widget testing, and build resolvers.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [],
+  "specialists": [
+    "agents/flutter-reviewer.md",
+    "agents/dart-build-resolver.md"
+  ],
+  "skills": [
+    "skills/dart-flutter-patterns",
+    "skills/flutter-dart-code-review"
+  ],
+  "workflows": [
+    "commands/flutter-build.md",
+    "commands/flutter-review.md",
+    "commands/flutter-test.md"
+  ]
+}

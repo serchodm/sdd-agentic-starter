@@ -1,0 +1,20 @@
+{
+  "id": "capability:devops",
+  "family": "capability",
+  "requires": [],
+  "description": "Containerization, Kubernetes, deployment patterns, and healthchecks.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [],
+  "specialists": [],
+  "skills": [
+    "skills/docker-patterns",
+    "skills/kubernetes-patterns",
+    "skills/deployment-patterns",
+    "skills/canary-watch"
+  ],
+  "workflows": []
+}

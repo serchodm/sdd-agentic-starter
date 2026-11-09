@@ -1,0 +1,23 @@
+{
+  "id": "lang:swift",
+  "family": "language",
+  "requires": [],
+  "description": "Swift 6+, SwiftUI, Actor concurrency, protocols, and iOS engineering.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [],
+  "specialists": [
+    "agents/swift-reviewer.md",
+    "agents/swift-build-resolver.md"
+  ],
+  "skills": [
+    "skills/swiftui-patterns",
+    "skills/swift-concurrency-6-2",
+    "skills/swift-actor-persistence",
+    "skills/swift-protocol-di-testing"
+  ],
+  "workflows": []
+}

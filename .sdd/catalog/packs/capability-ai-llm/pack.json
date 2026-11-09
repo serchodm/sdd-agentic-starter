@@ -1,0 +1,29 @@
+{
+  "id": "capability:ai-llm",
+  "family": "capability",
+  "requires": [],
+  "description": "AI/LLM pipelines, RAG evaluation, prompt caching, MCP server patterns, and ML lifecycle.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [],
+  "specialists": [
+    "agents/rag-pipeline-reviewer.md",
+    "agents/mle-reviewer.md",
+    "agents/pytorch-build-resolver.md"
+  ],
+  "skills": [
+    "skills/cost-aware-llm-pipeline",
+    "skills/prompt-optimizer",
+    "skills/prompt-caching-strategy",
+    "skills/eval-harness",
+    "skills/ai-regression-testing",
+    "skills/iterative-retrieval",
+    "skills/mcp-server-patterns",
+    "skills/pytorch-patterns",
+    "skills/mle-workflow"
+  ],
+  "workflows": []
+}

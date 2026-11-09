@@ -1,0 +1,25 @@
+{
+  "id": "framework:fastapi",
+  "family": "framework",
+  "requires": [
+    "lang:python"
+  ],
+  "description": "FastAPI async REST, WebSockets, SSE, Pydantic v2 DTOs, and dependency injection.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/python/fastapi.md"
+  ],
+  "specialists": [
+    "agents/fastapi-reviewer.md"
+  ],
+  "skills": [
+    "skills/fastapi-patterns"
+  ],
+  "workflows": [
+    "commands/fastapi-review.md"
+  ]
+}

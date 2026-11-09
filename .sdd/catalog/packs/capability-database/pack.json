@@ -1,0 +1,24 @@
+{
+  "id": "capability:database",
+  "family": "capability",
+  "requires": [],
+  "description": "Relational and vector database modeling, migrations, and performance.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [],
+  "specialists": [
+    "agents/database-reviewer.md"
+  ],
+  "skills": [
+    "skills/database-migrations",
+    "skills/postgres-patterns",
+    "skills/mysql-patterns",
+    "skills/redis-patterns",
+    "skills/clickhouse-io",
+    "skills/prisma-patterns"
+  ],
+  "workflows": []
+}

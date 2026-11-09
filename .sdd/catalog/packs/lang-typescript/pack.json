@@ -1,0 +1,27 @@
+{
+  "id": "lang:typescript",
+  "family": "language",
+  "requires": [],
+  "description": "TypeScript strict type design, Node/Bun runtime, and modern tooling.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/typescript/coding-style.md",
+    "rules/typescript/hooks.md",
+    "rules/typescript/patterns.md",
+    "rules/typescript/security.md",
+    "rules/typescript/testing.md"
+  ],
+  "specialists": [
+    "agents/typescript-reviewer.md"
+  ],
+  "skills": [
+    "skills/typescript-patterns",
+    "skills/vite-patterns",
+    "skills/bun-runtime"
+  ],
+  "workflows": []
+}

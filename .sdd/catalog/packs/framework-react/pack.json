@@ -1,0 +1,35 @@
+{
+  "id": "framework:react",
+  "family": "framework",
+  "requires": [
+    "lang:typescript"
+  ],
+  "description": "React 19, hooks, component architecture, Vitest, and performance patterns.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/react/coding-style.md",
+    "rules/react/hooks.md",
+    "rules/react/patterns.md",
+    "rules/react/security.md",
+    "rules/react/testing.md"
+  ],
+  "specialists": [
+    "agents/react-reviewer.md",
+    "agents/react-build-resolver.md"
+  ],
+  "skills": [
+    "skills/react-patterns",
+    "skills/react-performance",
+    "skills/react-testing",
+    "skills/frontend-patterns"
+  ],
+  "workflows": [
+    "commands/react-build.md",
+    "commands/react-review.md",
+    "commands/react-test.md"
+  ]
+}

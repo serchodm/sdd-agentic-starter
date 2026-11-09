@@ -6,7 +6,7 @@
 
 ## 🇬🇧 English (EN-GB)
 
-Universal software development starter template governed by **Spec-Driven Development (SDD)** and multi-agent orchestration.
+Universal software development starter template governed by **Spec-Driven Development (SDD)** and multi-agent orchestration, integrating high-rigour engineering patterns from **Everything Claude Code (ECC)** under the MIT License.
 
 ### 🚀 Getting Started with a New Project
 
@@ -18,7 +18,7 @@ cd my-new-project
 ```
 
 #### 2. Initial Repository Lock (`Gate 00: Stack Lock`)
-To guarantee architectural consistency and prevent premature coding, **production code in `src/` is strictly locked** by rule `RN-SDD-GATE00-STACK-LOCK`. No production code or tests may be created until the technology stack, hosting topology, and agent squad are formally agreed upon.
+To guarantee architectural consistency and prevent premature coding, **production code in `src/` is strictly locked** by rule `RN-SDD-GATE00-STACK-LOCK`. No production code or tests may be created until the technology stack, hosting topology, Ownership Map, and agent squad are formally agreed upon.
 
 #### 3. Converse with `@orchestrator` in your AI Assistant (Antigravity / Cursor / Claude Code)
 Send this prompt to start the project:
@@ -28,144 +28,121 @@ The `@orchestrator` will:
 1. Deploy the interactive **Gate 00 Bootstrap Wizard (`sdd-bootstrap`)** with dynamic decision tree pruning:
    - **Infrastructure & Hosting**: Public Cloud (AWS/Azure/GCP), Docker Containers, or modern PaaS (**Vercel**, Netlify, Railway).
    - **Scope & Pruning**: Automatically prunes irrelevant questions (e.g. omits UI styling for API-only projects, or backend questions for client-only SPAs).
-   - **Agent Squad Activation**: Dynamically sets roles to `ACTIVE` or `INACTIVE (N/A)` according to scope.
-   - **Golden Samples**: Inserts canonical Do's & Don'ts (clean controllers/handlers, typed Result pattern error handling, and dependency injection).
-   - **Deterministic DoD Commands**: Freezes verified commands for linting, fast in-memory unit tests (<1s), integration tests, and production build to eliminate agent discovery overhead.
+   - **Ownership Map (§3.2)**: Configures deterministic boundaries, mapping code paths to specific builder agents with forbidden imports and verification commands.
+   - **Stack Pack Activation**: Dynamically activates language, framework, and capability packs from `.sdd/catalog/packs/`.
+   - **Deterministic DoD Commands (§2.5)**: Freezes verified commands for linting, fast in-memory unit tests (<1s), integration tests, and production builds to eliminate agent discovery overhead.
    - **Local Environment**: Generates `docker-compose.yml` or `vercel.json` dev setup.
-2. Complete **`specs/STACK.md`** and request your explicit human sign-off: `[x] Gate 00 Approved (Human Sign-off)`.
-3. Once approved, `src/` unlocks and the normal SDD development lifecycle begins (Gate 0 -> Gate 5).
+2. Complete **`specs/STACK.md`** and compile the squad using `python scripts/sdd_agent_generator.py --materialize`.
+3. Request your explicit human sign-off: `[x] Gate 00 Approved (Human Sign-off)`.
+4. Once approved, `src/` unlocks and the normal SDD development lifecycle begins (Gate 0 -> Gate 5).
 
 ---
 
-### 👥 Agent Squad Topologies (Configured in Gate 00)
-The template supports two operational topologies depending on project complexity:
-- **Specialised Granular Squad (High-Specialisation)**: 12 atomic roles with strict boundary isolation (`@back-domain`, `@back-infra`, `@back-api`, `@db-specialist`, `@back-test`, `@front-logic`, `@front-ui`, `@front-test`, `@devops`, `@documentator`, `@architect`, `@orchestrator`).
-- **Compact Squad**: 7 core roles for leaner projects or MVPs (`@orchestrator`, `@architect`, `@back-engineer`, `@front-engineer`, `@qa-tester`, `@devops`, `@documentator`).
+### 🏛️ The 3-Layer Agentic Architecture
 
-Generated conversationally by `@orchestrator` or inspected via CLI:
-```bash
-python scripts/sdd_agent_generator.py --list
-python scripts/sdd_agent_generator.py --mode granular  # or --mode compact
+The framework organizes multi-agent development into three strictly decoupled layers:
+
+```mermaid
+flowchart TD
+    subgraph CAT[".sdd/catalog/ (Inactive Framework Catalog - Zero Token Overhead)"]
+        ARQ["Layer Archetypes (domain, infra, api, db, test, mobile, cli)"]
+        SPC["Universal ECC Specialists (read-only audit lenses)"]
+        PK["Stack Packs (lang:*, framework:*, capability:*)"]
+    end
+    STACK["specs/STACK.md (Gate 00: Stack + Ownership Map + Packs)"]
+    GEN["sdd_agent_generator.py --materialize"]
+    OVR[".agents/overrides/ (Project-Specific Overrides)"]
+    subgraph LIVE[".agents/ (Active Workspace Runtime)"]
+        L1["Layer 1: Core Squad (orchestrator, functional-analyst, architect, qa-tester, documentator, devops)"]
+        L2["Layer 2: Builders (back-domain, back-api, front-ui, back-engineer, etc.)"]
+        L3["Layer 3: Active ECC Specialists (security-reviewer, build-error-resolver, reviewers)"]
+    end
+    CAT --> GEN
+    STACK --> GEN
+    OVR --> GEN
+    GEN --> L2
+    GEN --> L3
 ```
+
+#### Layer 1: Core Governance Squad (Stack-Agnostic, Fixed)
+The fixed leadership and quality custodians that govern the SDD lifecycle regardless of technology stack:
+- **`@orchestrator`** (Primary): Tech Lead and SDD Master. Plans the DAG, dispatches orders to `.agent-inbox/`, and verifies quality gates. **Zero direct code writing in `src/`**.
+- **`@functional-analyst`** (Gate 1): Formulates functional requirements in strict formal **EARS** syntax with Given-When-Then BDD acceptance criteria.
+- **`@architect`** (Gate 2): Designs API contracts (OpenAPI/gRPC), DTO schemas, persistence schemas, and registers Architecture Decision Records (**ADRs**).
+- **`@qa-tester`** (Gate 4): Audits test suites, mutation coverage, and runs quality audit skills (`sdd-test-quality-audit`, `santa-method`).
+- **`@documentator`** (Gate 5): Custodian of bilingual living documentation (`docs/es/`, `docs/en/`), API catalog, and traceability matrix (`RN-SDD-0DD`).
+- **`@devops`**: Manages containerization, CI/CD pipelines, environments, and deployment configs.
+
+#### Layer 2: Builders & The Ownership Map (Write Permissions)
+Builders are the **only agents permitted to write production code**. Each builder is assigned an exclusive zone of the codebase in `specs/STACK.md §3.2`:
+- **Single Source of Truth**: The Ownership Map maps file globs to owner agents, forbidden imports, and DoD commands.
+- **Mechanical Enforcement**: Hook `sdd_code_gate_guard.py` mechanically blocks any builder from modifying files outside its assigned zone.
+- **Presets & Custom Topologies**: Choose from `compact` (7 roles), `granular` (12 atomic roles), `api-only`, `spa-only`, `monorepo`, or custom combinations (e.g. granular backend + compact frontend).
+
+#### Layer 3: Ultra-Specialists ECC (Read-Only Audit Lenses & Surgical Resolvers)
+Adapted from `affaan-m/ecc` under the MIT License. Specialists operate with **Zero Trust Prompt Defense** and read-only tools (`tools: bash, read, grep, glob`; write permissions are disabled except for resolvers with minimal-diff constraints):
+- **Universal Specialists (20)**: `@security-reviewer`, `@silent-failure-hunter`, `@code-explorer`, `@spec-miner`, `@code-architect`, `@type-design-analyzer`, `@build-error-resolver`, `@tdd-guide`, `@performance-optimizer`, `@e2e-runner`, `@code-simplifier`, `@refactor-cleaner`, `@gan-planner`, `@gan-generator`, `@gan-evaluator`, `@conversation-analyzer`, `@docs-lookup`, `@pr-test-analyzer`, `@comment-analyzer`, `@opensource-sanitizer`.
+- **Stack-Specific Specialists**: Activated dynamically via Stack Packs (e.g. `@python-reviewer`, `@fastapi-reviewer`, `@csharp-reviewer`, `@react-reviewer`, `@go-reviewer`, `@java-reviewer`).
 
 ---
 
-### 🏛️ The SDD Lifecycle (Gate 00 to Gate 5)
+### 📦 Inactive Catalog vs. Active Workspace Runtime
 
-```text
-[ Gate 00: STACK.md ] ──► [ Gate 0: Backlog Intake ]
-                                    │
-                                    ▼
-[ Gate 1: 01-spec.md (EARS) ] ──► [ Gate 2: 02-tech-spec.md (Contracts) ]
-                                    │
-                                    ▼
-[ Gate 3: 03-tasks.md (DAG) ] ──► [ Subagent Execution (.agent-inbox/) ]
-                                    │
-                                    ▼
-[ Gate 4: QA Verification ] ────► [ Gate 5: Living Docs 0DD (docs/) ] ──► DONE
-```
+To prevent context bloat and eliminate token overhead:
+1. **`.sdd/catalog/` (Inactive Catalog)**: Contains clean recipes, 20 universal specialists, archetypes, and 18+ stack packs (`lang-python`, `framework-fastapi`, `lang-typescript`, `framework-react`, `lang-csharp`, `lang-go`, `lang-rust`, `lang-java`, `capability-database`, `capability-devops`, `capability-web-frontend`, `capability-ai-llm`). Because it resides outside `.agents/`, the AI assistant ignores it, consuming **0 tokens** during normal sessions.
+2. **`.agents/` (Active Workspace Runtime)**: Only houses the active squad (Core + materialized builders + active specialists).
+3. **`.agents/overrides/` (Project Customizations)**: Allows customizing any generated builder with project-specific domain knowledge without modifying catalog archetypes or dirtying the upstream template.
 
 ---
 
-### 🧠 Session Lifecycle, Context Governance & Handoff Workflows
-To prevent context degradation, token exhaustion, and hallucination in long-running tasks, the framework enforces rigorous session hygiene and phase splitting:
+### 🔄 The 12 Slash Command Workflows
 
-#### 1. Phase Splitting & Model Tier Optimisation (`RN-SDD-SESSION-LIFECYCLE`)
-Tasks are divided across clean, isolated conversation sessions matched to the optimal model tier:
-- **Phase A — Architecture & Specs (Gates 00 to 3)**: Use high-reasoning models (e.g. Gemini Pro / Thinking, Claude Sonnet / Opus, OpenAI o1/o3) strictly for requirements gathering (`01-spec.md`), technical specifications (`02-tech-spec.md`), API/DTO contracts, and the atomic task DAG (`03-tasks.md`).
-- **Phase B — Implementation & Verification (Gate 4)**: Open a fresh session using fast, cost-effective execution models (e.g. Gemini Flash, Claude Haiku) loading only `02-tech-spec.md`, `03-tasks.md`, and knowledge docs to implement code via specialist subagents.
-- **Phase C — Living Docs & Closure (Gate 5)**: Execute `@documentator` in a dedicated low-cost thread to update bilingual living documentation (`docs/es/`, `docs/en/`), sync the traceability matrix, and run `git push origin main`.
-
-#### 2. Active Session Pointer (`.agents/ACTIVE_STATE.md`)
-The single source of truth for execution state between sessions. Caps mandatory context files to a maximum of 4 files to eliminate blind context bloat:
-```markdown
-- **Active Work Item:** FEAT-001 (or IDLE)
-- **Current Gate:** Gate 03 (Tasks Ready for Execution)
-- **Recommended Model Tier:** Execution (Flash/Sonnet)
-- **Next Execution Target:** Dispatch Task 1.1 to @back-engineer
-- **Mandatory Context Files:** specs/features/FEAT-001/02-tech-spec.md, ...
-```
-
-#### 3. Slash Command Handoff Workflows
-- **`/checkpoint`**: Automatically captures the active state, snapshots pending tasks into `.agents/ACTIVE_STATE.md`, and prepares a safe session handoff.
-- **`/continue`**: Resumes execution in a fresh session by loading exclusively `.agents/ACTIVE_STATE.md` and the bounded mandatory files, resetting the turn counter to `Turn 1/15`.
-- **`/gate5`**: Directly launches a dedicated closing session for `@documentator` to update functional docs, sync `TRACEABILITY-MATRIX.md`, and execute `RN-SDD-GIT-SYNC`.
-
-#### 4. Context Health Semaphore & Token Telemetry (`RN-SDD-CONTEXT-SEMAPHORE`)
-The `@orchestrator` tracks turn depth, execution blocks, and token usage, attaching a telemetry footer to every turn:
-- 🟢 **Green** (`Turn 1-10` | `Blocks 0-1`): Normal execution window.
-- 🟡 **Yellow** (`Turn 11-14` | `Blocks 2`): Warning threshold; prepare for session handoff.
-- 🔴 **Red** (`Turn 15+` | `Blocks 3+`): **Strict Stop-the-Line**. The agent halts subagent dispatch and triggers `/checkpoint` to force a clean handoff.
-
-Inspect session token usage and prompt cache efficiency via:
-```bash
-python .agents/scripts/sdd_token_usage.py
-```
+| Category | Command | Description |
+| :--- | :--- | :--- |
+| **Lifecycle & Execution** | `/pipeline-run` | Executes the autonomous SDD development pipeline for an approved feature. |
+| | `/opsx-delegate` | Tech Lead delegates an atomic task to a specialist's inbox (`.agent-inbox/<agent>/`). |
+| | `/opsx-pickup` | Specialist picks up task ticket, audits DoR, implements code, and validates DoD. |
+| | `/gate5` | Launches dedicated closing session for `@documentator` to sync living docs and push. |
+| **Session & Handoff** | `/checkpoint` | Captures session state into `.agents/ACTIVE_STATE.md` and prepares safe handoff. |
+| | `/continue` | Resumes work in a fresh session with bounded context, resetting turns to `1/15`. |
+| **Quality & Verification** | `/santa-loop` | Dual-reviewer independent convergence audit (Santa Method: "Checking It Twice"). |
+| | `/gan-build` | Generator-Evaluator adversarial loop (`gan-planner` → `gan-generator` → `gan-evaluator`). |
+| | `/build-fix` | Surgical build resolver that repairs compiler/type/test errors with minimal diff. |
+| | `/harness-audit` | Audits harness health, rule integrity, and boundary compliance. |
+| **Continuous Learning** | `/learn` | Extracts atomic instincts (`continuous-learning-v2`) from session into memory. |
+| | `/evolve` | Clusters high-confidence instincts (>=0.75) into reusable skills or rules. |
 
 ---
 
-### ⚡ Token-Optimised Deterministic Tooling
-Minimise context token consumption by 90%+ with zero discovery overhead:
+### 🛡️ Mechanical Hooks & Code Guards
 
-#### 1. Universal Multi-Language AST Repo-Map Generator (`sdd_repo_map.py`)
-Extracts class hierarchies, method signatures, types, interfaces, and component definitions without dumping full implementation bodies. Fully language-agnostic, supporting 20+ top languages with zero external dependencies:
-- **Web & Fullstack**: TypeScript (`.ts`, `.tsx`), JavaScript (`.js`, `.jsx`), Python (`.py`), PHP (`.php`), Ruby (`.rb`).
-- **Enterprise & Backend**: C# (.NET, `.cs`), Java (`.java`), Kotlin (`.kt`, `.kts`), Go (`.go`), Rust (`.rs`), Scala (`.scala`).
-- **Mobile**: Dart / Flutter (`.dart`), Swift (`.swift`), Kotlin (`.kt`).
-- **Systems & Low-Level**: C & C++ (`.c`, `.h`, `.cpp`, `.hpp`, `.cc`), Zig (`.zig`).
-- **Data, Contracts & Scripts**: SQL schemas (`.sql`), Shell / Bash (`.sh`), PowerShell (`.ps1`), Solidity (`.sol`), Elixir (`.ex`), Lua (`.lua`).
-```bash
-# Generate compact signature map for any language in your stack
-python .agents/scripts/sdd_repo_map.py src/
-```
-
-#### 2. Deterministic Terminal Output Trimmer (`sdd_trim_exec.py`)
-Wraps test, lint, and build commands to shield the agent's context window from terminal log pollution:
-- **On Success (`exit 0`)**: Compresses 100+ lines of test output into a single clean summary line (`✅ [DoD OK] ...`).
-- **On Failure (`exit != 0`)**: Strips ANSI noise, blank lines, and deprecation notices, isolating only the targeted stack trace, failure assertion, file, and line.
-```bash
-python .agents/scripts/sdd_trim_exec.py pytest tests/unit/test_auth.py
-python .agents/scripts/sdd_trim_exec.py npm test
-```
-
-#### 3. Selective Context & Dynamic Rule Loading (`RN-SDD-SELECTIVE-CONTEXT`)
-- Forbids recursive blind grepping. Agents consult `docs/knowledge/SYSTEM_TOPOLOGY.md`, `API_CATALOG.md`, and `DATA_MODELS.md` first.
-- Governance rules in `.agents/rules/` are loaded conditionally per active Gate, never all at once.
-- Deterministic DoD commands are pre-registered in `specs/STACK.md` during Gate 00 and passed directly to atomic tasks.
+The framework installs deterministic hooks in `.agents/hooks.json` executed before any tool call (`PreToolUse` on `edit_file` / `write_file`):
+1. **`sdd_immutable_feature_guard.py`**: Enforces `RN-SDD-IMMUTABLE-DONE`. Prevents editing specs of features already marked `Done`.
+2. **`sdd_code_gate_guard.py`**: Enforces `RN-SDD-GATE00-STACK-LOCK` (blocks code editing before Gate 00 approval), `RN-SDD-GATE2-CODE-LOCK` (blocks code editing without human-signed Gates 1, 2, and 3), and `RN-ECC-MAX-FILE-LINES` (blocks creating or expanding files beyond 800 lines).
 
 ---
 
-### 🛡️ Framework Healthcheck
-Audit the mechanical integrity of agent definitions, rules, and governance scripts at any time:
-```bash
-python .agents/scripts/sdd_healthcheck.py
-```
+### ⚡ Deterministic Tooling (Zero Discovery Overhead)
+
+- **Universal Multi-Language AST Repo-Map (`sdd_repo_map.py`)**: Extracts classes, signatures, interfaces, and methods across 20+ languages (Python, TypeScript, C#, Go, Rust, Java, Kotlin, Swift, Dart, C/C++, PHP, Ruby, etc.) without external dependencies.
+- **Deterministic Terminal Trimmer (`sdd_trim_exec.py`)**: Wraps test and build commands, compressing green passes into a single summary line and isolating critical stack traces on failure.
+- **Universal Multi-IDE Token Telemetry (`sdd_token_usage.py`)**: Measures token consumption, context depth, and cache hit ratio across Antigravity, Claude Code, Cursor, Codex, Windsurf, and Roo Code.
+- **Boundary Verifier (`verify_architecture_boundaries.py`)**: Audits layer isolation and imports according to the Ownership Map.
 
 ---
 
-### 🔄 Bidirectional Framework Synchronisation (`sdd_sync.py`)
-As you develop projects, you may discover improvements to agent rules (`.agents/rules/`), audit skills (`.agents/skills/`), or gate guards (`.agents/scripts/`). To prevent framework divergence without polluting the starter template with project-specific code:
+### ⚖️ Third-Party Notices & Attribution
 
-1. **Check framework divergence status**:
-   ```bash
-   python scripts/sdd_sync.py --status
-   ```
-2. **Export improvements from this project to the starter template**:
-   ```bash
-   python scripts/sdd_sync.py --push-to-template C:/Projects/sdd-agentic-starter
-   ```
-   *(Surgically syncs only the core agentic framework, sanitising project names and safeguarding `src/`).*
-3. **Pull starter template updates into this project**:
-   ```bash
-   python scripts/sdd_sync.py --pull-from-template C:/Projects/sdd-agentic-starter
-   ```
+This starter template incorporates, adapts, or is inspired by open-source works under permissive licenses:
+- **Everything Claude Code (ECC)**: Copyright (c) 2026 Affaan Mustafa ([https://github.com/affaan-m/ecc](https://github.com/affaan-m/ecc)), licensed under the **MIT License**. Reviewer agents, prompt defense baselines, build resolvers, continuous learning v2, and language pattern packs are adapted from ECC. Full legal notice in [`THIRD_PARTY_NOTICES.md`](file:///c:/Projects/sdd-agentic-starter/THIRD_PARTY_NOTICES.md).
+- **REA Framework**: Inspired by `morluto/rea` for Fail-Closed governance and Human Gate Ownership.
 
 ---
 ---
 
 ## 🇪🇸 Español (ES-ES)
 
-Plantilla universal de desarrollo de software guiado por especificaciones (**Spec-Driven Development - SDD**) y orquestación multi-agente.
+Plantilla universal de desarrollo de software guiada por especificaciones (**Spec-Driven Development - SDD**) y orquestación multi-agente, integrando patrones de alta ingeniería de **Everything Claude Code (ECC)** bajo Licencia MIT.
 
 ### 🚀 Cómo Iniciar un Nuevo Proyecto a partir de este Template
 
@@ -177,7 +154,7 @@ cd mi-nuevo-proyecto
 ```
 
 #### 2. El Repositorio Inicia BLOQUEADO (`Gate 00: Stack Lock`)
-Para garantizar orden arquitectónico y compatibilidad, **el código de producción en `src/` está estrictamente bloqueado** por la regla `RN-SDD-GATE00-STACK-LOCK`. No se puede escribir código de producción ni tests hasta definir las tecnologías, el hosting y el escuadrón agéntico.
+Para garantizar orden arquitectónico y compatibilidad, **el código de producción en `src/` está estrictamente bloqueado** por la regla `RN-SDD-GATE00-STACK-LOCK`. No se puede escribir código de producción ni tests hasta definir formalmente las tecnologías, el hosting, el Ownership Map y el escuadrón agéntico.
 
 #### 3. Habla con el `@orchestrator` en tu asistente IA (Antigravity / Cursor / Claude Code)
 Envía este mensaje para iniciar el proyecto:
@@ -187,134 +164,89 @@ El `@orchestrator`:
 1. Desplegará el **Asistente Interactivo de Gate 00 (`sdd-bootstrap`)** con poda dinámica en árbol:
    - **Infraestructura y Hosting**: Cloud Pública (AWS/Azure/GCP), Contenedores Docker o PaaS modernas (**Vercel**, Netlify, Railway).
    - **Alcance y Poda Dinámica**: Omite automáticamente preguntas irrelevantes (ej: sin estilos si es solo API, o sin backend si es SPA estática).
-   - **Activación del Escuadrón Agéntico**: Configura la matriz de agentes en `ACTIVO` o `INACTIVO (N/A)` según el alcance.
-   - **Golden Samples**: Inserta ejemplos canónicos de Do's & Don'ts (enrutamiento limpio con DTOs, Result Pattern y desacoplamiento con inyección de dependencias).
-   - **Comandos Deterministas de DoD**: Congela los comandos verificados de linting, pruebas unitarias acotadas (<1s en memoria), integración y build para eliminar el overhead de descubrimiento.
+   - **Ownership Map (§3.2)**: Configura las fronteras deterministas de código, asignando cada zona física a un agente constructor con sus imports prohibidos y comandos DoD.
+   - **Activación de Stack Packs**: Activa bajo demanda los paquetes de lenguaje, framework y capacidad desde `.sdd/catalog/packs/`.
+   - **Comandos Deterministas de DoD (§2.5)**: Congela los comandos verificados de linting, pruebas unitarias acotadas (<1s en memoria), integración y build para eliminar el overhead de descubrimiento.
    - **Entorno Local**: Genera la configuración inicial de `docker-compose.yml` o `vercel.json`.
-2. Rellenará formalmente **`specs/STACK.md`** y te solicitará tu firma humana expresa: `[x] Gate 00 Approved (Human Sign-off)`.
-3. Una vez aprobada, el código en `src/` se desbloqueará y comenzará el ciclo normal de desarrollo (Gate 0 -> Gate 5).
+2. Completará formalmente **`specs/STACK.md`** y compilará el escuadrón con `python scripts/sdd_agent_generator.py --materialize`.
+3. Te solicitará tu firma humana expresa: `[x] Gate 00 Approved (Human Sign-off)`.
+4. Una vez aprobada, el código en `src/` se desbloqueará y comenzará el ciclo normal de desarrollo (Gate 0 -> Gate 5).
 
 ---
 
-### 👥 Topologías de Escuadrón Agéntico (Configurables en Gate 00)
-La plantilla soporta dos modalidades operativas según la escala y complejidad del proyecto:
-- **Escuadrón Especializado Granular (Alta Especialización)**: 12 roles atómicos con fronteras estrictas de aislamiento (`@back-domain`, `@back-infra`, `@back-api`, `@db-specialist`, `@back-test`, `@front-logic`, `@front-ui`, `@front-test`, `@devops`, `@documentator`, `@architect`, `@orchestrator`).
-- **Escuadrón Compacto**: 7 roles core para proyectos ágiles o MVPs (`@orchestrator`, `@architect`, `@back-engineer`, `@front-engineer`, `@qa-tester`, `@devops`, `@documentator`).
+### 🏛️ La Arquitectura Agéntica de 3 Capas
 
-Generable de forma conversacional por el `@orchestrator` o inspeccionable por consola:
-```bash
-python scripts/sdd_agent_generator.py --list
-python scripts/sdd_agent_generator.py --mode granular  # o --mode compact
-```
+El framework organiza el desarrollo multi-agente en tres capas estrictamente desacopladas:
 
----
+#### Capa 1: Escuadrón Core de Gobernanza (Agnóstico al Stack, Fijo)
+Líderes y custodios de calidad que gobiernan el ciclo SDD independientemente de la tecnología:
+- **`@orchestrator`** (Primary): Tech Lead y Scrum Master SDD. Planifica el DAG, despacha órdenes a `.agent-inbox/` y verifica compuertas. **Cero código directo en `src/`**.
+- **`@functional-analyst`** (Gate 1): Redacta los requisitos funcionales en sintaxis formal **EARS** con criterios de aceptación BDD Given-When-Then.
+- **`@architect`** (Gate 2): Diseña contratos de API (OpenAPI/gRPC), schemas DTO, esquemas de persistencia y registra **ADRs**.
+- **`@qa-tester`** (Gate 4): Audita la suite de pruebas, cobertura de mutación y ejecuta skills de calidad (`sdd-test-quality-audit`, `santa-method`).
+- **`@documentator`** (Gate 5): Custodio de la documentación viva bilingüe (`docs/es/`, `docs/en/`), catálogo de APIs y matriz de trazabilidad (`RN-SDD-0DD`).
+- **`@devops`**: Especialista en infraestructura, contenedores Docker, CI/CD y despliegue.
 
-### 🏛️ Ciclo de Vida SDD (Gate 00 a Gate 5)
+#### Capa 2: Constructores y el Ownership Map (Permisos de Escritura)
+Los agentes constructores son los **únicos autorizados para escribir código de producción**. Cada constructor tiene asignada una zona exclusiva en `specs/STACK.md §3.2`:
+- **Fuente Única de Verdad**: El Ownership Map asocia globs de archivos con agentes dueños, imports prohibidos y comandos DoD.
+- **Control Mecánico**: El hook `sdd_code_gate_guard.py` bloquea físicamente a cualquier agente que intente editar ficheros fuera de su zona asignada.
+- **Presets y Topologías Flexibles**: Escoge entre `compact` (7 roles), `granular` (12 roles atómicos), `api-only`, `spa-only`, `monorepo` o combinaciones híbridas (ej: backend granular + frontend compacto).
 
-```text
-[ Gate 00: STACK.md ] ──► [ Gate 0: Backlog Intake ]
-                                    │
-                                    ▼
-[ Gate 1: 01-spec.md (EARS) ] ──► [ Gate 2: 02-tech-spec.md (Contratos) ]
-                                    │
-                                    ▼
-[ Gate 3: 03-tasks.md (DAG) ] ──► [ Implementación Subagentes (.agent-inbox/) ]
-                                    │
-                                    ▼
-[ Gate 4: Verificación QA ] ───► [ Gate 5: Living Docs 0DD (docs/) ] ──► DONE
-```
+#### Capa 3: Ultra-Especialistas ECC (Lentes de Auditoría de Solo Lectura y Resolvers Quirúrgicos)
+Adaptados de `affaan-m/ecc` bajo Licencia MIT. Operan con **Prompt Defense de Confianza Cero** y herramientas de solo lectura (`tools: bash, read, grep, glob`; permisos de escritura deshabilitados salvo para resolvers con diff mínimo):
+- **Especialistas Universales (20)**: `@security-reviewer`, `@silent-failure-hunter`, `@code-explorer`, `@spec-miner`, `@code-architect`, `@type-design-analyzer`, `@build-error-resolver`, `@tdd-guide`, `@performance-optimizer`, `@e2e-runner`, `@code-simplifier`, `@refactor-cleaner`, `@gan-planner`, `@gan-generator`, `@gan-evaluator`, `@conversation-analyzer`, `@docs-lookup`, `@pr-test-analyzer`, `@comment-analyzer`, `@opensource-sanitizer`.
+- **Especialistas de Stack**: Activados dinámicamente según los Stack Packs del proyecto (ej: `@python-reviewer`, `@fastapi-reviewer`, `@csharp-reviewer`, `@react-reviewer`, `@go-reviewer`, `@java-reviewer`).
 
 ---
 
-### 🧠 Ciclo de Vida de Sesión, Gobernanza de Contexto y Workflows de Handoff
-Para evitar la degradación de contexto, el agotamiento de tokens y los bucles de alucinación en tareas de largo recorrido, el framework aplica una higiene rigurosa de sesión y división por fases:
+### 📦 Catálogo Inerte vs. Runtime Activo de Sesión
 
-#### 1. División de Fases y Optimización por Niveles de Modelo (`RN-SDD-SESSION-LIFECYCLE`)
-Las tareas se desacoplan en sesiones de conversación aisladas adaptadas al nivel de modelo óptimo:
-- **Fase A — Arquitectura y Especificaciones (Gates 00 a 3)**: Modelos de alto razonamiento (ej: Gemini Pro / Thinking, Claude Sonnet / Opus, OpenAI o1/o3) dedicados exclusivamente a requisitos (`01-spec.md`), especificaciones técnicas (`02-tech-spec.md`), contratos DTO/API y el DAG de tareas atómicas (`03-tasks.md`).
-- **Fase B — Implementación y Verificación (Gate 4)**: Sesión limpia con modelos rápidos y coste-eficientes (ej: Gemini Flash, Claude Haiku) cargando únicamente `02-tech-spec.md`, `03-tasks.md` y documentos de conocimiento para implementar código mediante subagentes especialistas.
-- **Fase C — Documentación Viva y Cierre (Gate 5)**: Ejecución de `@documentator` en un hilo de bajo coste para actualizar la documentación funcional bilingüe (`docs/es/`, `docs/en/`), sincronizar la matriz de trazabilidad y ejecutar `git push origin main`.
-
-#### 2. Puntero de Sesión Activa (`.agents/ACTIVE_STATE.md`)
-Fuente única de verdad del estado de ejecución entre sesiones. Limita los archivos de contexto obligatorio a un máximo estricto de 4 archivos para eliminar la saturación ciega de contexto:
-```markdown
-- **Active Work Item:** FEAT-001 (o IDLE)
-- **Current Gate:** Gate 03 (Tareas Listas para Ejecución)
-- **Recommended Model Tier:** Execution (Flash/Sonnet)
-- **Next Execution Target:** Despachar Tarea 1.1 a @back-engineer
-- **Mandatory Context Files:** specs/features/FEAT-001/02-tech-spec.md, ...
-```
-
-#### 3. Workflows de Handoff mediante Comandos Slash
-- **`/checkpoint`**: Captura automáticamente el estado activo, guarda las tareas pendientes en `.agents/ACTIVE_STATE.md` y prepara un traspaso de sesión seguro.
-- **`/continue`**: Reanuda la ejecución en una sesión limpia cargando exclusivamente `.agents/ACTIVE_STATE.md` y los archivos acotados, reiniciando el contador a `Turno 1/15`.
-- **`/gate5`**: Lanza directamente una sesión de cierre dedicada y económica para que el `@documentator` actualice la documentación funcional, sincronice `TRACEABILITY-MATRIX.md` y ejecute `RN-SDD-GIT-SYNC`.
-
-#### 4. Semáforo de Salud de Contexto y Telemetría de Tokens (`RN-SDD-CONTEXT-SEMAPHORE`)
-El `@orchestrator` monitoriza de forma continua el recuento de turnos, los bloques de subagentes y el consumo de tokens, adjuntando un pie de telemetría en cada respuesta:
-- 🟢 **Verde** (`Turno 1-10` | `Bloques 0-1`): Ventana de ejecución óptima.
-- 🟡 **Amarillo** (`Turno 11-14` | `Bloques 2`): Umbral de aviso; preparar traspaso de sesión.
-- 🔴 **Rojo** (`Turno 15+` | `Bloques 3+`): **Parada Obligatoria (*Stop-the-Line*)**. El agente detiene el despacho de subagentes y ejecuta `/checkpoint` para forzar un handoff limpio.
-
-Inspecciona el uso de tokens y la eficiencia del prompt caching con:
-```bash
-python .agents/scripts/sdd_token_usage.py
-```
+Para erradicar la saturación de contexto y eliminar el gasto innecesario de tokens:
+1. **`.sdd/catalog/` (Catálogo Inerte)**: Contiene recetas puras, 20 especialistas universales, arquetipos y 18+ stack packs (`lang-python`, `framework-fastapi`, `lang-typescript`, `framework-react`, `lang-csharp`, `lang-go`, `lang-rust`, `lang-java`, `capability-database`, `capability-devops`, `capability-web-frontend`, `capability-ai-llm`). Al residir fuera de `.agents/`, el asistente IA lo ignora, consumiendo **0 tokens** en sesiones normales.
+2. **`.agents/` (Runtime Activo)**: Solo contiene el escuadrón activo del proyecto (Core + constructores materializados + especialistas activados).
+3. **`.agents/overrides/` (Personalizaciones del Proyecto)**: Permite añadir conocimiento de negocio específico a un constructor generado sin ensuciar los arquetipos del catálogo ni la plantilla upstream.
 
 ---
 
-### ⚡ Herramientas Deterministas Optimizadas para Ahorro de Tokens
-Reduce el consumo de tokens de contexto en más de un 90% con cero sobrecarga de descubrimiento (*zero discovery overhead*):
+### 🔄 Los 12 Workflows de Comandos Slash
 
-#### 1. Generador Universal Multi-Lenguaje de Mapa AST (`sdd_repo_map.py`)
-Extrae jerarquías de clases, firmas de métodos, tipos, interfaces y componentes sin cargar el cuerpo completo de los ficheros. 100% agnóstico al stack, soportando más de 20 lenguajes sin dependencias externas:
-- **Web & Fullstack**: TypeScript (`.ts`, `.tsx`), JavaScript (`.js`, `.jsx`), Python (`.py`), PHP (`.php`), Ruby (`.rb`).
-- **Empresarial & Backend**: C# (.NET, `.cs`), Java (`.java`), Kotlin (`.kt`, `.kts`), Go (`.go`), Rust (`.rs`), Scala (`.scala`).
-- **Mobile**: Dart / Flutter (`.dart`), Swift (`.swift`), Kotlin (`.kt`).
-- **Sistemas & Bajo Nivel**: C y C++ (`.c`, `.h`, `.cpp`, `.hpp`, `.cc`), Zig (`.zig`).
-- **Datos, Contratos & Scripts**: Esquemas SQL (`.sql`), Shell / Bash (`.sh`), PowerShell (`.ps1`), Solidity (`.sol`), Elixir (`.ex`), Lua (`.lua`).
-```bash
-# Generar mapa compacto de firmas para cualquier lenguaje de tu stack
-python .agents/scripts/sdd_repo_map.py src/
-```
-
-#### 2. Recortador Determinista de Salida de Terminal (`sdd_trim_exec.py`)
-Envuelve comandos de test, lint y build para evitar la saturación de la ventana de contexto con logs excesivos:
-- **En Éxito (`exit 0`)**: Comprime más de 100 líneas de salida en un resumen limpio de una sola línea (`✅ [DoD OK] ...`).
-- **En Fallo (`exit != 0`)**: Elimina ruido de ANSI, líneas en blanco y avisos de obsolescencia, aislando únicamente la traza del error, la aserción fallida, el fichero y la línea afectada.
-```bash
-python .agents/scripts/sdd_trim_exec.py pytest tests/unit/test_auth.py
-python .agents/scripts/sdd_trim_exec.py npm test
-```
-
-#### 3. Contexto Selectivo y Carga Perezosa de Reglas (`RN-SDD-SELECTIVE-CONTEXT`)
-- Prohibida la búsqueda ciega con grep recursivo. Los agentes consultan primero `docs/knowledge/SYSTEM_TOPOLOGY.md`, `API_CATALOG.md` y `DATA_MODELS.md`.
-- Las reglas de `.agents/rules/` se cargan bajo demanda según el Gate activo, nunca de forma masiva.
-- Los comandos deterministas de DoD se congelan en `specs/STACK.md` durante el Gate 00 y se transfieren directamente a las tareas atómicas.
+| Categoría | Comando | Descripción |
+| :--- | :--- | :--- |
+| **Ciclo de Vida y Ejecución** | `/pipeline-run` | Ejecuta el pipeline desatendido completo de desarrollo SDD para una feature aprobada. |
+| | `/opsx-delegate` | El Tech Lead delega una tarea atómica al buzón de un especialista (`.agent-inbox/<agente>/`). |
+| | `/opsx-pickup` | El especialista recoge su tarea, audita DoR, implementa y valida DoD. |
+| | `/gate5` | Sesión dedicada y económica para que `@documentator` actualice living docs y sincronice Git. |
+| **Sesión y Handoff** | `/checkpoint` | Guarda el estado activo en `.agents/ACTIVE_STATE.md` y prepara un traspaso de sesión limpio. |
+| | `/continue` | Reanuda el trabajo en un hilo limpio con contexto acotado, reiniciando turnos a `1/15`. |
+| **Calidad y Verificación** | `/santa-loop` | Doble revisión independiente convergente (Santa Method: "Checking It Twice"). |
+| | `/gan-build` | Bucle adversario Generador-Evaluador (`gan-planner` → `gan-generator` → `gan-evaluator`). |
+| | `/build-fix` | Reparador quirúrgico de errores de compilación/tipos/tests con el diff mínimo. |
+| | `/harness-audit` | Audita la salud del arnés de agentes, integridad de reglas y fronteras arquitectónicas. |
+| **Aprendizaje Continuo** | `/learn` | Extrae instintos atómicos (`continuous-learning-v2`) de la sesión hacia la memoria. |
+| | `/evolve` | Agrupa instintos de alta confianza (>=0.75) y los evoluciona hacia nuevas skills o reglas. |
 
 ---
 
-### 🛡️ Verificación de Salud del Framework
-Audita en cualquier momento la integridad mecánica de las reglas, agentes y scripts de gobernanza:
-```bash
-python .agents/scripts/sdd_healthcheck.py
-```
+### 🛡️ Guardias Mecánicas y Hooks
+
+El framework instala hooks deterministas en `.agents/hooks.json` ejecutados antes de cualquier mutación de fichero (`PreToolUse` en `edit_file` / `write_file`):
+1. **`sdd_immutable_feature_guard.py`**: Aplica `RN-SDD-IMMUTABLE-DONE`. Bloquea la edición de especificaciones de features ya completadas (`Done`).
+2. **`sdd_code_gate_guard.py`**: Aplica `RN-SDD-GATE00-STACK-LOCK` (bloquea código antes de aprobar Gate 00), `RN-SDD-GATE2-CODE-LOCK` (bloquea código sin Gates 1, 2 y 3 aprobados por el usuario) y `RN-ECC-MAX-FILE-LINES` (bloquea la creación o expansión de ficheros más allá de 800 líneas).
 
 ---
 
-### 🔄 Sincronización Bidireccional con la Plantilla (`sdd_sync.py`)
-A medida que desarrolles proyectos, es natural que descubras mejoras en las reglas (`.agents/rules/`), en las skills de auditoría (`.agents/skills/`) o en los scripts de guardia (`.agents/scripts/`). Para evitar la divergencia del framework sin contaminar la plantilla con código de negocio:
+### ⚡ Herramientas Deterministas (Cero Sobrecarga de Descubrimiento)
 
-1. **Ver el estado de divergencia del framework**:
-   ```bash
-   python scripts/sdd_sync.py --status
-   ```
-2. **Exportar mejoras de este proyecto hacia la plantilla**:
-   ```bash
-   python scripts/sdd_sync.py --push-to-template C:/Projects/sdd-agentic-starter
-   ```
-   *(Sincroniza quirúrgicamente sólo el core agéntico, sanitizando referencias a nombres propios y protegiendo tu código en `src/`).*
-3. **Traer actualizaciones de la plantilla hacia este proyecto**:
-   ```bash
-   python scripts/sdd_sync.py --pull-from-template C:/Projects/sdd-agentic-starter
-   ```
+- **Generador Universal de Mapa AST (`sdd_repo_map.py`)**: Extrae clases, interfaces y firmas en más de 20 lenguajes sin dependencias externas.
+- **Recortador Determinista de Terminal (`sdd_trim_exec.py`)**: Comprime salidas exitosas de tests y builds a una sola línea y aísla la traza exacta en caso de fallo.
+- **Telemetría de Tokens Multi-IDE (`sdd_token_usage.py`)**: Monitoriza consumo de tokens y tasa de prompt cache en Antigravity, Claude Code, Cursor, Windsurf, Codex y Roo Code.
+- **Verificador de Fronteras (`verify_architecture_boundaries.py`)**: Audita el aislamiento de capas e imports prohibidos según el Ownership Map.
+
+---
+
+### ⚖️ Avisos de Terceros y Atribución Open Source
+
+Esta plantilla incorpora, adapta o se inspira en proyectos de código abierto bajo licencias permisivas:
+- **Everything Claude Code (ECC)**: Copyright (c) 2026 Affaan Mustafa ([https://github.com/affaan-m/ecc](https://github.com/affaan-m/ecc)), publicado bajo **Licencia MIT**. Los agentes revisores, baselines de prompt defense, build resolvers, motor de aprendizaje continuo v2 y paquetes de patrones han sido adaptados de ECC. Consulta el aviso legal completo en [`THIRD_PARTY_NOTICES.md`](file:///c:/Projects/sdd-agentic-starter/THIRD_PARTY_NOTICES.md).
+- **Framework REA**: Inspiración en `morluto/rea` para las compuertas de gobernanza Fail-Closed y Human Gate Ownership.

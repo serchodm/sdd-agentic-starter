@@ -6,12 +6,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "c:\\Projects\\P.A.C.O\\backend\\.venv\\Scripts\\python.exe c:\\Projects\\P.A.C.O\\.agents\\scripts\\sdd_immutable_feature_guard.py",
+            "command": "uv run python .agents/scripts/sdd_immutable_feature_guard.py",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "c:\\Projects\\P.A.C.O\\backend\\.venv\\Scripts\\python.exe c:\\Projects\\P.A.C.O\\.agents\\scripts\\sdd_code_gate_guard.py",
+            "command": "uv run python .agents/scripts/sdd_code_gate_guard.py",
             "timeout": 10
           }
         ]

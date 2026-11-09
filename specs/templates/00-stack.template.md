@@ -79,6 +79,21 @@
 
 > **Nota de Desactivación Dinámica:** Si el proyecto no requiere Frontend (API pura / CLI), los especialistas de Frontend se marcan como `INACTIVO (N/A)`. Si es un frontend estático sin backend propio, los especialistas de Backend se marcan como `INACTIVO (N/A)`.
 
+### 3.2. Ownership Map (Mapeo Declarativo de Zonas y Fronteras de Código)
+*(Fuente única de verdad para permisos de escritura, asignación de tareas DAG en Gate 3 y verificación de límites por hooks)*:
+
+| Zona (ID) | Rutas Físicas (Glob) | Agente Dueño (`owner`) | Arquetipo Base | Imports Prohibidos (`forbid_imports`) | Comandos DoD Asignados |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `[zona-id]` | `[ej: src/backend/domain/**]` | `[@back-domain / @back-engineer]` | `[layer-domain / tier-backend]` | `[web_framework, orm, etc.]` | `[Comando DoD de verificación]` |
+| `[zona-id]` | `[ej: src/frontend/**]` | `[@front-engineer]` | `[tier-frontend]` | `[backend, direct DB]` | `[Comando DoD de verificación]` |
+
+> **Política ante Rutas Huérfanas (`unowned_policy`):** `fail-closed` (Cualquier fichero de código que no esté asignado a una zona del Ownership Map bloquea la aprobación de Gate 3).
+
+### 3.3. Stack Packs Activos (Catálogo `.sdd/catalog/packs/`)
+*(Packs de lenguaje, framework y capacidad activados desde el catálogo inerte bajo licencia MIT de ECC)*:
+- `[ej: lang-python, framework-fastapi, capability-database, capability-devops]`
+- *(Se materializan en la sesión mediante `python scripts/sdd_agent_generator.py --materialize`)*.
+
 ---
 
 ## 📁 4. Estructura Canónica de Directorios (`src/`)

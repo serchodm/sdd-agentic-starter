@@ -1,0 +1,31 @@
+{
+  "id": "framework:vue",
+  "family": "framework",
+  "requires": [
+    "lang:typescript"
+  ],
+  "description": "Vue 3 Composition API, Pinia, Vue Router, and Nuxt 4 SSR patterns.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/vue/coding-style.md",
+    "rules/vue/hooks.md",
+    "rules/vue/patterns.md",
+    "rules/vue/security.md",
+    "rules/vue/testing.md"
+  ],
+  "specialists": [
+    "agents/vue-reviewer.md"
+  ],
+  "skills": [
+    "skills/vue-patterns",
+    "skills/nuxt4-patterns",
+    "skills/ui-to-vue"
+  ],
+  "workflows": [
+    "commands/vue-review.md"
+  ]
+}

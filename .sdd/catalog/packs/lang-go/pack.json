@@ -1,0 +1,31 @@
+{
+  "id": "lang:go",
+  "family": "language",
+  "requires": [],
+  "description": "Idiomatic Go, table-driven tests, goroutine concurrency, and build resolvers.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/golang/coding-style.md",
+    "rules/golang/hooks.md",
+    "rules/golang/patterns.md",
+    "rules/golang/security.md",
+    "rules/golang/testing.md"
+  ],
+  "specialists": [
+    "agents/go-reviewer.md",
+    "agents/go-build-resolver.md"
+  ],
+  "skills": [
+    "skills/golang-patterns",
+    "skills/golang-testing"
+  ],
+  "workflows": [
+    "commands/go-build.md",
+    "commands/go-review.md",
+    "commands/go-test.md"
+  ]
+}

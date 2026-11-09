@@ -1,0 +1,34 @@
+{
+  "id": "capability:web-frontend",
+  "family": "capability",
+  "requires": [],
+  "description": "Web frontend quality: accessibility (WCAG 2.1 AA), design systems, SEO, and browser QA.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/web/coding-style.md",
+    "rules/web/design-quality.md",
+    "rules/web/hooks.md",
+    "rules/web/patterns.md",
+    "rules/web/performance.md",
+    "rules/web/security.md",
+    "rules/web/testing.md"
+  ],
+  "specialists": [
+    "agents/a11y-architect.md",
+    "agents/seo-specialist.md"
+  ],
+  "skills": [
+    "skills/accessibility",
+    "skills/frontend-a11y",
+    "skills/design-system",
+    "skills/browser-qa",
+    "skills/make-interfaces-feel-better",
+    "skills/motion-foundations",
+    "skills/i18n-sync"
+  ],
+  "workflows": []
+}

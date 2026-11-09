@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-11-09T01:25:59.176662",
+  "preset": "compact",
+  "tech_stack": "Multi-Stack",
+  "core_agents": [
+    "orchestrator",
+    "functional-analyst",
+    "architect",
+    "qa-tester",
+    "documentator",
+    "devops"
+  ],
+  "builders": [
+    "back-engineer",
+    "front-engineer"
+  ],
+  "specialists": [
+    "build-error-resolver",
+    "code-architect",
+    "code-explorer",
+    "code-simplifier",
+    "comment-analyzer",
+    "conversation-analyzer",
+    "docs-lookup",
+    "e2e-runner",
+    "gan-evaluator",
+    "gan-generator",
+    "gan-planner",
+    "opensource-sanitizer",
+    "performance-optimizer",
+    "pr-test-analyzer",
+    "refactor-cleaner",
+    "security-reviewer",
+    "silent-failure-hunter",
+    "spec-miner",
+    "tdd-guide",
+    "type-design-analyzer"
+  ],
+  "active_packs": [
+    "lang-typescript",
+    "framework-react",
+    "capability-database",
+    "capability-web-frontend",
+    "lang-java",
+    "lang-csharp",
+    "framework-fastapi",
+    "lang-go",
+    "lang-python",
+    "capability-devops",
+    "framework-vue"
+  ]
+}

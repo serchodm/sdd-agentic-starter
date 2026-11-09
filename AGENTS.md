@@ -96,10 +96,11 @@ El equipo se organiza por responsabilidades de ingeniería de software. Cada age
 **DIRECTIVA CRÍTICA DE AHORRO DE TOKENS & GOBERNANZA DE CONTEXTO:** PROHIBIDO cargar globalmente todos los archivos de `.agents/rules/*` simultáneamente en el contexto. El `@orchestrator` y los subagentes solo deben cargar en memoria las reglas listadas explícitamente en `Mandatory Context Files` de `.agents/ACTIVE_STATE.md` o las que correspondan estrictamente a su Gate activo o capa técnica:
 
 - **Gate 00 (`specs/STACK.md`):** Leer únicamente `.agents/rules/00-stack-lock.md`.
-- **Gate 1 (`01-spec.md`):** Leer únicamente `.agents/rules/02-ears-requirements.md` y `.agents/rules/01-sdd-lifecycle.md`.
+- **Gate 1 (`01-spec.md`):** Leer únicamente `.agents/rules/03-ears-requirements.md` y `.agents/rules/01-sdd-lifecycle.md`.
 - **Gates 2 y 3 (`02-tech-spec.md` y `03-tasks.md`):** Leer únicamente `.agents/rules/04-multiagent-dag.md` + las directivas técnicas fijadas en `specs/STACK.md`.
-- **Gate 4 (Subagentes de Código):** Cada especialista lee exclusivamente su contrato de `02-tech-spec.md`, su regla de rol (`.agents/agents/<agente>.md`) y el archivo de seguridad `.agents/rules/05-security-and-secrets.md` si maneja credenciales o I/O externa.
-- **Gate 5 (`@documentator`):** Leer únicamente `.agents/rules/03-functional-doc-0dd.md`.
+- **Gate 4 (Subagentes de Código):** Cada especialista lee exclusivamente su contrato de `02-tech-spec.md`, su regla de rol (`.agents/agents/<agente>.md`), `.agents/rules/05-security-and-secrets.md`, `.agents/rules/07-engineering-baseline.md` y las reglas del stack pack activo que le correspondan.
+- **Gate 5 (`@documentator`):** Leer únicamente `.agents/rules/06-functional-doc-0dd.md`.
+- **Change Management (CR-XXX):** Leer `.agents/rules/02-change-management.md`.
 
 ---
 

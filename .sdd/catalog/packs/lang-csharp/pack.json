@@ -1,0 +1,26 @@
+{
+  "id": "lang:csharp",
+  "family": "language",
+  "requires": [],
+  "description": "C# .NET 9, nullable reference types, EF Core, async ValueTask, and xUnit patterns.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/csharp/coding-style.md",
+    "rules/csharp/hooks.md",
+    "rules/csharp/patterns.md",
+    "rules/csharp/security.md",
+    "rules/csharp/testing.md"
+  ],
+  "specialists": [
+    "agents/csharp-reviewer.md"
+  ],
+  "skills": [
+    "skills/dotnet-patterns",
+    "skills/csharp-testing"
+  ],
+  "workflows": []
+}

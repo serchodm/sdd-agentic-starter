@@ -1,0 +1,33 @@
+{
+  "id": "lang:kotlin",
+  "family": "language",
+  "requires": [],
+  "description": "Kotlin, coroutines, flows, Ktor, Exposed, and Compose Multiplatform patterns.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/kotlin/coding-style.md",
+    "rules/kotlin/hooks.md",
+    "rules/kotlin/patterns.md",
+    "rules/kotlin/security.md",
+    "rules/kotlin/testing.md"
+  ],
+  "specialists": [
+    "agents/kotlin-reviewer.md",
+    "agents/kotlin-build-resolver.md"
+  ],
+  "skills": [
+    "skills/kotlin-patterns",
+    "skills/kotlin-testing",
+    "skills/kotlin-coroutines-flows",
+    "skills/kotlin-ktor-patterns"
+  ],
+  "workflows": [
+    "commands/kotlin-build.md",
+    "commands/kotlin-review.md",
+    "commands/kotlin-test.md"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "framework:django",
+  "family": "framework",
+  "requires": [
+    "lang:python"
+  ],
+  "description": "Django ORM, Celery, TDD, security, and verification workflows.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [],
+  "specialists": [
+    "agents/django-reviewer.md",
+    "agents/django-build-resolver.md"
+  ],
+  "skills": [
+    "skills/django-patterns",
+    "skills/django-security",
+    "skills/django-tdd",
+    "skills/django-verification",
+    "skills/django-celery"
+  ],
+  "workflows": []
+}

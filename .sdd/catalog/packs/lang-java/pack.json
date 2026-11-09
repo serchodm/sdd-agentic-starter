@@ -1,0 +1,33 @@
+{
+  "id": "lang:java",
+  "family": "language",
+  "requires": [],
+  "description": "Java 21+, Spring Boot, Gradle/Maven, JPA, and verification workflows.",
+  "upstream": {
+    "repo": "affaan-m/ecc",
+    "license": "MIT",
+    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+  },
+  "rules": [
+    "rules/java/coding-style.md",
+    "rules/java/hooks.md",
+    "rules/java/patterns.md",
+    "rules/java/security.md",
+    "rules/java/testing.md"
+  ],
+  "specialists": [
+    "agents/java-reviewer.md",
+    "agents/java-build-resolver.md"
+  ],
+  "skills": [
+    "skills/java-coding-standards",
+    "skills/springboot-patterns",
+    "skills/springboot-security",
+    "skills/springboot-tdd",
+    "skills/springboot-verification",
+    "skills/jpa-patterns"
+  ],
+  "workflows": [
+    "commands/gradle-build.md"
+  ]
+}

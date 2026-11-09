@@ -1,11 +1,11 @@
-# Regla 00: Bloqueo de Stack Tecnológico y Asistente Bootstrap (Gate 00)
+# Regla 00: Bloqueo de Stack Tecnológico, Ownership Map y Bootstrap (Gate 00)
 
-> **NORMA DE SEGURIDAD ABSOLUTA:** El repositorio permanece en estado **BLOQUEADO** hasta que el stack técnico, la arquitectura y el escuadrón agéntico hayan sido formalmente acordados y firmados en `specs/STACK.md`.
+> **NORMA DE SEGURIDAD ABSOLUTA:** El código de producción y tests permanece en estado **ESTRICTAMENTE BLOQUEADO** hasta que el stack técnico, la arquitectura, el Ownership Map y el escuadrón agéntico hayan sido formalmente acordados y firmados en `specs/STACK.md` (`[x] Gate 00 Approved`).
 
 ---
 
 ## 1. Motivo y Justificación
-Desarrollar sin definir el stack provoca código incompatible, agentes desorientados, dependencias parásitas y retrabajo masivo. El Gate 00 garantiza que antes de la primera línea de especificación o código, se conocen con total certeza las herramientas de trabajo, el destino de hosting (Cloud, Docker, Vercel/PaaS), el ciclo CI/CD y los roles activos.
+Desarrollar sin definir el stack provoca código incompatible, agentes desorientados, dependencias parásitas y retrabajo masivo. El Gate 00 garantiza que antes de la primera línea de especificación o código, se conocen con total certeza las herramientas de trabajo, el destino de hosting (Cloud, Docker, Vercel/PaaS), el ciclo CI/CD, los comandos deterministas DoD y los dueños de cada zona de código.
 
 ---
 
@@ -19,7 +19,9 @@ Desarrollar sin definir el stack provoca código incompatible, agentes desorient
    - Se ejecuta el cuestionario interactivo de 10 dimensiones con **poda dinámica en árbol**:
      - Las respuestas tempranas (ej: *Solo Backend*, *Solo Frontend*, *Stateless*) podan automáticamente las ramas irrelevantes.
      - Se configuran las directrices para Cloud, Contenedores Docker o plataformas PaaS/Serverless (Vercel, Netlify, Railway).
-   - Se genera `specs/STACK.md` con los Golden Samples (Do's & Don'ts) y la matriz del **Escuadrón Agéntico**.
+   - Se congela la Sección 2.5 de **Comandos Deterministas de Verificación DoD** (lint, test unitario <1s, integración, build) para eliminar el overhead de descubrimiento.
+   - Se genera el **Ownership Map (§3.2)** asignando un único agente constructor por zona de código con sus imports prohibidos y comandos DoD.
+   - Se ejecuta `python scripts/sdd_agent_generator.py --materialize` para compilar los agentes constructores y activar los stack packs requeridos desde `.sdd/catalog/`.
 
 ---
 
@@ -27,11 +29,12 @@ Desarrollar sin definir el stack provoca código incompatible, agentes desorient
 `specs/STACK.md` debe estar formalmente redactado y contar con:
 - Topología, hosting y unidad de empaquetado definidas.
 - Tecnologías core de Backend, Frontend y Persistencia (o marcadas como N/A explícitamente).
-- Matriz del Escuadrón Agéntico con roles `ACTIVO` o `INACTIVO (N/A)`, directorios permitidos y comandos CLI asignados.
+- Comandos deterministas DoD verificados en la Sección 2.5.
+- Ownership Map (§3.2) sin zonas huérfanas ni solapes.
 - Golden Samples canónicos de código limpio (Do) vs antipatrones prohibidos (Don't).
 - Casilla `[x] Gate 00 Approved (Human Sign-off)` marcada exclusivamente tras la confirmación expresa del usuario en el chat.
 
 ---
 
 ## 4. Guardia Mecánica
-La herramienta `.agents/scripts/sdd_code_gate_guard.py` comprobará el estado de `specs/STACK.md`. Cualquier intento de edición sobre `src/` será rechazado de inmediato si Gate 00 no está superado.
+La herramienta `.agents/scripts/sdd_code_gate_guard.py` comprobará el estado de `specs/STACK.md`. Cualquier intento de edición sobre código de producción o tests será rechazado de inmediato si Gate 00 no está superado.
