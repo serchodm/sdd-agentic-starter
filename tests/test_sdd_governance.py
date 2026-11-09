@@ -19,7 +19,13 @@ sys.path.insert(0, str(ROOT_DIR / "scripts"))
 from scripts.sdd_cli import DISPATCH_MAP
 from scripts.sdd_git import load_git_governance, resolve_branch_name
 from scripts.sdd_hooks import CONFLICT_PATTERNS, SECRET_PATTERNS, validate_pre_push
-from scripts.sdd_instincts import load_instincts, save_instincts
+from scripts.sdd_instincts import (
+    calculate_decayed_confidence,
+    cosine_similarity,
+    get_repo_root,
+    load_instincts,
+    save_instincts,
+)
 
 
 class TestSDDGovernance(unittest.TestCase):
@@ -75,6 +81,42 @@ class TestSDDGovernance(unittest.TestCase):
         self.assertIn("inst-win-py-alias", ids)
         self.assertIn("inst-anti-rubber-stamp", ids)
         self.assertIn("inst-worktree-isolation", ids)
+
+    def test_sdd_instincts_semantic_similarity(self):
+        """Verifica la similitud coseno semántica para deduplicación (MemGPT pattern)."""
+        t1 = "Al ejecutar scripts de Python en Windows con alias de Microsoft Store"
+        t2 = "Al ejecutar comandos de Python en Windows con el alias de Microsoft Store"
+        t3 = "Al configurar un bucket de Amazon S3 en produccion"
+
+        sim_near = cosine_similarity(t1, t2)
+        sim_diff = cosine_similarity(t1, t3)
+
+        self.assertGreaterEqual(sim_near, 0.70, "Textos análogos deben tener alta similitud")
+        self.assertLess(sim_diff, 0.25, "Textos dispares deben tener muy baja similitud")
+
+    def test_sdd_instincts_temporal_decay(self):
+        """Verifica el decaimiento temporal de confianza según vida media (half-life)."""
+        fresh_instinct = {
+            "confidence": 0.90,
+            "last_reinforced": "2026-11-09T00:00:00+00:00",
+        }
+        # Un instinto reciente no debe decaer significativamente
+        fresh_conf = calculate_decayed_confidence(fresh_instinct, half_life_days=90.0)
+        self.assertAlmostEqual(fresh_conf, 0.90, delta=0.05)
+
+        # Un instinto de hace 180 días con half-life 90 debe decaer a aprox 0.90 * 0.25 = 0.225 -> clamped a 0.30
+        stale_instinct = {
+            "confidence": 0.90,
+            "last_reinforced": "2025-11-09T00:00:00+00:00",
+        }
+        stale_conf = calculate_decayed_confidence(stale_instinct, half_life_days=90.0)
+        self.assertEqual(stale_conf, 0.30, "Instinto muy antiguo debe decaer al suelo mínimo de 0.30")
+
+    def test_dynamic_repo_root_resolution(self):
+        """Verifica que get_repo_root() resuelva el repositorio git dinámicamente."""
+        root = get_repo_root()
+        self.assertTrue(root.exists())
+        self.assertTrue((root / ".git").exists() or (root / "specs").exists())
 
 
 if __name__ == "__main__":

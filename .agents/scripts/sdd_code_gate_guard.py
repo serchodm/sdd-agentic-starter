@@ -16,7 +16,27 @@ Enforces:
 import json
 import pathlib
 import re
+import subprocess
 import sys
+
+
+def get_repo_root() -> pathlib.Path:
+    """Resuelve dinámicamente el directorio raíz del repositorio o worktree activo."""
+    try:
+        res = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        toplevel = res.stdout.strip()
+        if toplevel:
+            return pathlib.Path(toplevel)
+    except Exception:
+        pass
+    return pathlib.Path(__file__).resolve().parents[2]
 
 try:
     from sdd_stack_gate_guard import check_stack_gate
@@ -145,7 +165,7 @@ def main() -> int:
         print(json.dumps({"decision": "allow"}))
         return 0
 
-    repo_root = pathlib.Path(__file__).resolve().parents[2]
+    repo_root = get_repo_root()
     repo_root_posix = str(repo_root).replace("\\", "/")
     normalized = target_path.replace("\\", "/")
 
