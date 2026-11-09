@@ -1,14 +1,14 @@
 {
-  "active_work_item_id": null,
+  "active_work_item_id": "REL-1.0.0",
   "type": null,
   "spec_dir": null,
   "git": {
     "base_branch": "develop",
-    "branch_name": null,
+    "branch_name": "release/v1.0.0",
     "worktree_path": null,
     "pr_number": null,
     "pr_url": null,
-    "status": "IDLE"
+    "status": "RELEASE_STAGING"
   },
   "gate_00_approved": false,
   "gate_0_approved": false,
