@@ -84,6 +84,13 @@
 
 ### 3.3. Stack Packs Activos (Catálogo `.sdd/catalog/packs/`)
 *(Packs de lenguaje, framework y capacidad activados desde el catálogo inerte bajo licencia MIT de ECC)*:
+
+```yaml sdd:stack-config
+gate00_approved: false
+preset: compact
+packs: []
+```
+
 - `[ej: lang-python, framework-fastapi, capability-database, capability-devops]`
 - *(Se materializan en la sesión mediante `python scripts/sdd_agent_generator.py --materialize`)*.
 

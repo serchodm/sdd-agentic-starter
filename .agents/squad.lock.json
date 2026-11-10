@@ -1,5 +1,7 @@
 {
-  "timestamp": "2026-11-09T01:25:59.176662",
+  "schema_version": 2,
+  "timestamp": "2026-11-10T19:25:07.266020+00:00",
+  "gate00_approved": false,
   "preset": "compact",
   "tech_stack": "Multi-Stack",
   "core_agents": [
@@ -36,17 +38,117 @@
     "tdd-guide",
     "type-design-analyzer"
   ],
-  "active_packs": [
-    "lang-typescript",
-    "framework-react",
-    "capability-database",
-    "capability-web-frontend",
-    "lang-java",
-    "lang-csharp",
-    "framework-fastapi",
-    "lang-go",
-    "lang-python",
-    "capability-devops",
-    "framework-vue"
-  ]
+  "active_packs": [],
+  "files": {
+    ".agents/agents/back-engineer.md": {
+      "sha256": "9b8133c4b08012786bb68af8c2a13b09b5a44f56ab8a890943fa134aee095ffa",
+      "owner": "builder:back-engineer",
+      "kind": "agent"
+    },
+    ".agents/agents/build-error-resolver.md": {
+      "sha256": "4f434560c1e754519eb50b4b02c8ba0c979569e91a6158933b124d8ccfd5aa1e",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/code-architect.md": {
+      "sha256": "9a590d6534d4a663e8012c692c673eb3fd8dc26f99ef2ada296d8f090311accf",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/code-explorer.md": {
+      "sha256": "6c1581e85f100e43b51d2d3a09a9314760f7a2372305dedd50fc493581063f67",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/code-simplifier.md": {
+      "sha256": "bc9fb5cfb650339ca8fe3d35cb51a70e673357e3658adab11e4b5b10f8e7b0a4",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/comment-analyzer.md": {
+      "sha256": "463b6f9f13305742864e73f23c7b57f01ed75a40e727ed9e8cb5f69bf26043b7",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/conversation-analyzer.md": {
+      "sha256": "48b1a99b2b98ca1d06bf3a050625976c339315e7dfcb5b4a90313d150a15ca81",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/docs-lookup.md": {
+      "sha256": "1bf4bc921c8112b3a330f9430af8dbea1aa41778c7dfeec487c9246534ebd188",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/e2e-runner.md": {
+      "sha256": "b58a7533a645a3429aa1f1c4feb658e0f553b6cd7f20675b947ba6fd63c0bf4b",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/front-engineer.md": {
+      "sha256": "d441d55b8f09a9f5ce9047d33d48d647d596696538975c69b6807260bdc444e3",
+      "owner": "builder:front-engineer",
+      "kind": "agent"
+    },
+    ".agents/agents/gan-evaluator.md": {
+      "sha256": "61e48bd67b4c36a7d28976bbb6b5ed16cd4ddc7cce9e1e66bc448cc3f9bdba6e",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/gan-generator.md": {
+      "sha256": "dda6727acfa6c4d392b3a045415e2b46dcb26b316624d20fd2032bf61bff39d7",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/gan-planner.md": {
+      "sha256": "b224983a9ee77788e9e66b8a70958dfcbebe6e48318646e0c1b89d6bb7f92535",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/opensource-sanitizer.md": {
+      "sha256": "ce17b49cd46ec1342e3b3ae156cb78e086f97fe9d232ffd2c51631039445d322",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/performance-optimizer.md": {
+      "sha256": "c6e91d4cecaf7c2a698c0a4c91a830d2f068bcbea60b8fcdaf5746da917fd0cb",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/pr-test-analyzer.md": {
+      "sha256": "d6466975861554481e95eb0ec9e3bada76fa3a907b42c5f997502e35a50173c9",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/refactor-cleaner.md": {
+      "sha256": "cbce0a60c30999505dacacd3d35797955d23bfdc57c982f38e8e807e3cfc60ab",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/security-reviewer.md": {
+      "sha256": "fa9c3f513761177afdc8f1d926e2d80ae5e06d1c634feea16d637ed8ce296fd6",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/silent-failure-hunter.md": {
+      "sha256": "cbf3a404853621b711e5143f80c79e12f437aba5f6d3698a674f276bc968e405",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/spec-miner.md": {
+      "sha256": "8e6d62968731b190c2b99ec540171a36cbb5f9bddd37a319207112fd145f19df",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/tdd-guide.md": {
+      "sha256": "e69f2644a3dc4fda55fd2c87e42011c762725b5839830424e9542f02658d47e7",
+      "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/type-design-analyzer.md": {
+      "sha256": "cb2d2d6df3cd94d69d6567a7f914e9c895ae3a0a996c680b7c27d88b396dc48b",
+      "owner": "specialists",
+      "kind": "agent"
+    }
+  }
 }
