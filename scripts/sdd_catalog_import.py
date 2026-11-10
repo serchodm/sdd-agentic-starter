@@ -5,11 +5,13 @@ Fetches upstream components from affaan-m/ecc (MIT License), adapts frontmatter
 for SDD agentic governance, and registers them cleanly inside `.sdd/catalog/`.
 """
 
+from collections.abc import Callable
+import http.client
 import json
-import os
 import pathlib
 import re
 import sys
+from typing import TypedDict
 import urllib.error
 import urllib.request
 
@@ -19,8 +21,24 @@ CATALOG_DIR = REPO_ROOT / ".sdd" / "catalog"
 SPECIALISTS_DIR = CATALOG_DIR / "specialists"
 PACKS_DIR = CATALOG_DIR / "packs"
 
+TextFetcher = Callable[[str], str | None]
+
+
+class PackDefinition(TypedDict):
+    """Schema for built-in stack pack declarations in STACK_PACKS."""
+
+    id: str
+    family: str
+    requires: list[str]
+    description: str
+    rules: list[str]
+    specialists: list[str]
+    skills: list[str]
+    workflows: list[str]
+
+
 # Universal specialists that belong to baseline catalog
-UNIVERSAL_SPECIALISTS = [
+UNIVERSAL_SPECIALISTS: list[str] = [
     "code-explorer",
     "spec-miner",
     "code-architect",
@@ -44,7 +62,7 @@ UNIVERSAL_SPECIALISTS = [
 ]
 
 # Stack packs definition
-STACK_PACKS = {
+STACK_PACKS: dict[str, PackDefinition] = {
     "lang-python": {
         "id": "lang:python",
         "family": "language",
@@ -229,19 +247,77 @@ STACK_PACKS = {
 
 
 def fetch_text(rel_url: str) -> str | None:
+    """Download a UTF-8 text asset relative to RAW_BASE, logging transport failures."""
     url = f"{RAW_BASE}/{rel_url.lstrip('/')}"
-    req = urllib.request.Request(url, headers={"User-Agent": "sdd-agentic-starter-catalog-importer/1.0"})
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "sdd-agentic-starter-catalog-importer/1.0"}
+    )
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             return resp.read().decode("utf-8")
-    except Exception as exc:
+    except (
+        urllib.error.URLError,
+        http.client.HTTPException,
+        TimeoutError,
+        OSError,
+        UnicodeDecodeError,
+        ValueError,
+    ) as exc:
+        print(f"  -> [WARN] Error descargando '{url}': {exc}", file=sys.stderr)
         return None
+
+
+def _safe_target(parent_dir: pathlib.Path, filename: str) -> pathlib.Path:
+    """Resolve filename and enforce strict containment inside parent_dir."""
+    if not filename or filename in {".", ".."}:
+        raise ValueError(f"Nombre de fichero invalido en catalogo: {filename!r}")
+    base = parent_dir.resolve()
+    target = (base / filename).resolve()
+    if not target.is_relative_to(base):
+        raise ValueError(f"Ruta fuera de '{base}': {target}")
+    return target
+
+
+def _fetch_or_warn(
+    fetcher: TextFetcher,
+    label: str,
+    rel_path: str,
+    warnings: list[str],
+) -> str | None:
+    """Fetch rel_path via fetcher and record an explicit [WARN] if it returns None."""
+    txt = fetcher(rel_path)
+    if txt is None:
+        warn = f"[WARN] {label}: no se pudo descargar '{rel_path}'"
+        print(f"  -> {warn}")
+        warnings.append(warn)
+        return None
+    return txt
+
+
+def _import_flat_assets(
+    fetcher: TextFetcher,
+    pack_dir: pathlib.Path,
+    pack_dir_name: str,
+    subdir_name: str,
+    entries: list[str],
+    warnings: list[str],
+) -> None:
+    """Download flat pack assets (rules/workflows), creating subdir_name only when non-empty."""
+    if not entries:
+        return
+    target_dir = pack_dir / subdir_name
+    target_dir.mkdir(parents=True, exist_ok=True)
+    for entry in entries:
+        txt = _fetch_or_warn(fetcher, f"({pack_dir_name}) {subdir_name}", entry, warnings)
+        if txt is not None:
+            target = _safe_target(target_dir, pathlib.Path(entry).name)
+            target.write_text(txt, encoding="utf-8")
 
 
 def adapt_agent_frontmatter(agent_name: str, content: str, read_only: bool = True) -> str:
     """Ensures consistent SDD Subagent frontmatter while preserving original Prompt Defense & Body."""
     desc = f"Especialista ECC en auditoria y resolucion tecnica: {agent_name}."
-    
+
     # Extract description from existing frontmatter if present
     match_desc = re.search(r"description:\s*(.+)", content)
     if match_desc:
@@ -254,7 +330,11 @@ def adapt_agent_frontmatter(agent_name: str, content: str, read_only: bool = Tru
         if len(parts) >= 3:
             body = parts[2].lstrip()
 
-    tools_block = "  bash: true\n  write: false\n  edit: false" if read_only else "  bash: true\n  write: true\n  edit: true"
+    tools_block = (
+        "  bash: true\n  write: false\n  edit: false"
+        if read_only
+        else "  bash: true\n  write: true\n  edit: true"
+    )
 
     adapted = f"""---
 name: {agent_name}
@@ -271,29 +351,39 @@ tools:
     return adapted
 
 
-def import_specialists():
-    SPECIALISTS_DIR.mkdir(parents=True, exist_ok=True)
-    print("\n[+] Importando Especialistas Universales ECC a .sdd/catalog/specialists/...")
+def import_specialists(
+    fetcher: TextFetcher = fetch_text,
+    specialists_dir: pathlib.Path = SPECIALISTS_DIR,
+) -> list[str]:
+    """Import universal ECC specialists into specialists_dir via an injectable fetcher."""
+    warnings: list[str] = []
+    specialists_dir.mkdir(parents=True, exist_ok=True)
+    print(f"\n[+] Importando Especialistas Universales ECC a {specialists_dir}...")
     for name in UNIVERSAL_SPECIALISTS:
         rel_path = f"agents/{name}.md"
-        content = fetch_text(rel_path)
-        if not content:
-            print(f"  -> [WARN] No se pudo descargar {name} desde {rel_path}")
+        content = _fetch_or_warn(fetcher, f"specialist '{name}'", rel_path, warnings)
+        if content is None:
             continue
 
         read_only = name not in {"build-error-resolver", "code-simplifier", "refactor-cleaner"}
         adapted = adapt_agent_frontmatter(name, content, read_only=read_only)
-        target = SPECIALISTS_DIR / f"{name}.md"
+        target = _safe_target(specialists_dir, f"{name}.md")
         target.write_text(adapted, encoding="utf-8")
         print(f"  -> [OK] Guardado especialista: {name}.md")
+    return warnings
 
 
-def import_packs():
-    PACKS_DIR.mkdir(parents=True, exist_ok=True)
-    print("\n[+] Importando y Estructurando Stack Packs en .sdd/catalog/packs/...")
+def import_packs(
+    fetcher: TextFetcher = fetch_text,
+    packs_dir: pathlib.Path = PACKS_DIR,
+) -> list[str]:
+    """Import STACK_PACKS into packs_dir while strictly preserving external pack directories."""
+    warnings: list[str] = []
+    packs_dir.mkdir(parents=True, exist_ok=True)
+    print(f"\n[+] Importando y Estructurando Stack Packs en {packs_dir}...")
 
     for pack_dir_name, meta in STACK_PACKS.items():
-        pack_dir = PACKS_DIR / pack_dir_name
+        pack_dir = _safe_target(packs_dir, pack_dir_name)
         pack_dir.mkdir(parents=True, exist_ok=True)
 
         manifest = {
@@ -313,49 +403,53 @@ def import_packs():
         }
         (pack_dir / "pack.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
-        # Download pack rules
-        if meta["rules"]:
-            rules_dir = pack_dir / "rules"
-            rules_dir.mkdir(parents=True, exist_ok=True)
-            for r in meta["rules"]:
-                txt = fetch_text(r)
-                if txt:
-                    r_target = rules_dir / pathlib.Path(r).name
-                    r_target.write_text(txt, encoding="utf-8")
+        _import_flat_assets(fetcher, pack_dir, pack_dir_name, "rules", meta["rules"], warnings)
 
-        # Download pack specialists
         if meta["specialists"]:
             agents_dir = pack_dir / "agents"
             agents_dir.mkdir(parents=True, exist_ok=True)
             for a in meta["specialists"]:
-                txt = fetch_text(a)
-                if txt:
+                txt = _fetch_or_warn(fetcher, f"({pack_dir_name}) specialist", a, warnings)
+                if txt is not None:
                     agent_name = pathlib.Path(a).stem
                     read_only = "resolver" not in agent_name
                     adapted = adapt_agent_frontmatter(agent_name, txt, read_only=read_only)
-                    a_target = agents_dir / pathlib.Path(a).name
+                    a_target = _safe_target(agents_dir, pathlib.Path(a).name)
                     a_target.write_text(adapted, encoding="utf-8")
 
-        # Download pack skills (SKILL.md)
         if meta["skills"]:
             skills_dir = pack_dir / "skills"
             skills_dir.mkdir(parents=True, exist_ok=True)
             for s in meta["skills"]:
                 skill_slug = pathlib.Path(s).name
-                txt = fetch_text(f"{s}/SKILL.md")
-                if txt:
-                    s_target_dir = skills_dir / skill_slug
+                skill_rel = f"{s}/SKILL.md"
+                txt = _fetch_or_warn(fetcher, f"({pack_dir_name}) skill", skill_rel, warnings)
+                if txt is not None:
+                    s_target_dir = _safe_target(skills_dir, skill_slug)
                     s_target_dir.mkdir(parents=True, exist_ok=True)
                     (s_target_dir / "SKILL.md").write_text(txt, encoding="utf-8")
 
+        _import_flat_assets(
+            fetcher, pack_dir, pack_dir_name, "workflows", meta["workflows"], warnings
+        )
+
         print(f"  -> [OK] Pack configurado: {pack_dir_name} ({meta['id']})")
 
+    return warnings
 
-def main():
+
+def main() -> None:
+    """Run the CLI catalog import for universal specialists and STACK_PACKS."""
     CATALOG_DIR.mkdir(parents=True, exist_ok=True)
-    import_specialists()
-    import_packs()
-    print("\n[SUCCESS] Catalogo .sdd/catalog/ inicializado con exito bajo Licencia MIT de ECC.")
+    warnings = import_specialists()
+    warnings.extend(import_packs())
+    if warnings:
+        print(
+            f"\n[WARN] Catalogo .sdd/catalog/ actualizado con {len(warnings)} advertencia(s).",
+            file=sys.stderr,
+        )
+    else:
+        print("\n[SUCCESS] Catalogo .sdd/catalog/ inicializado con exito bajo Licencia MIT de ECC.")
 
 
 if __name__ == "__main__":
