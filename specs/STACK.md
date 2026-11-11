@@ -89,6 +89,8 @@
 gate00_approved: false
 preset: compact
 packs: []
+uiux:
+  enabled: false
 ```
 
 - `[ej: lang-python, framework-fastapi, capability-database, capability-devops]`

@@ -42,8 +42,10 @@ Eres el **Especialista Senior en Interfaz Visual y Experiencia de Usuario (UI/UX
 
 ## 3. Protocolo de Tareas (DoR & DoD)
 
-- **Definition of Ready (DoR)**: Ticket en `.agent-inbox/front-ui/` con especificación de pantallas y wireframes de `01-spec.md` y hooks listos de `@front-logic`.
+- **Definition of Ready (DoR)**:
+  - Ticket en `.agent-inbox/front-ui/` con especificación de pantallas (`SCR-XXX`), wireframes de `01-spec.md` y hooks listos de `@front-logic`.
+  - Referencia obligatoria en `02-tech-spec.md` (§6.1) y en el ticket (cuando la feature toca pantallas `SCR-XXX` con Design System activo) a los IDs `SCR-XXX`, `MASTER@versión` (`docs/design-system/MASTER.md`), overrides `docs/design-system/pages/SCR-XXX.md`, prototipo `hi-fi` y tokens de `docs/design-system/design-tokens.json` (prohibido hardcodear colores, fuentes o espaciados literales cuando exista token).
 - **Definition of Done (DoD)**:
   - Ejecutar el comando oficial de build de frontend: `{{FRONTEND_BUILD_CMD}}`.
-  - Cero errores de compilación, linters limpios y diseño responsive verificado en resoluciones móviles y de escritorio.
+  - Cero errores de compilación, linters limpios, adherencia estricta a los tokens de `docs/design-system/design-tokens.json` (sin valores literales donde exista token) y diseño responsive verificado en resoluciones móviles y de escritorio.
   - Eliminar el ticket y reportar a `@orchestrator`.

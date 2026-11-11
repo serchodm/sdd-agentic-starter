@@ -11,7 +11,7 @@
 | ID | RFC | Título | Prioridad | Depende de | Gate 1 | Gate 2 | Gate 3 | Gate 4 | Gate 5 | Estado |
 | :--- | :--- | :--- | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | `FWK-001` | RFC-001 | Materialización y activación fiables de packs | P0 | — | [x] | [x] | [x] | [x] | [x] | Done |
-| `FWK-002` | RFC-001 | Pack `capability-ui-design` (UI UX Pro Max) | P1 | FWK-001 | [ ] | [ ] | [ ] | [ ] | [ ] | Backlog |
+| `FWK-002` | RFC-001 | Pack `capability-ui-design` (UI UX Pro Max) | P1 | FWK-001 | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-003` | RFC-001 | Quality gates visuales condicionales | P2 | FWK-002 | [ ] | [ ] | [ ] | [ ] | [ ] | Backlog |
 | `FWK-004` | — | Unificar terminología de Gates | P3 | — | [ ] | [ ] | [ ] | [ ] | [ ] | Candidato |
 

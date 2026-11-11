@@ -38,9 +38,9 @@ To eliminate cognitive fatigue and avoid nonsensical questions, `@orchestrator` 
 
 | Condición Detectada | Preguntas Podadas (Omitidas) | Impacto en Escuadrón Agéntico |
 | :--- | :--- | :--- |
-| **`Solo Backend / API Only`** | Framework visual, Estilos CSS, Estado cliente, Tests UI, Vercel Previews | `@front-engineer` -> **INACTIVO / INACTIVE (N/A)** |
-| **`Solo Frontend / Client Only`** | Framework backend, DTOs backend, ORM, Migraciones BD, Testcontainers backend | `@back-engineer` -> **INACTIVO / INACTIVE (N/A)** |
-| **`CLI / Herramienta Local`** | Frontend, Hosting serverless/cloud, Contenedores de hosting, Vercel | `@front-engineer` -> **INACTIVO / INACTIVE (N/A)** |
+| **`Solo Backend / API Only`** | Framework visual, Estilos CSS, Estado cliente, Tests UI, Vercel Previews, todas las preguntas `uiux` (`ui-ux-pro-max`, `hifi_format`, `brand_constraints`) | `@front-engineer` -> **INACTIVO / INACTIVE (N/A)**; no se activan `capability-ui-design` ni `@ui-ux-designer` |
+| **`Solo Frontend / Client Only`** | Framework backend, DTOs backend, ORM, Migraciones BD, Testcontainers backend | `@back-engineer` -> **INACTIVO / INACTIVE (N/A)**; mantiene preguntas `uiux` activas |
+| **`CLI / Herramienta Local`** | Frontend, Hosting serverless/cloud, Contenedores de hosting, Vercel, todas las preguntas `uiux` (`ui-ux-pro-max`, `hifi_format`, `brand_constraints`) | `@front-engineer` -> **INACTIVO / INACTIVE (N/A)**; no se activan `capability-ui-design` ni `@ui-ux-designer` |
 | **`Persistencia: N/A (Stateless)`** | Motor BD, ORM/Micro-ORM, Migraciones de esquema, Testcontainers de BD | - |
 | **`Hosting: Vercel / Netlify / Cloudflare`** | Orquestadores Kubernetes, Docker Swarm, Registries de contenedores | Flujo CI/CD orientado a GitOps y Previews por PR |
 | **`Hosting: Air-Gapped / Aislado`** | CDNs remotas, Gestores de secretos en nube pública | Assets 100% locales, variables `.env` o Vault on-prem |
@@ -123,6 +123,16 @@ To eliminate cognitive fatigue and avoid nonsensical questions, `@orchestrator` 
    - `gRPC / Protocol Buffers (.proto)`
    - `GraphQL Schema-First`
    - `DTOs manuales desacoplados`
+9. **Frontend: Inteligencia Visual y Design System (`uiux`)** *(Omitido si es Solo Backend / CLI)*:
+   - `(Recommended) Activar ui-ux-pro-max (packs: capability-web-frontend + capability-ui-design, proveedor vendorizado offline + @ui-ux-designer en Gate 2)`
+   - `Solo skills ECC de frontend (capability-web-frontend con @a11y-architect, sin proveedor externo; uiux.enabled: false)`
+10. **Frontend: Formato de Prototipos Hi-Fi (`uiux.hifi_format`)** *(Omitido si es Solo Backend / CLI o si `uiux.enabled: false`)*:
+    - `(Recommended) html (HTML/CSS navegable verificable offline / browser-qa)`
+    - `figma (Enlace y artefactos Figma gobernados)`
+    - `html+figma (Híbrido: prototipo HTML/CSS navegable + enlace Figma)`
+11. **Frontend: Restricciones de Marca (`uiux.brand_constraints`)** *(Omitido si es Solo Backend / CLI o si `uiux.enabled: false`)*:
+    - `(Recommended) Ninguna (sin fichero de marca previo)`
+    - `Ruta relativa en el repositorio (p. ej. docs/design-system/BRAND.md)`
 
 ### 📍 Ronda 3: Persistencia, Calidad, Seguridad, Golden Samples y Agentes
 1. **Motor de Base de Datos** *(Omitido si es Stateless)*:
@@ -241,6 +251,16 @@ To eliminate cognitive fatigue and avoid nonsensical questions, `@orchestrator` 
    - `gRPC / Protocol Buffers (.proto)`
    - `GraphQL Schema-First`
    - `Decoupled manual DTOs`
+9. **Frontend: Visual Design Intelligence & Design System (`uiux`)** *(Skipped if Backend Only / CLI)*:
+   - `(Recommended) Enable ui-ux-pro-max (packs: capability-web-frontend + capability-ui-design, offline vendored provider + @ui-ux-designer at Gate 2)`
+   - `ECC frontend skills only (capability-web-frontend with @a11y-architect, no external provider; uiux.enabled: false)`
+10. **Frontend: Hi-Fi Prototype Format (`uiux.hifi_format`)** *(Skipped if Backend Only / CLI or if `uiux.enabled: false`)*:
+    - `(Recommended) html (Navigable HTML/CSS verifiable offline / via browser-qa)`
+    - `figma (Governed Figma links and artefacts)`
+    - `html+figma (Hybrid: navigable HTML/CSS prototype + Figma link)`
+11. **Frontend: Brand Constraints (`uiux.brand_constraints`)** *(Skipped if Backend Only / CLI or if `uiux.enabled: false`)*:
+    - `(Recommended) None (no pre-existing brand guidelines file)`
+    - `Relative repository path (e.g. docs/design-system/BRAND.md)`
 
 ### 📍 Round 3: Persistence, Quality, Security, Golden Samples & Agents
 1. **Database Engine** *(Skipped if Stateless)*:
@@ -286,9 +306,33 @@ To eliminate cognitive fatigue and avoid nonsensical questions, `@orchestrator` 
 ## 📝 6. Deterministic Output & Conversational Agent Generation
 Upon receiving the user's responses in chat, `@orchestrator`:
 1. Completes **`specs/STACK.md`** in the user's chosen language (ES-ES or EN-GB), using **`specs/templates/00-stack.template.md`**.
-2. **Generates and Materialises the Agent Squad in the Session**:
-   - Runs `python scripts/sdd_agent_generator.py --mode <compact|granular>` to compile the selected agents in `.agents/agents/*.md` and initialise `.agent-inbox/`.
-   - Injects canonical directory scopes (`src/backend/...`, `src/frontend/...`) and validation commands (`dotnet test`, `npm run build`, `pytest`) into each agent definition.
-3. Sets the **Agent Squad Table** (`ACTIVE` vs `INACTIVE (N/A)`) in `specs/STACK.md`.
-4. Inserts the corresponding **Golden Samples (Do's & Don'ts)** in the target language and technology.
-5. Informs the user in chat of the active squad and requests human sign-off: `[x] Gate 00 Approved (Human Sign-off)`.
+2. **Emits the Structured `sdd:stack-config` Block in `specs/STACK.md` (§3.3)**:
+   - Sets `gate00_approved: false` until explicit human sign-off, `preset` (`compact | granular | api-only | spa-only`), and `packs`.
+   - When the project includes a UI (`Fullstack` or `Frontend Only`):
+     - If visual intelligence is enabled (`uiux.enabled: true`), includes **`capability-web-frontend`** and **`capability-ui-design`** in `packs`, alongside the `uiux` section:
+       ````markdown
+       ```yaml sdd:stack-config
+       gate00_approved: false
+       preset: <compact|granular|spa-only>
+       packs:
+         - <lang-pack>
+         - <framework-pack>
+         - capability-web-frontend
+         - capability-ui-design
+       uiux:
+         enabled: true
+         provider: ui-ux-pro-max
+         version: "2.15.0"
+         hifi_format: <html|figma|html+figma>
+         # brand_constraints: docs/design-system/BRAND.md  # Optional relative path
+       ```
+       ````
+     - If ECC frontend skills only are chosen (`uiux.enabled: false`), includes `capability-web-frontend` without `capability-ui-design` and sets `uiux: { enabled: false }` (keeping `@a11y-architect` and ECC skills without `@ui-ux-designer`).
+   - When the project is `Backend Only / API Only` or `CLI`, omits `capability-ui-design` and sets `uiux.enabled: false` (or omits the `uiux` section).
+3. Sets the **Agent Squad Table** (`ACTIVE` vs `INACTIVE (N/A)`), **Ownership Map (§3.2)**, and **Golden Samples (Do's & Don'ts)** in `specs/STACK.md`.
+4. **Requests Human Sign-off (`RN-SDD-HUMAN-GATE-OWNERSHIP`)**: Informs the user in chat of the proposed stack and active squad, and asks for explicit approval to mark `[x] Gate 00 Approved (Human Sign-off)` and set `gate00_approved: true`.
+5. **Materialises the Agent Squad After Gate 00 Approval**:
+   - Runs `uv run python scripts/sdd_agent_generator.py --materialize` to compile the selected builders, universal specialists, and active stack packs into `.agents/` (including `.agents/agents/ui-ux-designer.md`, `.agents/skills/sdd-ui-design/`, `.agents/skills/ui-ux-pro-max/`, and `.agents/workflows/ui-design-review.md` when `uiux.enabled: true`) and initialise `.agent-inbox/`.
+6. **Automatic `Design System Foundation` Backlog Registration (`RF-008`, `AMB-005`)**:
+   - **ONLY if `uiux.enabled: true`** after Gate 00 approval: automatically registers a single row in `specs/BACKLOG.md` titled **`Design System Foundation`** with the **next sequential available `FEAT-XXX` ID** (e.g. `FEAT-002` if `FEAT-001` already exists), `Gate 0 (Intake)` = `[x]`, Gates 1–5 = `[ ]`, and `Estado Final` = `Backlog`.
+   - Do **not** create `specs/features/FEAT-XXX-*/`, `docs/design-system/`, or any production code during Gate 00; the foundational feature executes its Gate 1–5 lifecycle in its own dedicated session (`RN-SDD-SESSION-LIFECYCLE`).

@@ -199,7 +199,7 @@ class TestSddPackMaterialization(unittest.TestCase):
         stack = _stack_doc(
             checkbox=True, gate00_yaml=True, packs=["lang-python"],
             prose="Ejemplos de stack: React / Vue / Java / TypeScript / FastAPI / PostgreSQL.",
-            extra_yaml="uiux:\n  mode: strict\n",
+            extra_yaml="uiux:\n  enabled: false\n",
         )
         ws = self._new_ws(stack, packs=("lang-python", "lang-java", "framework-react", "framework-vue"), with_archetype=True)
         _write_text(ws / ".sdd" / "catalog" / "specialists" / "code-explorer.md", "---\nname: code-explorer\n---\nExplorer.\n")
@@ -239,12 +239,12 @@ class TestSddPackMaterialization(unittest.TestCase):
     def test_stack_config_yaml_parsing_and_invalid_blocks(self) -> None:
         valid_block = _stack_doc(
             checkbox=True, gate00_yaml=True, packs=["lang-python"],
-            extra_yaml="uiux:\n  enabled: true\n  palette:\n    - warm\n    - editorial\n",
+            extra_yaml="uiux:\n  enabled: true\n  provider: ui-ux-pro-max\n  hifi_format: html\n",
         )
         cfg, approved = parse_stack_config(_write_text(self._tmp_root / "yaml_valid.md", valid_block))
         self.assertTrue(approved)
         self.assertEqual(cfg.packs, ("lang-python",))
-        self.assertEqual(cfg.uiux, {"enabled": True, "palette": ["warm", "editorial"]})
+        self.assertEqual(cfg.uiux, {"enabled": True, "provider": "ui-ux-pro-max", "hifi_format": "html"})
 
         bad_cases = (
             _stack_doc(checkbox=True, gate00_yaml="yes"),

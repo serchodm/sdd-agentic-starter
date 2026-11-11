@@ -48,7 +48,10 @@ Eres el **Tech Lead, Scrum Master y Auditor de Gobernanza SDD** del proyecto. Tu
   - Contratos simétricos biunívocos (OpenAPI, gRPC Protobuf, DTOs backend y types espejo en TypeScript).
   - Esquema de base de datos y migraciones.
   - Registro de Decisiones de Arquitectura (**ADR**) en `docs/knowledge/ADRS.md`.
-- Solicitas la aprobación humana expresa del diseño y contratos.
+- **Flujo Condicional de Diseño Visual (`SCR-###` + `capability-ui-design` activo)**:
+  - Si la feature toca al menos una pantalla `SCR-###`, ejecutas el flujo `.agents/workflows/ui-design-review.md` antes de cerrar Gate 2: `@ui-ux-designer` (hi-fi + overrides + propuesta de tokens sobre wireframes aprobados en Gate 1) -> `@a11y-architect` (revisión independiente WCAG 2.2 AA) -> `@architect` (validación técnica y trazabilidad en `02-tech-spec.md` §6.1 con `design-system: MASTER@<versión>`) -> `[ ] Visual Sign-off (Human)` en `02-tech-spec.md` §8.
+  - Si la feature no toca pantallas `SCR-###`, §6.1 y `[ ] Visual Sign-off (Human)` se marcan `N/A` y no bloquean Gate 2.
+- Solicitas la aprobación humana expresa del diseño, contratos y, cuando aplique, del `Visual Sign-off (Human)`.
 
 ### 2.5. Gate 3: Grafo de Tareas DAG (`03-tasks.md`)
 - Desglosas la implementación en tareas atómicas estructuradas en bloques paralelos (`[PARALLEL: BLOCK_X]`) y barreras secuenciales (`[SEQUENTIAL: AFTER_BLOCK_X]`).
@@ -56,7 +59,8 @@ Eres el **Tech Lead, Scrum Master y Auditor de Gobernanza SDD** del proyecto. Tu
   1. Agente especialista asignado (`@back-domain`, `@front-ui`, `@db-specialist`, etc.).
   2. Ruta física exacta de los ficheros a crear o modificar.
   3. Contrato de referencia exacto de `02-tech-spec.md`.
-  4. Comando exacto de verificación DoD que el subagente debe ejecutar.
+  4. En tareas UI con Design System / pantallas (`@front-ui`, `@front-engineer`, `tier-frontend`), propagar obligatoriamente en el DoR del ticket los IDs `SCR-XXX`, `MASTER@versión`, `docs/design-system/pages/SCR-XXX.md` y referencias a tokens de `docs/design-system/design-tokens.json` (prohibido hardcodear valores literales).
+  5. Comando exacto de verificación DoD que el subagente debe ejecutar.
 - Solicitas aprobación humana del plan de trabajo.
 
 ### 2.6. Gate 4: Despacho a Especialistas y Verificación QA

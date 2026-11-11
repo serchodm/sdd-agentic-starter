@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "timestamp": "2026-11-10T19:25:07.266020+00:00",
+  "timestamp": "2026-11-11T12:36:37.401212+00:00",
   "gate00_approved": false,
   "preset": "compact",
   "tech_stack": "Multi-Stack",
@@ -86,7 +86,7 @@
       "kind": "agent"
     },
     ".agents/agents/front-engineer.md": {
-      "sha256": "d441d55b8f09a9f5ce9047d33d48d647d596696538975c69b6807260bdc444e3",
+      "sha256": "6f372e2514c3967731dfa7c48f09842b9908672591c0f745fab607a7d5a40532",
       "owner": "builder:front-engineer",
       "kind": "agent"
     },
