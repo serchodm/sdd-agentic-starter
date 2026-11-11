@@ -1,0 +1,18 @@
+{
+  "id": "capability:ui-design",
+  "family": "capability",
+  "requires": ["capability:web-frontend"],
+  "targets": ["web"],
+  "description": "UI/UX design intelligence (styles, palettes, typography, UX patterns) governed by SDD.",
+  "upstream": {
+    "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "package": "ui-ux-pro-max-cli",
+    "license": "MIT",
+    "version": "2.15.0",
+    "vendor_lock": "vendor/ui-ux-pro-max/VENDOR.lock.json"
+  },
+  "specialists": ["agents/ui-ux-designer.md"],
+  "skills": ["skills/sdd-ui-design", "vendor/ui-ux-pro-max"],
+  "workflows": ["workflows/ui-design-review.md"],
+  "rules": []
+}

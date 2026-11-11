@@ -90,9 +90,23 @@
 > **Política ante Rutas Huérfanas (`unowned_policy`):** `fail-closed` (Cualquier fichero de código que no esté asignado a una zona del Ownership Map bloquea la aprobación de Gate 3).
 
 ### 3.3. Stack Packs Activos (Catálogo `.sdd/catalog/packs/`)
-*(Packs de lenguaje, framework y capacidad activados desde el catálogo inerte bajo licencia MIT de ECC)*:
-- `[ej: lang-python, framework-fastapi, capability-database, capability-devops]`
-- *(Se materializan en la sesión mediante `python scripts/sdd_agent_generator.py --materialize`)*.
+*(Packs de lenguaje, framework, capacidad y configuración visual activados desde `.sdd/catalog/packs/`)*:
+
+```yaml sdd:stack-config
+gate00_approved: false
+preset: compact                 # compact | granular | api-only | spa-only
+packs: []                       # ej: [lang-python, framework-fastapi, capability-web-frontend, capability-ui-design]
+uiux:
+  enabled: false                # true solo en proyectos con UI (exige capability-web-frontend y capability-ui-design en packs)
+  provider: ui-ux-pro-max       # Proveedor vendorizado offline (sin llamadas npx en diseño)
+  version: "2.15.0"             # Versión fijada y auditada mediante VENDOR.lock.json
+  hifi_format: html             # html | figma | html+figma
+  # brand_constraints: docs/design-system/BRAND.md  # Ruta relativa opcional (sin '..' ni rutas absolutas)
+```
+
+- **`packs`**: Identificadores de packs del catálogo (p. ej. `lang-python`, `framework-fastapi`, `capability-database`, `capability-web-frontend`, `capability-ui-design`).
+- **`uiux`**: Configuración del proveedor de inteligencia visual (`enabled: false` por defecto; omitir o mantener `enabled: false` en proyectos `api-only` / CLI). Si `uiux.enabled: true`, deben figurar `capability-web-frontend` y `capability-ui-design` en `packs` y registrarse la feature `Design System Foundation` en `specs/BACKLOG.md`.
+- *(Se materializan en la sesión tras aprobar Gate 00 mediante `uv run python scripts/sdd_agent_generator.py --materialize`)*.
 
 ### 3.4. Gobernanza Git y Aislamiento de Entorno (`git_governance`)
 *(Configuración agnóstica acordada en Gate 00 para la gestión de ramas, worktrees y fusiones automáticas)*:

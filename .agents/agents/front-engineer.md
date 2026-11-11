@@ -42,7 +42,8 @@ Eres el **Ingeniero Senior de Frontend y UI/UX** del proyecto. Tu misión es imp
 
 - **Definition of Ready (DoR)**:
   - Ticket en `.agent-inbox/front-engineer/` con contratos DTO y prototipos o especificaciones UI.
+  - Referencia obligatoria en `02-tech-spec.md` (§6.1) y en el ticket (cuando la feature toca pantallas `SCR-XXX` con Design System activo) a los IDs `SCR-XXX`, `MASTER@versión` (`docs/design-system/MASTER.md`), overrides `docs/design-system/pages/SCR-XXX.md`, prototipo `hi-fi` y tokens de `docs/design-system/design-tokens.json` (prohibido hardcodear colores, fuentes o espaciados literales cuando exista token).
 - **Definition of Done (DoD)**:
   - Comando de verificacion: `npm run build && npm test`.
-  - Verifica typecheck y build limpios sin errores.
+  - Verifica typecheck, build limpios sin errores y uso estricto de tokens de `docs/design-system/design-tokens.json` (sin valores literales donde exista token).
   - Elimina tu ticket de `.agent-inbox/` y reporta a `@orchestrator`.

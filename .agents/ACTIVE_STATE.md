@@ -1,19 +1,18 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-10 20:44
-- **Active Work Item:** `IDLE` (`FWK-001` Done — Gate 5 cerrado)
-- **Active Branch:** `feat/fwk-001-pack-materialization`
-- **Spec Folder Path:** `.sdd/framework/work-items/FWK-001-pack-materialization`
-- **Current Gate:** Gate 5 Completo (`FWK-001` Done; listo para nuevo Work Item o Gate 00 en sesión limpia)
-- **Recommended Model Tier:** Reasoning (Opus/Sonnet) for Gates 00-3 (`FWK-002`)
-- **Last Completed Milestone:** `FWK-001` completado end-to-end (Gates 1–5): registro YAML `sdd:stack-config` + Gate 00 fail-closed (`scripts/sdd_pack_registry.py`), materializador atómico + lock v2 (`scripts/sdd_agent_generator.py`), importador con workflows + sync (`scripts/sdd_catalog_import.py`, `scripts/sdd_sync.py`), 30/30 tests offline (`tests/test_sdd_pack_materialization.py`), 3 auditorías Gate 4 PASS y documentación viva 0DD (`ADR-002`, `docs/knowledge/`, `TRACEABILITY-MATRIX.md`, `docs/es/` y `docs/en/`).
-- **Next Execution Target:** Abrir hilo nuevo para iniciar `FWK-002` (`capability-ui-design` / UI UX Pro Max en `.sdd/framework/BACKLOG.md`) o ejecutar Gate 00 en `specs/STACK.md`.
+- **Timestamp:** 2026-11-11 16:30
+- **Active Work Item:** `None` (`FWK-002` completado y marcado `Done` en Gate 5; listo para nuevo hilo limpio según `RN-SDD-SESSION-LIFECYCLE`)
+- **Active Branch:** `feat/fwk-002-capability-ui-design` (sincronizada con `origin` tras cierre de `FWK-002`; lista para PR hacia `develop`)
+- **Spec Folder Path:** `.sdd/framework/work-items/FWK-002-capability-ui-design` (Línea base cerrada en `Done`)
+- **Current Gate:** Gate 5 Completado y Certificado (`FWK-002` `Done`: `T_A1`–`T_A3`, `T_B1`, `T_C1`, `T_D1` `[x]`)
+- **Recommended Model Tier:** High-Reasoning (Opus/Pro/Sonnet) si se inicia Gate 1 de `FWK-003` en un nuevo hilo limpio
+- **Last Completed Milestone:** Bloque D (`T_D1` `@documentator` + cierre Gate 5) completado: `ADR-003` registrado en `docs/knowledge/ADRS.md`, actualizados `docs/knowledge/{SYSTEM_TOPOLOGY,DATA_MODELS,API_CATALOG}.md`, `docs/traceability/TRACEABILITY-MATRIX.md`, documentación bilingüe `docs/{es,en}/` (`MOD-002`, `README.md`, `DOCUMENTATION-INDEX.md`), `FWK-002` marcado `Done` en `.sdd/framework/BACKLOG.md`, `37` tests offline en verde y sincronización en `feat/fwk-002-capability-ui-design`.
+- **Next Execution Target:** Abrir hilo nuevo y limpio para PR `feat/fwk-002-capability-ui-design` -> `develop` o iniciar Gate 1 de `FWK-003` (*Quality gates visuales condicionales*) previa aprobación humana.
 - **Mandatory Context Files (MAX 4 FILES):**
   1. `AGENTS.md`
   2. `.sdd/framework/BACKLOG.md`
   3. `.sdd/framework/rfcs/RFC-001-ui-ux-pro-max.md`
-  4. `specs/STACK.md`
+  4. `docs/knowledge/ADRS.md`
 - **Critical Technical Decisions / Snapshot:**
-  - `FWK-001` validado y cerrado en `.sdd/framework/BACKLOG.md` (no tocar `specs/features/` ni `src/`).
-  - Plantilla base saneada con `gate00_approved: false`, `active_packs: []` y `.agents/squad.lock.json` `schema_version: 2`.
-  - Reglas de pack aisladas en `.agents/pack-rules/<pack>/` (`ADR-002`, `RN-SDD-SELECTIVE-CONTEXT`).
-  - Rama `feat/fwk-001-pack-materialization` sincronizada con `origin` tras cierre Gate 5.
+  - `FWK-002` (`capability-ui-design` + `ui-ux-pro-max-cli@2.15.0` MIT) cerrado en `Done` (`Gate 1..5 [x]`); rama `feat/fwk-002-capability-ui-design` creada desde `develop` (sin tocar `src/` ni `specs/BACKLOG.md`, y sin `docs/design-system/` en el starter).
+  - Contratos implementados y verificados: `scripts/sdd_vendor_update.py` (`485` líneas), `scripts/sdd_pack_registry.py` (`494` líneas), `scripts/sdd_agent_generator.py` (`471` líneas), `tests/test_sdd_pack_materialization.py` (`497` líneas), `tests/test_sdd_ui_design.py` (`479` líneas); `45` ficheros runtime + `LICENSE` = `46` entradas en `VENDOR.lock.json`.
+  - `.gitattributes` fija `text eol=lf` para `.sdd/catalog/packs/capability-ui-design/**` y `.agents/**`.
