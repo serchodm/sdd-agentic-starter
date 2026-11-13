@@ -6,6 +6,7 @@
 | ADR-002 | 2026-11-10 | Aislamiento `.agents/pack-rules/<pack>/`, Activación `sdd:stack-config` + Gate 00 y `squad.lock.json` v2 | Aprobado | Evita carga global *always-on*, elimina falsos positivos regex sobre `STACK.md` y garantiza materialización atómica *fail-closed* con trazabilidad SHA-256. |
 | ADR-003 | 2026-11-11 | Vendorización Aislada `capability-ui-design` (`ui-ux-pro-max-cli@2.15.0`), Ciclo Semver `docs/design-system/` y Separación `sdd_vendor_update.py` | Aprobado | Mantiene 100% offline la materialización y diseño UI/UX con verificación SHA-256 (`VENDOR.lock.json`), evita colisiones con ECC (`capability-web-frontend`) y preserva `RN-SDD-IMMUTABLE-DONE` / `RN-SDD-1-TO-1-CR`. |
 | ADR-004 | 2026-11-13 | Quality Gates Visuales Condicionales, Anti-Deriva de Design Tokens y Gobernanza Bi-Nivel (FWK-003) | Aprobado | Previene deriva de diseño mediante validación determinista offline (sdd_tokens_validator.py), gobernanza estricta de baselines visuales (INCONCLUSIVE ante ausencias, prohibido auto-aprobación por IA) y coste cero en proyectos sin UI (api-only). |
+| ADR-005 | 2026-11-13 | Unificación de Terminología de Gates, Estados y Ejecución DAG (FWK-004) | Aprobado | Elimina colisiones numéricas (Gate S0 vs Gate 0..5), separa ortogonalmente Gates, Bloques DAG y Fases de Sesión, estandariza estados bilingües y consolida plantillas CR bajo soporte dual-accept fail-closed. |
 
 ---
 
@@ -54,4 +55,30 @@
 - **Trade-offs y Consecuencias:**
   - *Trade-off:* la detección de literales en código frontend mediante expresiones regulares optimizadas y extensiones seleccionadas prescinde de un analizador AST completo de CSS/JS, asegurando tiempos de ejecución ultrarrápidos (`< 0.3s`) y cero dependencias de Node.js en el motor base.
   - *Trade-off:* las pruebas dinámicas de navegador dependen de la disponibilidad de herramientas externas; en entornos sin navegadores se degrada a `SKIPPED_UNAVAILABLE_TOOL`, evitando instalar Chromium/Firefox en el starter mientras se garantiza que no haya falsos positivos.
-  - *Consecuencia:* el pipeline de CI en `.github/workflows/ci.yml` ejecuta `sdd_tokens_validator.py --allow-missing` en cada commit de forma offline, determinista y bloqueante.
+  - *Consecuencia:* el pipeline de CI en `.github/workflows/ci.yml` ejecuta `sdd_tokens_validator.py --allow-missing` en cada commit de forma offline, determinista y bloqueante.
+
+---
+
+## ADR-005: Unificación de Terminología de Gates, Estados y Ejecución DAG (`FWK-004`)
+
+- **Estado:** Aprobado (Gate 2 de [`FWK-004-gate-terminology-unification`](../../.sdd/framework/work-items/FWK-004-gate-terminology-unification/02-tech-spec.md), `2026-11-13`)
+- **Contexto:** Se detectaron cuatro fuentes de confusión y divergencia normativa en el repositorio: (1) **Colisión numérica `Gate 00` vs `Gate 0`**, donde `Gate 00` designaba el bloqueo de stack a nivel de proyecto y `Gate 0` el registro de un work item en backlog; (2) **Uso polisémico del término "Fase"**, empleado tanto como sinónimo de Gate (`Fase 1..5`), como para bloques DAG en `03-tasks.md` y particiones de sesión conversacional (`Sesión A / Sesión B`); (3) **Divergencias bilingües de estados**, mezclando `Done`/`Completado`, `Draft`/`Propuesto` y `Candidate`/`Candidato` en tableros y guardias; y (4) **Duplicación de plantillas de Change Request**, coexistiendo `04-change-spec.template.md` y `04-change-request-spec.template.md` con enlaces rotos a `08-ears-requirements-standard.md`.
+- **Decisión:**
+  1. **Tabla Canónica Única de Gates**: fijar `Gate S0` para Stack Lock a nivel de proyecto (`specs/STACK.md`) y `Gate 0..5` para el ciclo de vida de Work Items (`Gate 0 Intake`, `Gate 1 Functional Spec`, `Gate 2 Tech Spec`, `Sub-Gate 2V Visual Sign-off`, `Gate 3 Task Graph DAG`, `Gate 4 Implementation & QA`, `Gate 5 Living Docs 0DD & Closure`).
+  2. **Separación Ortogonal Conceptual**:
+     - `Gate`: Compuertas formales de control humano y técnico (`Gate S0`, `Gate 0..5`).
+     - `Block` / `Bloque DAG`: Agrupaciones atómicas de tareas (`[PARALLEL]` y `[SEQUENTIAL]`) en `03-tasks.md`.
+     - `Session Phase`: Partición del ciclo de vida conversacional (`Sesión A: Gates 0 a 3` y `Sesión B: Gates 4 y 5`).
+  3. **Estrategia Cero Ruptura (`Dual-Accept Fail-Closed`)**:
+     - `scripts/sdd_pack_registry.py` y `.agents/scripts/sdd_stack_gate_guard.py` aceptan marcadores canónicos (`[x] Gate S0 Approved`, `stack_approved: true`) y legacy (`[x] Gate 00 Approved`, `gate00_approved: true`).
+     - Ante conflicto booleano explícito (`stack_approved: true` vs `gate00_approved: false`), aborta de inmediato en *fail-closed* lanzando `StackConfigError`.
+     - `StackConfig` y `squad.lock.json` mantienen compatibilidad retroactiva preservando `gate00_approved` junto a `stack_approved`.
+  4. **Vocabulario Unificado y Consolidación de Plantillas CR**:
+     - Work Items: `Candidate` → `Backlog` → `In Progress` → `In Review` → `Done` (o `Blocked`).
+     - Specs: `Draft` → `In Review` → `Approved` → `Done`.
+     - Fusión de contenidos útiles de `04-change-spec.template.md` dentro de `04-change-request-spec.template.md`, eliminando el archivo redundante.
+     - Corrección de enlaces rotos heredados hacia `03-ears-requirements.md`.
+- **Trade-offs y Consecuencias:**
+  - *Trade-off:* Mantener soporte dual temporal en parsers y guardias añade una leve lógica de comprobación booleana, a cambio de garantizar cero rotura para proyectos existentes basados en la nomenclatura previa.
+  - *Trade-off:* `scripts/sdd_pack_registry.py` requirió compactación sin pérdida semántica para respetar estrictamente el techo modular $\le 500$ líneas (496 líneas resultantes).
+  - *Consecuencia:* Se incorporan 22 tests unitarios en `tests/test_sdd_terminology_unification.py` que blindan contractualmente la aceptación dual, el fallo cerrado y la integridad de plantillas, elevando la suite completa a 67 tests en verde.

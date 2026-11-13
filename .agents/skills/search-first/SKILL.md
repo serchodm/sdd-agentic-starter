@@ -5,7 +5,7 @@ description: Flujo obligatorio Research-Before-You-Code de affaan-m/ECC para con
 
 # Skill: `search-first` (*Research-Before-You-Code* de `affaan-m/ECC`)
 
-Esta meta-skill establece el protocolo obligatorio de **Fase 0** antes de redactar especificaciones técnicas (`02-tech-spec.md`) o escribir código en cualquier tarea.
+Esta meta-skill establece el protocolo obligatorio de **Gate 0 / Pre-Spec** antes de redactar especificaciones técnicas (`02-tech-spec.md`) o escribir código en cualquier tarea.
 
 ## 1. Secuencia Determinista de Investigación (Zero Blind Exploration)
 

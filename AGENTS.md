@@ -6,11 +6,11 @@
 
 ## 🛑 1. Reglas de Oro Innegociables del SDD
 
-1. **`RN-SDD-GATE00-STACK-LOCK` (Bloqueo Inicial de Stack Tecnológico):**
+1. **`RN-SDD-GATE-S0-STACK-LOCK` (Bloqueo Inicial de Stack Tecnológico — Legacy: `RN-SDD-GATE00-STACK-LOCK`):**
    - Al clonar este repositorio, **el código de producción (`src/`) se encuentra estrictamente BLOQUEADO**.
-   - Queda terminantemente prohibido crear o modificar ficheros de código hasta que `specs/STACK.md` haya sido completado por el `@orchestrator` y cuente con la firma explícita del usuario (`[x] Gate 00 Approved`).
+   - Queda terminantemente prohibido crear o modificar ficheros de código hasta que `specs/STACK.md` haya sido completado por el `@orchestrator` y cuente con la firma explícita del usuario (`[x] Gate S0 Approved`, aceptándose `[x] Gate 00 Approved` como alias legacy).
 2. **`RN-SDD-GATE2-CODE-LOCK` (Cero Código sin Gate 2 Aprobado):**
-   - Superado el Gate 00, sigue rigiendo la regla de oro: es **estrictamente obligatorio** contar con `01-spec.md` (Gate 1), `02-tech-spec.md` (Gate 2) y `03-tasks.md` (Gate 3) con aprobación humana expresa antes de tocar código de producción o tests.
+   - Superado el Gate S0, sigue rigiendo la regla de oro: es **estrictamente obligatorio** contar con `01-spec.md` (Gate 1), `02-tech-spec.md` (Gate 2) y `03-tasks.md` (Gate 3) con aprobación humana expresa antes de tocar código de producción o tests.
 3. **`RN-SDD-IMMUTABLE-DONE` (Inmutabilidad de Features Completadas):**
    - Una vez que una Feature (`FEAT-XXX`) alcanza el estado `Done` / `Completado` (Gate 5 superado) en `specs/BACKLOG.md`, su carpeta `specs/features/FEAT-XXX-*/` se convierte en una **LÍNEA BASE HISTÓRICA INMUTABLE (SÓLO LECTURA)**.
    - Jamás se reescriben ni mutan especificaciones de features finalizadas. Cualquier cambio o evolución posterior requiere un Change Request independiente (`specs/changes/CR-XXX-*/`).
@@ -18,7 +18,7 @@
    - Todo cambio posterior a una feature completada debe formalizarse como un Change Request independiente bajo `specs/changes/CR-<NUM>-<kebab-case>/`.
    - Si una petición impacta $N$ features completadas, se deben crear **$N$ Change Requests separados (1 CR por cada feature afectada)**.
 5. **`RN-SDD-HUMAN-GATE-OWNERSHIP` (Autoridad Humana en Aprobación de Puertas):**
-   - Los agentes de IA **nunca deben autoaprobar** Gate 00, Gate 1, Gate 2 o Gate 3, ni marcar casillas `[x]` de sign-off humano sin el consentimiento explícito del usuario en el chat.
+   - Los agentes de IA **nunca deben autoaprobar** Gate S0, Gate 1, Gate 2 o Gate 3, ni marcar casillas `[x]` de sign-off humano sin el consentimiento explícito del usuario en el chat.
 6. **`RN-SDD-FAIL-CLOSED` (Parada Inmediata ante Ambigüedad):**
    - Ante cualquier ambigüedad en el alcance, contratos no tipados, conflictos lógicos o fallos de verificación, el agente debe detenerse inmediatamente (*Stop-the-Line*) y consultar al usuario. Queda prohibido inventar o asumir comportamientos.
 7. **`RN-SDD-0DD` (Deuda Cero de Documentación & Gate 5 Sign-Off):**
@@ -29,7 +29,7 @@
 9. **`RN-SDD-SESSION-LIFECYCLE` (Límites Estrictos de Sesión y Control de Contexto):**
    - Un único hilo de conversación **NUNCA DEBE** abarcar múltiples Features (`FEAT-XXX`), Change Requests (`CR-XXX`) o Bugs (`BUG-XXX`).
    - El ciclo de vida máximo de un hilo del `@orchestrator` es de estrictamente **1 Work Item**. Una vez completado el Gate 5 (`git push`), el hilo finaliza y se abre uno nuevo.
-   - **División de Fases para Features Grandes (Phase Splitting):**
+   - **División de Fases de Sesión (Session Phase Splitting):**
      - **Sesión A (Arquitectura & Specs — Gates 0 a 3):** Usar modelos de alto razonamiento exclusivamente para redactar y validar `01-spec.md`, `02-tech-spec.md` y `03-tasks.md`.
      - **Sesión B (Ejecución & Cierre — Gates 4 y 5):** Abrir un hilo nuevo y limpio cargando sólo `02-tech-spec.md`, `03-tasks.md` y `docs/knowledge/` para despachar subagentes y ejecutar `@documentator` (Gate 5) con modelos rápidos y coste-eficientes.
 10. **`RN-SDD-SELECTIVE-CONTEXT` (Cero Exploración Ciega y Lecturas Acotadas):**
@@ -60,7 +60,7 @@
 [ Petición del Usuario ]
          │
          ▼
-¿Está aprobado el Gate 00 en specs/STACK.md?
+¿Está aprobado el Gate S0 en specs/STACK.md?
          ├──► NO: Ejecutar sesión de Bootstrap de Stack. Código BLOQUEADO.
          │
          └──► SÍ: Inspeccionar `specs/BACKLOG.md`: ¿A qué Feature afecta?
@@ -98,7 +98,8 @@ El equipo se organiza por responsabilidades de ingeniería de software. Cada age
 
 **DIRECTIVA CRÍTICA DE AHORRO DE TOKENS & GOBERNANZA DE CONTEXTO:** PROHIBIDO cargar globalmente todos los archivos de `.agents/rules/*` simultáneamente en el contexto. El `@orchestrator` y los subagentes solo deben cargar en memoria las reglas listadas explícitamente en `Mandatory Context Files` de `.agents/ACTIVE_STATE.md` o las que correspondan estrictamente a su Gate activo o capa técnica:
 
-- **Gate 00 (`specs/STACK.md`):** Leer únicamente `.agents/rules/00-stack-lock.md`.
+- **Gate S0 (`specs/STACK.md`):** Leer únicamente `.agents/rules/00-stack-lock.md`.
+- **Gate 0 (`specs/BACKLOG.md`):** Leer únicamente `.agents/rules/01-sdd-lifecycle.md`.
 - **Gate 1 (`01-spec.md`):** Leer únicamente `.agents/rules/03-ears-requirements.md` y `.agents/rules/01-sdd-lifecycle.md`.
 - **Gates 2 y 3 (`02-tech-spec.md` y `03-tasks.md`):** Leer únicamente `.agents/rules/04-multiagent-dag.md` + las directivas técnicas fijadas en `specs/STACK.md`.
 - **Gate 4 (Subagentes de Código):** Cada especialista lee exclusivamente su contrato de `02-tech-spec.md`, su regla de rol (`.agents/agents/<agente>.md`), `.agents/rules/05-security-and-secrets.md`, `.agents/rules/07-engineering-baseline.md` y las reglas del stack pack activo que le correspondan.
@@ -111,7 +112,7 @@ El equipo se organiza por responsabilidades de ingeniería de software. Cada age
 
 Queda terminantemente prohibido que los subagentes ejecuten comandos exploratorios, inspeccionen archivos de configuración a ciegas o ejecuten suites completas de tests sin necesidad.
 
-1. **Definición en Gate 00:** En la Sección 2.5 de `specs/STACK.md` se congelan los comandos exactos y pre-probados del proyecto para:
+1. **Definición en Gate S0:** En la Sección 2.5 de `specs/STACK.md` se congelan los comandos exactos y pre-probados del proyecto para:
    - **Lint & Typecheck**
    - **Prueba Unitaria Acotada** (en memoria, mocks, sin BD/red externa — ejecución < 1s)
    - **Prueba de Integración** (con servicios auxiliares levantados)

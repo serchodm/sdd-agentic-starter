@@ -145,21 +145,20 @@ Rige la asignación biunívoca entre la naturaleza de la tarea y el agente espec
 
 ---
 
-## 🔄 5. Ciclo de Delivery de 6 Fases (OpenSpec Delivery Lifecycle)
+## 🔄 5. Ciclo de Delivery de Gates SDD (OpenSpec Delivery Lifecycle)
 
-Todo requerimiento funcional transita obligatoriamente por estas 6 fases continuas:
+Todo requerimiento funcional transita obligatoriamente por las compuertas normativas del framework (`Gate S0` a nivel de proyecto; `Gate 0` a `Gate 5` a nivel de Work Item):
 
 ```text
-1. Solicitar ──► 2. Especificar ──► 3. Delegar ──► 4. Implementar ──► 5. Validar ──► 6. Consolidar
-  (Backlog)     (01-spec / 02)     (03-tasks)      (Subagentes)        (CI/DoD)     (Living Docs)
+Gate 0 (Intake) ──► Gate 1 & 2 (Specs) ──► Gate 3 (DAG) ──► Gate 4 (Impl & QA) ──► Gate 5 (Living Docs 0DD)
+   (Backlog)         (01-spec / 02)       (03-tasks)          (Subagentes)               (Closure)
 ```
 
-1. **Solicitar:** El usuario plantea la necesidad; `@functional-analyst` registra el ticket en `specs/BACKLOG.md` (Gate 0).
-2. **Especificar:** Redacción de `01-spec.md` (Gate 1 - Aprobación funcional humana) y `02-tech-spec.md` (Gate 2 - Aprobación técnica humana con contratos biunívocos sellados).
-3. **Delegar:** `@orchestrator` genera `03-tasks.md` organizando las tareas en bloques `[PARALLEL]` y `[SEQUENTIAL]` con asignación estricta de agente (Gate 3 - Aprobación humana de tareas).
-4. **Implementar:** `@orchestrator` ejecuta `runSubAgent` bloque a bloque. Los subagentes operan en contextos aislados y ejecutan sus comandos de verificación locales.
-5. **Validar:** Verificación holística de regresión: tests unitarios, tests de componentes, typechecking, linter y auditoría de límites arquitectónicos.
-6. **Consolidar:** `@documentator` actualiza la documentación funcional viva y el directorio `docs/knowledge/` (Catálogo de APIs, Esquemas DB y ADRs). Sincronización obligatoria con la rama de trabajo o `develop` (`RN-SDD-BRANCH-SYNC`). Prohibido comitear directo a `main`.
+1. **Gate 0 (Backlog Intake):** El usuario plantea la necesidad; `@functional-analyst` registra el ticket en `specs/BACKLOG.md`. (Previamente, el proyecto debe tener superado `Gate S0: Stack Lock` en `specs/STACK.md`).
+2. **Gate 1 (Functional Spec) & Gate 2 (Technical Spec):** Redacción de `01-spec.md` (Gate 1 - Aprobación funcional humana) y `02-tech-spec.md` (Gate 2 - Aprobación técnica humana con contratos biunívocos sellados, incluyendo Sub-Gate 2V `Gate 2 Visual Sign-off` si afecta pantallas).
+3. **Gate 3 (Task Graph DAG):** `@orchestrator` genera `03-tasks.md` organizando las tareas en bloques DAG (`Block` `[PARALLEL]` y `[SEQUENTIAL]`) con asignación estricta de agente (Gate 3 - Aprobación humana de tareas).
+4. **Gate 4 (Implementation & QA):** `@orchestrator` ejecuta `runSubAgent` bloque a bloque. Los subagentes de código operan en contextos aislados y ejecutan sus comandos de verificación locales (DoD), culminando en la verificación holística de regresión y calidad por `@qa-tester` (tests unitarios/integración, linter, typecheck y auditorías).
+5. **Gate 5 (Living Docs 0DD & Closure):** `@documentator` actualiza la documentación funcional viva y el directorio `docs/knowledge/` (Catálogo de APIs, Modelos de Datos, Topología y ADRs) con cero deuda documental (0DD). Cierre en `specs/BACKLOG.md` y sincronización obligatoria con la rama de trabajo o `develop` (`RN-SDD-BRANCH-SYNC`). Prohibido comitear directo a `main`.
 
 ---
 

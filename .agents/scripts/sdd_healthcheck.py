@@ -39,17 +39,23 @@ def check_spec_triads(specs_root: pathlib.Path, backlog_path: pathlib.Path) -> l
             item_id_match = re.match(r"^([A-Za-z]+-\d{3,4})", item_dir.name)
             item_id = item_id_match.group(1).upper() if item_id_match else item_dir.name.upper()
 
-            # Determinar si el expediente se encuentra en fase propuesta (Gate 1)
+            # Determinar si el expediente se encuentra en fase inicial/propuesta (Gate 1: Draft / Proposed / Propuesto / Gate 1)
             is_gate1_proposed = False
             for line in backlog_text.splitlines():
                 line_upper = line.upper()
                 line_lower = line.lower()
                 if item_id in line_upper:
-                    if ("propuesto" in line_lower or "gate 1" in line_lower) and "done" not in line_lower and "completado" not in line_lower:
+                    gate1_indicators = ("draft", "proposed", "propuesto", "gate 1")
+                    if (
+                        any(ind in line_lower for ind in gate1_indicators)
+                        and "done" not in line_lower
+                        and "completado" not in line_lower
+                        and "completed" not in line_lower
+                    ):
                         is_gate1_proposed = True
                         break
 
-            # Si está propuesto en Gate 1, solo se exige el documento inicial (01-*)
+            # Si está en estado inicial (Gate 1), solo se exige el documento inicial (01-*)
             files_to_check = (required_files[0],) if is_gate1_proposed else required_files
             for req in files_to_check:
                 if not (item_dir / req).exists():

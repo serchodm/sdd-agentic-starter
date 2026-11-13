@@ -383,12 +383,12 @@ def materialize_squad(
 ) -> dict[str, Any]:  # JSON-serializable squad.lock.json v2 payload per 02-tech-spec.md §3.2.
     """Resolve configuration, preflight-check collisions/edits, and atomically materialize squad."""
     paths = WorkspacePaths.from_root(repo_root)
-    config, effective_gate00 = parse_stack_config(paths.stack_path, valid_presets=PRESET_CONFIGS.keys())
+    config, effective_gate_s0 = parse_stack_config(paths.stack_path, valid_presets=PRESET_CONFIGS.keys())
     effective_preset = preset_name if preset_name is not None else config.preset
     if effective_preset not in PRESET_CONFIGS:
         raise StackConfigError(f"Unknown preset {effective_preset!r}; expected one of: {', '.join(sorted(PRESET_CONFIGS))}.")
 
-    activations, resolved_packs = resolve_active_packs(config, effective_gate00, requested_packs, paths.packs_dir)
+    activations, resolved_packs = resolve_active_packs(config, effective_gate_s0, requested_packs, paths.packs_dir)
     desired, builder_names, specialist_names, pack_agents = _build_materialization_plan(
         paths, PRESET_CONFIGS[effective_preset]["builders"], DEFAULT_TECH_STACK, resolved_packs
     )
@@ -401,7 +401,8 @@ def materialize_squad(
 
     lock: dict[str, Any] = {
         "schema_version": 2, "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "gate00_approved": effective_gate00, "preset": effective_preset, "tech_stack": DEFAULT_TECH_STACK,
+        "stack_approved": effective_gate_s0,
+        "gate00_approved": effective_gate_s0, "preset": effective_preset, "tech_stack": DEFAULT_TECH_STACK,
         "core_agents": list(CORE_AGENTS), "builders": builder_names, "specialists": sorted(specialist_names),
         "active_packs": [{"name": a.name, "id": a.pack_id, "source": a.source} for a in activations],
         "files": {rel: {"sha256": pf.sha256, "owner": pf.owner, "kind": pf.kind} for rel, pf in sorted(desired.items())},
@@ -414,7 +415,7 @@ def materialize_squad(
         paths.lock_file.write_bytes((json.dumps(lock, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
 
     names = [a.name for a in activations]
-    print(f"\n[+] Materializado Escuadron Agentico SDD (preset: {effective_preset}, gate00: {effective_gate00})")
+    print(f"\n[+] Materializado Escuadron Agentico SDD (preset: {effective_preset}, gate_s0: {effective_gate_s0})")
     print(f"  -> Stack Packs Activos: {', '.join(names) if names else '(Ninguno)'}")
     print(f"  -> Ficheros gestionados: {len(desired)} | Especialistas: {len(specialist_names)}")
     print(f"[SUCCESS] Escuadron materializado con exito. Registro actualizado en: {paths.lock_file.name}")

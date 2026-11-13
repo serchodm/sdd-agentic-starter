@@ -21,7 +21,7 @@ type YamlValue = YamlScalar | list[YamlValue] | dict[str, YamlValue]
 
 _OPEN_FENCE_RE = re.compile(r"^[ \t]*(`{3,})(.*)$")
 _STACK_CONFIG_INFO_RE = re.compile(r"^yaml[ \t]+sdd:stack-config$", re.IGNORECASE)
-_HUMAN_SIGNOFF_MARKERS: tuple[str, str] = ("[x] Gate 00 Approved", "[X] Gate 00 Approved")
+_HUMAN_SIGNOFF_MARKERS: tuple[str, ...] = ("[x] Gate S0 Approved", "[X] Gate S0 Approved", "[x] Gate 00 Approved", "[X] Gate 00 Approved")
 _INT_RE = re.compile(r"^[+-]?[0-9]+$")
 _FLOAT_RE = re.compile(r"^[+-]?(?:[0-9]+\.[0-9]*|\.[0-9]+)$")
 _DOUBLE_ESCAPES: dict[str, str] = {"n": "\n", "r": "\r", "t": "\t", "\\": "\\", '"': '"', "/": "/"}
@@ -39,10 +39,13 @@ class ManualModificationConflictError(SddGeneratorError): """Raised when a manag
 @dataclass(frozen=True)
 class StackConfig:
     """Validated configuration parsed from the sdd:stack-config YAML block."""
-    gate00_approved: bool
-    preset: str
-    packs: tuple[str, ...]
-    uiux: dict[str, Any] | None = None
+    stack_approved: bool; preset: str; packs: tuple[str, ...]; uiux: dict[str, Any] | None = None
+    def __init__(self, stack_approved: bool | None = None, preset: str = "compact", packs: tuple[str, ...] = (), uiux: dict[str, Any] | None = None, gate00_approved: bool | None = None) -> None:
+        val = stack_approved if stack_approved is not None else (gate00_approved if gate00_approved is not None else False)
+        object.__setattr__(self, "stack_approved", bool(val)); object.__setattr__(self, "preset", preset)
+        object.__setattr__(self, "packs", tuple(packs)); object.__setattr__(self, "uiux", uiux)
+    @property
+    def gate00_approved(self) -> bool: return self.stack_approved
 
 @dataclass(frozen=True)
 class PackActivation:
@@ -299,10 +302,8 @@ def _validate_safe_rel_parts(entry: str, field_name: str, exc_cls: type[SddGener
 
 def _validate_uiux_config(uiux: object, preset: str) -> dict[str, Any] | None:
     """Validate the optional `uiux` configuration block in sdd:stack-config."""
-    if uiux is None:
-        return None
-    if not isinstance(uiux, dict):
-        raise StackConfigError("'uiux' in sdd:stack-config must be a YAML mapping when specified.")
+    if uiux is None: return None
+    if not isinstance(uiux, dict): raise StackConfigError("'uiux' in sdd:stack-config must be a YAML mapping when specified.")
     if unknown := sorted(set(uiux) - _UIUX_ALLOWED_KEYS):
         raise StackConfigError(f"Unknown key(s) in 'uiux': {', '.join(unknown)}.")
     if not isinstance(enabled := uiux.get("enabled"), bool):
@@ -310,8 +311,7 @@ def _validate_uiux_config(uiux: object, preset: str) -> dict[str, Any] | None:
     if enabled and preset == "api-only":
         raise StackConfigError("'uiux.enabled: true' is incompatible with preset 'api-only'.")
     for key in ("provider", "version"):
-        if key in uiux:
-            _require_nonempty_str(uiux[key], f"'uiux.{key}'", StackConfigError)
+        if key in uiux: _require_nonempty_str(uiux[key], f"'uiux.{key}'", StackConfigError)
     if enabled and uiux.get("provider", "ui-ux-pro-max") != "ui-ux-pro-max":
         raise StackConfigError(f"Invalid 'uiux.provider' {uiux['provider']!r}; expected 'ui-ux-pro-max'.")
     if "hifi_format" in uiux and (not isinstance(fmt := uiux["hifi_format"], str) or fmt not in _VALID_HIFI_FORMATS):
@@ -322,9 +322,9 @@ def _validate_uiux_config(uiux: object, preset: str) -> dict[str, Any] | None:
     return uiux
 
 def parse_stack_config(stack_path: Path, valid_presets: Collection[str] = DEFAULT_VALID_PRESETS) -> tuple[StackConfig, bool]:
-    """Parse specs/STACK.md and return `(StackConfig, effective_gate00_approved)`."""
+    """Parse specs/STACK.md and return `(StackConfig, effective_approved)`."""
     if not stack_path.exists():
-        return StackConfig(gate00_approved=False, preset="compact", packs=()), False
+        return StackConfig(stack_approved=False, preset="compact", packs=()), False
     try:
         content = stack_path.read_text(encoding="utf-8")
     except OSError as exc:
@@ -332,17 +332,21 @@ def parse_stack_config(stack_path: Path, valid_presets: Collection[str] = DEFAUL
     has_human_signoff = any(marker in content for marker in _HUMAN_SIGNOFF_MARKERS)
     if (block := _extract_stack_config_block(content)) is None:
         if has_human_signoff:
-            raise StackConfigError("Gate 00 is signed off in STACK.md, but ```yaml sdd:stack-config is missing.")
-        return StackConfig(gate00_approved=False, preset="compact", packs=()), False
+            raise StackConfigError("Gate S0 is signed off in STACK.md, but ```yaml sdd:stack-config is missing.")
+        return StackConfig(stack_approved=False, preset="compact", packs=()), False
     data = parse_yaml_subset(block)
-    gate00, preset, packs = data.get("gate00_approved"), data.get("preset", "compact"), data.get("packs", [])
-    if not isinstance(gate00, bool):
-        raise StackConfigError("'gate00_approved' in sdd:stack-config must be a strict boolean (true/false).")
+    has_stack, has_gate00 = "stack_approved" in data, "gate00_approved" in data
+    if not has_stack and not has_gate00: raise StackConfigError("Missing 'stack_approved' (or legacy 'gate00_approved') in sdd:stack-config.")
+    stack_val, gate00_val = data.get("stack_approved"), data.get("gate00_approved")
+    if has_stack and not isinstance(stack_val, bool): raise StackConfigError("'stack_approved' in sdd:stack-config must be a strict boolean (true/false).")
+    if has_gate00 and not isinstance(gate00_val, bool): raise StackConfigError("'gate00_approved' in sdd:stack-config must be a strict boolean (true/false).")
+    if has_stack and has_gate00 and stack_val != gate00_val: raise StackConfigError("Conflicting 'stack_approved' and legacy 'gate00_approved' in sdd:stack-config.")
+    approved, preset, packs = (stack_val if has_stack else gate00_val), data.get("preset", "compact"), data.get("packs", [])
     if not isinstance(preset, str) or preset not in valid_presets:
         raise StackConfigError(f"Invalid preset {preset!r}; expected one of: {', '.join(sorted(valid_presets))}.")
     if not isinstance(packs, list) or any(not isinstance(p, str) or not p.strip() for p in packs):
         raise StackConfigError("'packs' in sdd:stack-config must be a list of non-empty strings.")
-    return StackConfig(gate00_approved=gate00, preset=preset, packs=tuple(packs), uiux=_validate_uiux_config(data.get("uiux"), preset)), has_human_signoff and gate00
+    return StackConfig(stack_approved=approved, preset=preset, packs=tuple(packs), uiux=_validate_uiux_config(data.get("uiux"), preset)), has_human_signoff and approved
 
 def _validate_str_list(data: Mapping[str, object], key: str, manifest_path: Path) -> tuple[str, ...]:
     """Validate that `data[key]` is present and contains only non-empty strings."""
@@ -370,10 +374,8 @@ def load_pack_manifest(pack_dir: Path) -> PackManifest:
     targets = _validate_str_list(data, "targets", manifest_path) if "targets" in data else ()
     upstream = data.get("upstream")
     if "upstream" in data:
-        if not isinstance(upstream, dict):
-            raise InvalidManifestError(f"Field 'upstream' in {manifest_path} must be a JSON object.")
-        if "vendor_lock" in upstream:
-            _require_nonempty_str(upstream["vendor_lock"], f"Field 'upstream.vendor_lock' in {manifest_path}", InvalidManifestError)
+        if not isinstance(upstream, dict): raise InvalidManifestError(f"Field 'upstream' in {manifest_path} must be a JSON object.")
+        if "vendor_lock" in upstream: _require_nonempty_str(upstream["vendor_lock"], f"Field 'upstream.vendor_lock' in {manifest_path}", InvalidManifestError)
     return PackManifest(dir_name=pack_dir.name, pack_id=data["id"], family=data["family"], description=description, targets=targets, upstream=upstream, **lists)
 
 def load_catalog_registry(packs_dir: Path) -> dict[str, PackManifest]:

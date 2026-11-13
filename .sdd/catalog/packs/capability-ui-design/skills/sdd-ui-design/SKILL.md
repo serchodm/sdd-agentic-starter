@@ -106,7 +106,7 @@ Cada cambio publicado tras la línea base inicial actualiza `design_system_versi
 
 ## 3. Gobernanza de Evolución (`RN-SDD-IMMUTABLE-DONE` & `RN-SDD-1-TO-1-CR`)
 
-1. **Feature fundacional**: `Design System Foundation` (registrada al activar `uiux.enabled: true` en Gate 00) produce `MASTER.md` v`1.0.0`, `design-tokens.json` y `CHANGELOG.md`.
+1. **Feature fundacional**: `Design System Foundation` (registrada al activar `uiux.enabled: true` en Gate S0) produce `MASTER.md` v`1.0.0`, `design-tokens.json` y `CHANGELOG.md`.
 2. **Evolución centralizada (1 CR sobre la fundacional)**: tras el `Done` de `Design System Foundation`, cualquier cambio de tokens o reglas globales en `MASTER.md` / `design-tokens.json` se canaliza como **1 único Change Request (`CR-XXX`) sobre `Design System Foundation`**, incrementando semver y actualizando `CHANGELOG.md`.
 3. **Re-skins puros vs impacto funcional**:
    - **Re-skin puro por tokens** (sin cambio de flujos, controles ni reglas): **no** abre CRs en las features consumidoras que estén en `Done`; sus carpetas `specs/features/` permanecen intactas (solo lectura).

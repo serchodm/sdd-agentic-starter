@@ -1,7 +1,7 @@
 # Especificación Técnica: [Título de la Feature]
 
 - **ID de la Feature**: [Ej. FEAT-006-declarative-agents]
-- **Estado**: [Borrador | En Revisión | Aprobado | En Implementación | Completado]
+- **Estado**: [Draft | In Review | Approved | Done]
 - **Especificación Funcional Asociada**: `01-spec.md`
 - **Tech Lead / Arquitecto**: `@orchestrator`
 - **Fecha de Creación**: YYYY-MM-DD
@@ -89,7 +89,7 @@ sequenceDiagram
 *(Obligatorio cuando la feature toca al menos una pantalla `SCR-###` y `capability-ui-design` está activo; indicar `N/A` en features sin pantallas afectadas o sin Design System activo).*
 
 - **`design-system`**: `MASTER@<versión>` *(ej. `MASTER@1.x`; indicar `N/A` si no aplica)*
-- **Cadena de revisión en Gate 2**: `@ui-ux-designer` (`sdd-ui-design`) -> `@a11y-architect` (WCAG 2.2 AA) -> `@architect` (validación técnica y contratos) -> `[ ] Visual Sign-off (Human)`.
+- **Cadena de revisión en Gate 2**: `@ui-ux-designer` (`sdd-ui-design`) -> `@a11y-architect` (WCAG 2.2 AA) -> `@architect` (validación técnica y contratos) -> `[ ] Gate 2 Visual Sign-off (Human)`.
 - **Regla de tokens (`RN-07`)**: Las especificaciones, overrides y prototipos `hi-fi` deben referenciar tokens de `docs/design-system/design-tokens.json` (prohibido hardcodear colores, fuentes o espaciados literales cuando exista token).
 
 | Pantalla (`SCR-XXX`) | Overrides (`docs/design-system/pages/`) | Prototipo Hi-Fi (`specs/features/<feat>/ux/`) | Tokens Aplicados | Revisión `@a11y-architect` |
@@ -115,5 +115,5 @@ sequenceDiagram
 
 ## 8. Aprobación Formal Gate 2 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 > ⚠️ **Exclusivo para el Stakeholder Humano** (Sin esta aprobación queda bloqueada toda edición de código por `sdd_code_gate_guard.py`):
-- [ ] **Gate 2 Aprobado por el Usuario**: La arquitectura, los contratos de datos y el análisis de impacto han sido validados.
-- [ ] **Visual Sign-off (Human)**: Los prototipos `hi-fi`, overrides `pages/SCR-XXX.md`, tokens propuestos y revisión `@a11y-architect` han sido validados *(bloqueante solo si la feature toca pantallas `SCR-###`; marcar `N/A` si no aplica)*.
+- [ ] **Gate 2 Approved (Human Sign-off):** La arquitectura, los contratos de datos y el análisis de impacto han sido validados.
+- [ ] **Gate 2 Visual Sign-off (Human)** *(alias legacy: `- [ ] **Visual Sign-off (Human)**`)*: Los prototipos `hi-fi`, overrides `pages/SCR-XXX.md`, tokens propuestos y revisión `@a11y-architect` han sido validados *(bloqueante solo si la feature toca pantallas `SCR-###`; marcar `N/A` si no aplica)*.

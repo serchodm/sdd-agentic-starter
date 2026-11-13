@@ -329,7 +329,7 @@ def cmd_seed(args: argparse.Namespace) -> int:
         },
         {
             "id": "inst-anti-rubber-stamp",
-            "trigger": "Al auditar o validar Gate 00, Gate 1, Gate 2 o Gate 3",
+            "trigger": "Al auditar o validar Gate S0, Gate 1, Gate 2 o Gate 3",
             "action": "Requerir sign-off humano explícito en el chat y jamás autoaprobar casillas [x] de validación humana (anti-rubber-stamping).",
             "confidence": 0.95,
             "scope": "global",

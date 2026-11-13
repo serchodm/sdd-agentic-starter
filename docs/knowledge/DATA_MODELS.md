@@ -4,7 +4,7 @@
 
 | Entidad / Modelo | Capa / Módulo | Propósito | Campos Clave | Relaciones / Restricciones |
 | :--- | :--- | :--- | :--- | :--- |
-| `StackConfig` | `scripts/sdd_pack_registry.py` (`@dataclass(frozen=True)`) | Configuración estructurada extraída del bloque `yaml sdd:stack-config` de `specs/STACK.md`. | `gate00_approved: bool`, `preset: str`, `packs: tuple[str, ...]`, `uiux: dict[str, Any] \| None` | `preset` validado contra `DEFAULT_VALID_PRESETS`; `uiux` validado por `_validate_uiux_config()` (`FWK-002`). |
+| `StackConfig` | `scripts/sdd_pack_registry.py` (`@dataclass(frozen=True)`) | Configuración estructurada extraída del bloque `yaml sdd:stack-config` de `specs/STACK.md`. | `stack_approved: bool` (con alias `@property gate00_approved`), `preset: str`, `packs: tuple[str, ...]`, `uiux: dict[str, Any] \| None` | `preset` validado contra `DEFAULT_VALID_PRESETS`; soporte dual-accept `stack_approved`/`gate00_approved` (`FWK-004`); `uiux` validado por `_validate_uiux_config()` (`FWK-002`). |
 | `PackActivation` | `scripts/sdd_pack_registry.py` (`@dataclass(frozen=True)`) | Registro de activación de un pack resuelto indicando su origen. | `name: str`, `pack_id: str`, `source: Literal["stack-config", "manual"]` | Deduplicado por `dir_name`; `"manual"` para `--packs` CLI. |
 | `PackManifest` | `scripts/sdd_pack_registry.py` (`@dataclass(frozen=True)`) | Manifiesto validado de un pack cargado desde `.sdd/catalog/packs/<pack>/pack.json`. | `dir_name: str`, `pack_id: str`, `family: str`, `requires: tuple[str, ...]`, `description: str`, `rules`, `specialists`, `skills`, `workflows` (`tuple[str, ...]`), `targets: tuple[str, ...]`, `upstream: dict[str, Any] \| None` | `id` y `family` obligatorios no vacíos; `id` único en todo el catálogo; `targets` y `upstream` opcionales validados (`FWK-002`). |
 | `ResolvedPackAssets` | `scripts/sdd_pack_registry.py` (`@dataclass(frozen=True)`) | Rutas físicas ya validadas dentro del directorio del pack listas para planificar. | `manifest: PackManifest`, `pack_dir: Path`, `agent_files: tuple[Path, ...]`, `skill_dirs: tuple[tuple[str, Path], ...]`, `rule_files: tuple[Path, ...]`, `workflow_files: tuple[Path, ...]` | Prohíbe rutas absolutas o `..`; toda skill exige `SKILL.md`; si `upstream.vendor_lock` existe, ejecuta `verify_vendor_lock()` antes de resolver. |
@@ -22,8 +22,8 @@
 
 ### 2.1. Bloque `yaml sdd:stack-config` en `specs/STACK.md`
 - Debe existir `0` o `1` bloque vallado ```` ```yaml sdd:stack-config ```` en `specs/STACK.md` (más de uno o bloque sin cerrar lanza `StackConfigError`).
-- Campos: `gate00_approved` (`true`/`false` estricto), `preset` (clave en `DEFAULT_VALID_PRESETS`, por defecto `"compact"`), `packs` (lista de strings no vacíos), `uiux` (mapa opcional).
-- La activación automática exige simultáneamente `[x] Gate 00 Approved` (o `[X]`) en el documento y `gate00_approved: true`. Si hay firma humana sin bloque `sdd:stack-config` → `StackConfigError`.
+- Campos: `stack_approved` (canónica, `true`/`false` estricto) o `gate00_approved` (legacy, `true`/`false` estricto; si ambas coexisten con valores contradictorios lanza `StackConfigError`), `preset` (clave en `DEFAULT_VALID_PRESETS`, por defecto `"compact"`), `packs` (lista de strings no vacíos), `uiux` (mapa opcional).
+- La activación automática exige simultáneamente firma humana canónica `[x] Gate S0 Approved` (o legacy `[x] Gate 00 Approved`) en el documento y `stack_approved: true` (o `gate00_approved: true`). Si hay firma humana sin bloque `sdd:stack-config` → `StackConfigError`.
 
 #### 2.1.1. Esquema Estricto de `uiux` en `sdd:stack-config` (`FWK-002`)
 Cuando `uiux` está presente (si es `None` o se omite sigue siendo válido):
@@ -40,7 +40,8 @@ Cuando `uiux` está presente (si es `None` o se omite sigue siendo válido):
 | :--- | :--- | :--- |
 | `schema_version` | `int` (`2`) | Versión del esquema de bloqueo y trazabilidad por fichero. |
 | `timestamp` | `str` (ISO-8601 UTC) | Marca temporal de generación; se conserva sin reescribir el fichero si el resto de la carga útil es idéntica. |
-| `gate00_approved` | `bool` | Estado efectivo (`has_human_signoff and config.gate00_approved`). |
+| `stack_approved` | `bool` | Estado efectivo de Gate S0 (`has_human_signoff and config.stack_approved`). |
+| `gate00_approved` | `bool` | Alias retrocompatible para lectores v2 existentes (`== stack_approved`). |
 | `preset` | `str` | Preset efectivo aplicado (`compact`, `granular`, `api-only`, `spa-only`). |
 | `tech_stack` | `str` | Etiqueta de stack (`"Multi-Stack"` por defecto). |
 | `core_agents` | `list[str]` | Lista fija de los 6 agentes core (`orchestrator`, `functional-analyst`, `architect`, `qa-tester`, `documentator`, `devops`). |

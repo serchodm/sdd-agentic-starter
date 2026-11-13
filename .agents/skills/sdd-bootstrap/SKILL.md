@@ -1,11 +1,11 @@
 ---
 name: sdd-bootstrap
-description: Executes the interactive Gate 00 Bootstrap Wizard to define system topology, hosting (Cloud/Docker/Vercel/PaaS), architecture, backend, frontend, persistence, testing, DevOps CI/CD, and project-specific expert agent activation in specs/STACK.md. Supports Spanish (ES-ES) and English (EN-GB).
+description: Executes the interactive Gate S0 Bootstrap Wizard to define system topology, hosting (Cloud/Docker/Vercel/PaaS), architecture, backend, frontend, persistence, testing, DevOps CI/CD, and project-specific expert agent activation in specs/STACK.md. Supports Spanish (ES-ES) and English (EN-GB).
 ---
 
-# Skill: `sdd-bootstrap` (Gate 00 Architectural Bootstrap Wizard)
+# Skill: `sdd-bootstrap` (Gate S0 Architectural Bootstrap Wizard)
 
-Used by `@orchestrator` to execute the mandatory **Gate 00 Bootstrap Session** before any code or feature specifications are created.
+Used by `@orchestrator` to execute the mandatory **Gate S0 Bootstrap Session** before any code or feature specifications are created.
 
 ## 🎯 Purpose
 Guides the user through an atomic, multi-round decision process covering the entire software lifecycle (infrastructure, hosting, CI/CD, architecture, languages, quality gates, and agent squad configuration) to deterministically generate `specs/STACK.md` and unlock `src/`.
@@ -24,11 +24,11 @@ The Bootstrap Wizard natively supports **Español (ES-ES)** and **English (EN-GB
 ---
 
 ## ⚡ 2. Trigger Conditions
-1. **Unapproved Gate 00**: `specs/STACK.md` contains `[ ] Gate 00 Approved (Human Sign-off)`.
+1. **Unapproved Gate S0**: `specs/STACK.md` contains `[ ] Gate S0 Approved (Human Sign-off)` (or legacy `[ ] Gate 00 Approved (Human Sign-off)`).
 2. **User Initiation**: The user requests project start:
-   - *ES-ES*: *"Hola @orchestrator. Iniciamos un nuevo proyecto. Activa el asistente de Gate 00."*
-   - *EN-GB*: *"Hello @orchestrator. We are starting a new project. Launch the Gate 00 Bootstrap Wizard."*
-3. **Fail-Closed Intercept**: If the user asks to write production code or create features while Gate 00 is locked, `@orchestrator` intercepts and triggers this skill.
+   - *ES-ES*: *"Hola @orchestrator. Iniciamos un nuevo proyecto. Activa el asistente de Gate S0."*
+   - *EN-GB*: *"Hello @orchestrator. We are starting a new project. Launch the Gate S0 Bootstrap Wizard."*
+3. **Fail-Closed Intercept**: If the user asks to write production code or create features while Gate S0 is locked, `@orchestrator` intercepts and triggers this skill.
 
 ---
 
@@ -307,11 +307,12 @@ To eliminate cognitive fatigue and avoid nonsensical questions, `@orchestrator` 
 Upon receiving the user's responses in chat, `@orchestrator`:
 1. Completes **`specs/STACK.md`** in the user's chosen language (ES-ES or EN-GB), using **`specs/templates/00-stack.template.md`**.
 2. **Emits the Structured `sdd:stack-config` Block in `specs/STACK.md` (§3.3)**:
-   - Sets `gate00_approved: false` until explicit human sign-off, `preset` (`compact | granular | api-only | spa-only`), and `packs`.
+   - Sets `stack_approved: false` (and legacy `gate00_approved: false`) until explicit human sign-off, `preset` (`compact | granular | api-only | spa-only`), and `packs`.
    - When the project includes a UI (`Fullstack` or `Frontend Only`):
      - If visual intelligence is enabled (`uiux.enabled: true`), includes **`capability-web-frontend`** and **`capability-ui-design`** in `packs`, alongside the `uiux` section:
        ````markdown
        ```yaml sdd:stack-config
+       stack_approved: false
        gate00_approved: false
        preset: <compact|granular|spa-only>
        packs:
@@ -330,9 +331,9 @@ Upon receiving the user's responses in chat, `@orchestrator`:
      - If ECC frontend skills only are chosen (`uiux.enabled: false`), includes `capability-web-frontend` without `capability-ui-design` and sets `uiux: { enabled: false }` (keeping `@a11y-architect` and ECC skills without `@ui-ux-designer`).
    - When the project is `Backend Only / API Only` or `CLI`, omits `capability-ui-design` and sets `uiux.enabled: false` (or omits the `uiux` section).
 3. Sets the **Agent Squad Table** (`ACTIVE` vs `INACTIVE (N/A)`), **Ownership Map (§3.2)**, and **Golden Samples (Do's & Don'ts)** in `specs/STACK.md`.
-4. **Requests Human Sign-off (`RN-SDD-HUMAN-GATE-OWNERSHIP`)**: Informs the user in chat of the proposed stack and active squad, and asks for explicit approval to mark `[x] Gate 00 Approved (Human Sign-off)` and set `gate00_approved: true`.
-5. **Materialises the Agent Squad After Gate 00 Approval**:
+4. **Requests Human Sign-off (`RN-SDD-HUMAN-GATE-OWNERSHIP`)**: Informs the user in chat of the proposed stack and active squad, and asks for explicit approval to mark `[x] Gate S0 Approved (Human Sign-off)` (or legacy `[x] Gate 00 Approved (Human Sign-off)`) and set `stack_approved: true` (and `gate00_approved: true`).
+5. **Materialises the Agent Squad After Gate S0 Approval**:
    - Runs `uv run python scripts/sdd_agent_generator.py --materialize` to compile the selected builders, universal specialists, and active stack packs into `.agents/` (including `.agents/agents/ui-ux-designer.md`, `.agents/skills/sdd-ui-design/`, `.agents/skills/ui-ux-pro-max/`, and `.agents/workflows/ui-design-review.md` when `uiux.enabled: true`) and initialise `.agent-inbox/`.
 6. **Automatic `Design System Foundation` Backlog Registration (`RF-008`, `AMB-005`)**:
-   - **ONLY if `uiux.enabled: true`** after Gate 00 approval: automatically registers a single row in `specs/BACKLOG.md` titled **`Design System Foundation`** with the **next sequential available `FEAT-XXX` ID** (e.g. `FEAT-002` if `FEAT-001` already exists), `Gate 0 (Intake)` = `[x]`, Gates 1–5 = `[ ]`, and `Estado Final` = `Backlog`.
-   - Do **not** create `specs/features/FEAT-XXX-*/`, `docs/design-system/`, or any production code during Gate 00; the foundational feature executes its Gate 1–5 lifecycle in its own dedicated session (`RN-SDD-SESSION-LIFECYCLE`).
+   - **ONLY if `uiux.enabled: true`** after Gate S0 approval: automatically registers a single row in `specs/BACKLOG.md` titled **`Design System Foundation`** with the **next sequential available `FEAT-XXX` ID** (e.g. `FEAT-002` if `FEAT-001` already exists), `Gate 0 (Intake)` = `[x]`, Gates 1–5 = `[ ]`, and `Estado Final` = `Backlog`.
+   - Do **not** create `specs/features/FEAT-XXX-*/`, `docs/design-system/`, or any production code during Gate S0; the foundational feature executes its Gate 1–5 lifecycle in its own dedicated session (`RN-SDD-SESSION-LIFECYCLE`).

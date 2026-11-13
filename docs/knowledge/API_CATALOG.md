@@ -37,7 +37,18 @@ Este catálogo se actualiza en el Gate 5 de cada Feature, Change Request o Work 
 
 ---
 
-## 2. Endpoints de la Aplicación del Proyecto *(Pendiente de Gate 00)*
+### 1.3. Interfaces de Gobernanza y Guardias SDD con Aceptación Dual (`FWK-004`)
+
+| Endpoint / Interfaz | Método / Tipo | Descripción | Contrato Entrada | Contrato Salida | Introducido en |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `sdd_pack_registry.parse_stack_config(...)` | Python API (`scripts/sdd_pack_registry.py`) | Soporte dual-accept para `Gate S0` / `Gate 00` y `stack_approved` / `gate00_approved`. Detección fail-closed de contradicciones booleanas. | `stack_path: Path`, `valid_presets: Collection[str] = DEFAULT_VALID_PRESETS` | `tuple[StackConfig, bool]` (`effective_gate_s0_approved`); lanza `StackConfigError` ante conflicto o incoherencia | `FWK-004` |
+| `sdd_stack_gate_guard.check_stack_gate(...)` | CLI / Python API (`.agents/scripts/sdd_stack_gate_guard.py`) | Guardia pre-tool para validar bloqueo de Gate S0 / Gate 00 aceptando los 4 marcadores canónicos y legacy. | `stack_path: Path` | `tuple[bool, str]` (`(True, "Gate S0 OK")` o `(False, "Gate S0 LOCKED: ...")`) | `FWK-004` |
+| `sdd_immutable_feature_guard.get_done_features(...)` | Python API (`.agents/scripts/sdd_immutable_feature_guard.py`) | Extracción de features finalizadas bajo RN-SDD-IMMUTABLE-DONE reconociendo estados `Done`, `Completado` y `Completed`. | `backlog_path: Path` | `set[str]` con identificadores inmutables | `FWK-004` |
+| `sdd_healthcheck.check_spec_triads(...)` | Python API (`.agents/scripts/sdd_healthcheck.py`) | Auditoría de integridad de expedientes SDD admitiendo estados preliminares `Draft`, `Proposed`, `Propuesto` o `Gate 1` sin exigir tríada completa. | `backlog_path: Path`, `features_dir: Path` | `list[str]` con errores detectados (lista vacía si OK) | `FWK-004` |
+
+---
+
+## 2. Endpoints de la Aplicación del Proyecto *(Pendiente de Gate S0 / Gate 00)*
 
 | Endpoint / Interfaz | Método / Tipo | Descripción | Contrato Entrada | Contrato Salida | Introducido en |
 | :--- | :--- | :--- | :--- | :--- | :--- |

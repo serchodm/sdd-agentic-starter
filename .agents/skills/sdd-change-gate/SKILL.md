@@ -11,14 +11,14 @@ Use this skill **before** editing any file in `specs/` or any production source 
 
 1. **Read `specs/BACKLOG.md` First:**
    - Identify every Feature (`FEAT-XXX`) impacted by the user's request.
-   - Check the current status of each impacted `FEAT-XXX` (`Pending`, `In Progress`, or `Done` / `Completado`).
+   - Check the current status of each impacted `FEAT-XXX` (`Candidate`, `Backlog`, `In Progress`, `In Review`, or `Done` / `Completado`).
 
 2. **Apply the Cardinality & Immutability Decision Matrix:**
 
 | Target Feature Status in `specs/BACKLOG.md` | Nature of Request | Permitted Action | Prohibited Action |
 | :--- | :--- | :--- | :--- |
 | **Does not exist** | Net-new capability | Register `FEAT-XXX` in `specs/BACKLOG.md` (Gate 0) and create `specs/features/FEAT-XXX-<slug>/` | Writing code before Gate 2 approval |
-| **`Pending` / `In Progress`** (Gate 5 NOT passed) | Scope adjustment or refinement | Update `specs/features/FEAT-XXX-<slug>/` following Stop-the-Line protocol | Writing code before updated Gate 2 approval |
+| **`Backlog` / `In Progress` / `In Review`** (Gate 5 NOT passed) | Scope adjustment or refinement | Update `specs/features/FEAT-XXX-<slug>/` following Stop-the-Line protocol | Writing code before updated Gate 2 approval |
 | **`Done` / `Completado`** (Gate 5 PASSED) | Evolution, library swap, new contract, UI/UX redesign | Create **1 Change Request per affected Feature** in `specs/changes/CR-<NUM>-<slug>/` (`01-spec.md`, `02-tech-spec.md`, `03-tasks.md`) | **NEVER edit or overwrite `specs/features/FEAT-XXX-*/`** (`RN-SDD-IMMUTABLE-DONE`) |
 | **`Done` / `Completado`** (Gate 5 PASSED) | Defect / deviation from approved spec | Create `specs/bugs/BUG-<NUM>-<slug>/` (`01-bug-report.md`, `02-fix-spec.md`, `03-tasks.md`) | Mutating `specs/features/FEAT-XXX-*/` or fixing code before red test |
 

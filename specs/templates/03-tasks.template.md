@@ -1,12 +1,13 @@
 # Tareas de Implementación: [Título de la Feature, Change Request o Bug]
 
 - **ID del Expediente**: [Ej. FEAT-006-declarative-agents | CR-012-hands-free-wake-word | BUG-010-voice-channel-auto-mute]
+- **Estado**: [Draft | In Review | Approved | Done]
 - **Feature Base**: [Ej. FEAT-010 / FEAT-008B]
 - **Orquestador Principal**: `@orchestrator`
 - **Agentes Especialistas Asignados**: [`@db-specialist`, `@back-domain`, `@back-infra`, `@back-api`, `@front-logic`, `@front-ui`, `@back-test`, `@front-test`, `@documentator`, `@qa-auditor`]
 - **Especificaciones de Referencia**:
-  - Funcional (Qué): [`01-spec.md`](01-spec.md) (Gate 1 Passed)
-  - Técnica (Cómo): [`02-tech-spec.md`](02-tech-spec.md) (Gate 2 Passed)
+  - Funcional (Qué): [`01-spec.md`](01-spec.md) (Gate 1 Approved)
+  - Técnica (Cómo): [`02-tech-spec.md`](02-tech-spec.md) (Gate 2 Approved)
 
 ---
 
@@ -130,11 +131,11 @@ graph TD
     - `docs/knowledge/API_CATALOG.md` (Nuevos endpoints registrados)
     - `docs/knowledge/DATA_MODELS.md` (Nuevas tablas/columnas/índices)
     - `docs/knowledge/ADRS.md` (Decisión técnica registrada)
-    - `docs/{es,en}/06-traceability/TRACEABILITY-MATRIX.md` (Matriz de trazabilidad)
+    - `docs/traceability/TRACEABILITY-MATRIX.md` (Matriz de trazabilidad)
   - *Comando de verificación DoD*: Validación de enlaces y 0DD (*Zero Document Debt*)
 
 ---
 
 ## 🚦 Aprobación Formal Gate 3 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 > ⚠️ **Exclusivo para el Stakeholder Humano**:
-- [ ] **Gate 3 Aprobado por el Usuario**: El grafo de dependencias, bloques paralelos y comandos de verificación DoD están autorizados para iniciar ejecución desatendida mediante subagentes.
+- [ ] **Gate 3 Approved (Human Sign-off):** El grafo de dependencias, bloques paralelos y comandos de verificación DoD están autorizados para iniciar Gate 4.

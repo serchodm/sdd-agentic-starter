@@ -423,7 +423,7 @@ class TestSddUiDesign(unittest.TestCase):
         checks = {
             UI_PACK_DIR / "agents" / "ui-ux-designer.md": (
                 "name: ui-ux-designer", "Gate 1", "wireframe.excalidraw", "screen-spec.md", "BLOCKED_DOR_", "BLOCKED_",
-                "src/**", "tests/**", "RN-SDD-IMMUTABLE-DONE", "npx", "--force", "@a11y-architect", "@architect", "[ ] Visual Sign-off (Human)",
+                "src/**", "tests/**", "RN-SDD-IMMUTABLE-DONE", "npx", "--force", "@a11y-architect", "@architect", "[ ] Gate 2 Visual Sign-off (Human)",
             ),
             UI_PACK_DIR / "skills" / "sdd-ui-design" / "SKILL.md": (
                 ".agents/skills/ui-ux-pro-max/scripts/search.py", "--json", "--output-dir", "--force",
@@ -431,17 +431,17 @@ class TestSddUiDesign(unittest.TestCase):
                 "MAJOR", "MINOR", "PATCH", "Design System Foundation", "CR-XXX", "RN-SDD-IMMUTABLE-DONE", "RN-SDD-1-TO-1-CR",
             ),
             UI_PACK_DIR / "workflows" / "ui-design-review.md": (
-                "BLOCKED_DOR_", "sdd-ui-design", "search.py", "@a11y-architect", "WCAG 2.2 AA", "@architect", "§6.1", "Stop-the-Line", "Visual Sign-off (Human)",
+                "BLOCKED_DOR_", "sdd-ui-design", "search.py", "@a11y-architect", "WCAG 2.2 AA", "@architect", "§6.1", "Stop-the-Line", "Gate 2 Visual Sign-off (Human)",
             ),
             ROOT_DIR / ".agents" / "skills" / "sdd-bootstrap" / "SKILL.md": (
                 "Solo Backend / API Only", "CLI / Herramienta Local", "Enable ui-ux-pro-max",
-                "uiux.hifi_format", "uiux.brand_constraints", "capability-ui-design", "Design System Foundation", "Gate 0 (Intake)", "specs/BACKLOG.md",
+                "uiux.hifi_format", "uiux.brand_constraints", "capability-ui-design", "Design System Foundation", "Gate 0", "specs/BACKLOG.md",
             ),
             ROOT_DIR / "specs" / "templates" / "02-technical-spec.template.md": (
-                "### 6.1. Diseño Visual", "MASTER@<versión>", "docs/design-system/pages/SCR-XXX.md", "docs/design-system/design-tokens.json", "@a11y-architect", "- [ ] **Visual Sign-off (Human)**",
+                "### 6.1. Diseño Visual", "MASTER@<versión>", "docs/design-system/pages/SCR-XXX.md", "docs/design-system/design-tokens.json", "@a11y-architect", "- [ ] **Gate 2 Visual Sign-off (Human)**",
             ),
             ROOT_DIR / ".agents" / "agents" / "orchestrator.md": (
-                "ui-design-review.md", "@ui-ux-designer", "@a11y-architect", "Visual Sign-off (Human)", "MASTER@versión", "pages/SCR-XXX.md",
+                "ui-design-review.md", "@ui-ux-designer", "@a11y-architect", "Gate 2 Visual Sign-off (Human)", "MASTER@versión", "pages/SCR-XXX.md",
             ),
         }
         for path, tokens in checks.items():
@@ -450,7 +450,7 @@ class TestSddUiDesign(unittest.TestCase):
                 self.assertIn(tok, text, f"Missing {tok!r} in {path.name}")
         designer = (UI_PACK_DIR / "agents" / "ui-ux-designer.md").read_text(encoding="utf-8")
         self.assertLess(designer.index("@a11y-architect"), designer.index("@architect"))
-        self.assertLess(designer.index("@architect"), designer.index("[ ] Visual Sign-off (Human)"))
+        self.assertLess(designer.index("@architect"), designer.index("[ ] Gate 2 Visual Sign-off (Human)"))
 
         tpl_cfg, tpl_eff = parse_stack_config(ROOT_DIR / "specs" / "templates" / "00-stack.template.md")
         self.assertFalse(tpl_eff)

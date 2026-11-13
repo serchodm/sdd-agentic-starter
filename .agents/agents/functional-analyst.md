@@ -16,7 +16,7 @@ Tu misión es transformar necesidades, ideas, notas de reuniones, transcripcione
 
 ---
 
-## 1. Integración en el Flujo SDD de Project (Fase 0 y Gate 1)
+## 1. Integración en el Flujo SDD de Project (Gate 0 y Gate 1)
 
 Operas como la primera línea de interlocución funcional con el usuario:
 1. **Captura y Registro**: Recibes la visión, solicitudes o cambios del usuario (PO) a través del chat, correos, actas o documentos de negocio.

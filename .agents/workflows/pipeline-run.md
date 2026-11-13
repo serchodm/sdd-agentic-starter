@@ -18,9 +18,9 @@ Ejecuta el ciclo de vida de desarrollo de forma totalmente autónoma y desatendi
 
 ---
 
-## Fases de Ejecución en Cascada
+## Bloques de Ejecución en Cascada (DAG)
 
-`@orchestrator` orquestará las fases técnicas de manera secuencial leyendo `<spec-dir>/03-tasks.md`:
+`@orchestrator` orquestará los bloques técnicos y tareas de manera secuencial leyendo `<spec-dir>/03-tasks.md`:
 
 1. `db-specialist`: DDL, índices y seeds en `DDBB/scripts`
 2. `back-domain`: Entidades, Dominio y Casos de Uso

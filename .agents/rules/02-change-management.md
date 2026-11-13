@@ -10,7 +10,7 @@
 ## 2. Árbol de Decisión Pre-Edición (Obligatorio Antes de Editar `specs/`)
 Antes de invocar `edit_file` o `write_file` sobre cualquier especificación:
 1. Consultar el estado de la Feature en `specs/BACKLOG.md`.
-2. Si la Feature está **`Pending` o `In Progress`** (Gate 5 no superado): se puede actualizar `specs/features/<FEAT-ID>/` mediante parada de línea (*Stop-the-Line*).
+2. Si la Feature está en progreso (`Candidate`, `Backlog`, `In Progress` o `In Review` — Gate 5 no superado): se puede actualizar `specs/features/<FEAT-ID>/` mediante parada de línea (*Stop-the-Line*).
 3. Si la Feature está **`Done` / `Completado`** (Gate 5 superado):
    - **PROHIBIDO** editar `specs/features/<FEAT-ID>/01-spec.md`, `02-tech-spec.md` o `03-tasks.md`.
    - **OBLIGATORIO** crear un expediente nuevo en `specs/changes/CR-<NUM>-<kebab-case-name>/` por cada Feature `Done` afectada:
@@ -18,7 +18,7 @@ Antes de invocar `edit_file` o `write_file` sobre cualquier especificación:
 specs/changes/CR-<NUM>-<kebab-case-name>/
 ├── 01-spec.md          # Gate 1: Especificación Funcional del Cambio (Scope Delta, User Stories, Criterios BDD)
 ├── 02-tech-spec.md     # Gate 2: Especificación Técnica del Cambio (Arquitectura delta, contratos, rendimiento)
-└── 03-tasks.md         # Gate 3: Plan de Tareas Atómicas Secuenciadas con Comandos de Verificación
+└── 03-tasks.md         # Gate 3: Plan de Tareas Atómicas Secuenciadas en Bloques (Block) con Comandos de Verificación
 ```
 
 ---
@@ -48,5 +48,5 @@ El agente de IA y el equipo deben avanzar de manera estrictamente secuencial, **
 
 ## 4. Cierre del Cambio, Prevención de "Spec Drift" y Sincronización en GitHub
 - **Preservación Intacta de la Spec Base:** Al finalizar la implementación y verificación de un CR (Gate 5), los documentos originales de `specs/features/<FEAT-ID>/` **permanecen intactos** como línea base original.
-- **Trazabilidad en Backlog y Docs Vivos:** El estado del CR se actualiza a `Done` en `specs/BACKLOG.md` referenciando la Feature base modificada, y la documentación funcional/técnica viva en `docs/es/`, `docs/en/` y `specs/architecture/` se sincroniza con el estado vigente en producción.
+- **Trazabilidad en Backlog y Docs Vivos:** El estado del CR se actualiza a `Done` en `specs/BACKLOG.md` referenciando la Feature base modificada, y la documentación funcional/técnica viva en `docs/es/`, `docs/en/` y `docs/knowledge/` se sincroniza con el estado vigente en producción.
 - **Commit y Push Obligatorios (`RN-SDD-BRANCH-SYNC`):** Todo cambio validado (tanto de especificaciones/roadmap como de implementación) debe consolidarse inmediatamente con `git add`, `git commit` y `git push origin <rama-activa>` hacia la rama de trabajo o `develop`. Prohibido el push directo a `main`.

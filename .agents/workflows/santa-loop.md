@@ -4,7 +4,7 @@ description: Ejecuta el bucle de doble revisión adversaria independiente (Santa
 
 # Workflow `/santa-loop` — Doble Verificación Adversaria Independiente (*Santa Method*)
 
-Activa este workflow antes de declarar completado un bloque crítico o antes de pasar a Gate 5 para garantizar calidad cero defectos mediante dos revisores independientes.
+Activa este workflow antes de declarar completado un bloque crítico (`Block`) o antes de pasar a Gate 5 para garantizar calidad cero defectos mediante dos revisores independientes.
 
 ## Pasos de Ejecución
 

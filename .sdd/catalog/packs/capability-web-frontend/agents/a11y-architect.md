@@ -151,7 +151,7 @@ Button(action: close) {
 
 ## Protocolo Operativo en Gate 4 (Quality Gate Visual y Soporte a `@qa-tester`)
 
-Durante la fase de verificación y pruebas (Gate 4):
+Durante Gate 4 (Implementación y QA):
 - **Soporte a `@qa-tester` ante Violaciones Complejas**: Cuando `@qa-tester` detecte violaciones complejas de **WCAG 2.2 AA** (árbol ARIA mal estructurado, focos no contenidos o atrapados en modales/drawers, contrastes complejos en estados dinámicos o temas alternantes), `@a11y-architect` interviene como especialista de accesibilidad.
 - **Formulación de Corrección Técnica**: Redacta la prescripción técnica exacta (atributos semánticos, gestión programática de foco con `focus-trap` o `inert`, mapeo ARIA o ajustes de color en `design-tokens.json`) dirigida a `@front-engineer` para su subsanación inmediata.
 - **Certificación del Dictamen de Accesibilidad**: Emite el veredicto final vinculante (`PASS` o `FAIL` justificado) sobre el componente o pantalla evaluada para certificar el Quality Gate Visual y permitir el cierre formal de Gate 4.

@@ -48,14 +48,14 @@ graph TD
 3. **If the block is marked `[SEQUENTIAL]`**:
    - Tasks execute sequentially, ensuring prerequisite contracts and services are running and tested before downstream components start.
 4. Verify that each specialist has marked its task completed (`- [x]`) in `<spec-dir>/03-tasks.md` with zero unhandled errors.
-5. **Quality & Boundary Audit (Phase D)**:
+5. **Quality & Boundary Audit (Block D)**:
    - Run `sdd-spec-compliance-audit` (1:1 contract isomorphism, zero `any`, obsolete code cleanup).
    - Run `sdd-silent-failure-audit` (zero swallowed exceptions or silent fallbacks).
    - Run `sdd-test-quality-audit` (100% BDD scenario coverage, no mock-only tautologies).
    - Run `python .agents/scripts/verify_architecture_boundaries.py`.
    - Run full regression suites: `pytest backend/tests/` and `cd frontend && npx tsc --noEmit && npm test -- --run && npm run build`.
    - Run `python .agents/scripts/sdd_healthcheck.py` (100% green).
-6. **Consolidation of Living Knowledge (Phase E)**:
+6. **Consolidation of Living Knowledge (Gate 5 / Block E)**:
    - `@documentator` updates `docs/knowledge/API_CATALOG.md`, `docs/knowledge/DATA_MODELS.md`, `docs/knowledge/ADRS.md` and `docs/knowledge/SYSTEM_TOPOLOGY.md`.
    - `@documentator` updates bilingual user/architecture documentation in `docs/es/` and `docs/en/` (`RN-SDD-0DD`).
 7. Upon confirming 100% compliance with the Definition of Done (DoD):

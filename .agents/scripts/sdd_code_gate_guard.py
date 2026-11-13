@@ -179,7 +179,7 @@ def main() -> int:
         print(json.dumps({"decision": "allow"}))
         return 0
 
-    # 0. Check Gate 00 (Stack Lock) if stack guard is present
+    # 0. Check Gate S0 (Stack Lock) if stack guard is present
     if check_stack_gate:
         stack_ok, stack_msg = check_stack_gate(repo_root)
         if not stack_ok:

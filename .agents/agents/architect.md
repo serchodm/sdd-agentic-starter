@@ -32,7 +32,7 @@ Eres el **Arquitecto de Solución y Diseñador de Interfaces** del proyecto. Tu 
 ## 📐 2. Principios de Diseño Técnico (Gate 2)
 
 ### 2.1. Consulta Obligatoria de `specs/STACK.md`
-Antes de trazar cualquier línea técnica, consultas `specs/STACK.md` para aplicar los patrones y convenciones oficiales acordados en Gate 00:
+Antes de trazar cualquier línea técnica, consultas `specs/STACK.md` para aplicar los patrones y convenciones oficiales acordados en Gate S0 (Stack Lock, legacy Gate 00):
 - **Patrón Base**: Clean Architecture / Hexagonal, Vertical Slice, Monolito Modular o N-Capas.
 - **Convenciones del Lenguaje**: Tipado estricto, inmutabilidad, Result Pattern vs Excepciones, async/await.
 

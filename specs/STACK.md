@@ -1,6 +1,6 @@
-# Especificación del Stack Tecnológico (Gate 00: Stack Definition)
+# Especificación del Stack Tecnológico (Gate S0: Stack Lock)
 
-> **ESTADO DE LA PUERTA:** `[ ] Gate 00 Approved (Human Sign-off)`
+> **ESTADO DE LA PUERTA:** `[ ] Gate S0 Approved (Human Sign-off)`
 > *(El código de producción permanece bloqueado hasta que esta casilla esté marcada con [x] tras el acuerdo formal con el usuario).*
 
 ---
@@ -43,7 +43,7 @@
 - **Gestión de Secretos**: `[ej: Vercel Environment Variables / .env con .env.example tipado / Azure Key Vault / AWS Secrets Manager]`
 
 ### 2.5. Comandos Deterministas de Verificación DoD (Zero Discovery Overhead)
-*(Definir obligatoriamente en Gate 00 para que ningún subagente queme tokens descubriendo comandos o explorando configuraciones)*:
+*(Definir obligatoriamente en Gate S0 para que ningún subagente queme tokens descubriendo comandos o explorando configuraciones)*:
 - **Lint & Typecheck:** `[ej: cd backend && ruff check . && mypy . | cd frontend && npx tsc --noEmit]`
 - **Prueba Unitaria Acotada (In-memory, mocks, 0 DB externa):** `[ej: pytest <path/to/test.py> -q | npx vitest run <path/to/test.ts>]`
 - **Prueba de Integración (Con servicios auxiliares/BD levantada):** `[ej: pytest tests/integration/<path/to/test.py> -q]`
@@ -86,7 +86,7 @@
 *(Packs de lenguaje, framework y capacidad activados desde el catálogo inerte bajo licencia MIT de ECC)*:
 
 ```yaml sdd:stack-config
-gate00_approved: false
+stack_approved: false           # Canónico Gate S0 (alias retrocompatible: gate00_approved)
 preset: compact
 packs: []
 uiux:
@@ -162,6 +162,6 @@ src/
 
 ---
 
-## ✍️ 7. Firmas de Aprobación de Gate 00
+## ✍️ 7. Firmas de Aprobación de Gate S0
 - [ ] `@orchestrator`: Especificación del stack, Ownership Map y comandos DoD validados técnica y operativamente.
-- [ ] **Usuario Humano**: `[ ] Gate 00 Approved (Human Sign-off)`
+- [ ] **Usuario Humano**: `[ ] Gate S0 Approved (Human Sign-off)`

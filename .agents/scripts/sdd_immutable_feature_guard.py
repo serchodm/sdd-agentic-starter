@@ -3,7 +3,7 @@
 SDD Immutable Feature Guard (PreToolUse Hook for Antigravity 2.0)
 Enforces RN-SDD-IMMUTABLE-DONE & RN-SDD-1-TO-1-CR:
 Blocks any edit_file or write_file operation targeting `specs/features/FEAT-XXX-*/`
-when `FEAT-XXX` is already marked `Done` or `Completado` in `specs/BACKLOG.md`.
+when `FEAT-XXX` is already marked `Done`, `Completado`, or `Completed` in `specs/BACKLOG.md`.
 """
 
 import json
@@ -48,9 +48,9 @@ def get_done_features(backlog_path: pathlib.Path) -> set[str]:
 
     content = backlog_path.read_text(encoding="utf-8", errors="ignore")
 
-    # 1. Check markdown table rows: | ... | `FEAT-004` | ... | `Done` |
+    # 1. Check markdown table rows: | `FEAT-004` | ... | `Done` |
     table_pattern = re.compile(
-        r"\|\s*`?(FEAT-\d{3,4})`?\s*\|[^|\n]*\|[^|\n]*\|[^|\n]*\|\s*`?(Done|Completado|Completed)`?\s*\|",
+        r"\|\s*`?(FEAT-\d{3,4})`?\s*\|(?:[^|\n]*\|)*?\s*`?(Done|Completado|Completed)`?\s*\|",
         re.IGNORECASE,
     )
     for match in table_pattern.finditer(content):

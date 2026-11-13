@@ -1,9 +1,9 @@
 ---
 name: research
-description: Modo de contexto de Exploración y Descubrimiento Pre-Spec (search-first, Fase 0) de affaan-m/ECC en solo lectura antes de diseñar arquitectura.
+description: Modo de contexto de Exploración y Descubrimiento Pre-Spec (search-first, Gate 0) de affaan-m/ECC en solo lectura antes de diseñar arquitectura.
 ---
 
-# Contexto Operativo: `research.md` (Modo Exploración y Arquitectura — Fase 0 / Gates 1-3)
+# Contexto Operativo: `research.md` (Modo Exploración y Arquitectura — Gate 0 / Gates 1-3)
 
 - **Modo**: Investigación, Trazado de Flujos y Diseño de Especificaciones (`search-first`).
 - **Foco Principal**: Comprender la topología existente, reutilizar capacidades de `docs/knowledge/` y extraer invariantes antes de proponer cambios en `01-spec.md` o `02-tech-spec.md`.

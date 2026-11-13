@@ -6,7 +6,7 @@ description: "Flujo de revisión y aprobación de diseño UI/UX en Gate 2 para f
 
 Secuencia obligatoria de **6 pasos** en **Gate 2** para toda feature (o Change Request activo) que incorpore o modifique pantallas `SCR-###` cuando `capability-ui-design` y `uiux.enabled: true` están activos en `specs/STACK.md`.
 
-> Si la feature **no** toca pantallas `SCR-###`, `@orchestrator` y `@architect` marcan la subsección §6.1 (*Diseño Visual*) y `[ ] Visual Sign-off (Human)` como `N/A` y este flujo no bloquea Gate 2.
+> Si la feature **no** toca pantallas `SCR-###`, `@orchestrator` y `@architect` marcan la subsección §6.1 (*Diseño Visual*) y `[ ] Gate 2 Visual Sign-off (Human)` como `N/A` y este flujo no bloquea Gate 2.
 
 ---
 
@@ -15,8 +15,8 @@ Secuencia obligatoria de **6 pasos** en **Gate 2** para toda feature (o Change R
 ### Paso 1: Validación DoR (Gate 1 + Wireframes §18 + Design System)
 - **Responsables**: `@orchestrator` y `@ui-ux-designer`.
 - **Verificaciones bloqueantes**:
-  1. `specs/STACK.md` tiene `[x] Gate 00 Approved` (`gate00_approved: true`), `capability-ui-design` en `packs` y `uiux.enabled: true`.
-  2. `01-spec.md` de la feature tiene `[x] Gate 1 Aprobado` y wireframes de baja fidelidad validados conforme a `FUNCTIONAL_DOCUMENTATION_STANDARD.md` §18 (`wireframe.excalidraw` + `screen-spec.md`).
+  1. `specs/STACK.md` tiene `[x] Gate S0 Approved` (o alias legacy `[x] Gate 00 Approved`), `stack_approved: true` (`gate00_approved: true`), `capability-ui-design` en `packs` y `uiux.enabled: true`.
+  2. `01-spec.md` de la feature tiene `[x] Gate 1 Approved` (o `Gate 1 Aprobado`) y wireframes de baja fidelidad validados conforme a `FUNCTIONAL_DOCUMENTATION_STANDARD.md` §18 (`wireframe.excalidraw` + `screen-spec.md`).
   3. `docs/design-system/MASTER.md` y `design-tokens.json` están vigentes, **o** la feature activa es `Design System Foundation` (o un `CR-XXX` sobre ella).
 - **Si falla cualquier punto**: `@ui-ux-designer` emite `.agent-inbox/ui-ux-designer/BLOCKED_DOR_<FEAT-ID>.md` y aplica *Stop-the-Line*.
 
@@ -46,9 +46,9 @@ Secuencia obligatoria de **6 pasos** en **Gate 2** para toda feature (o Change R
   - Si existe cualquier cambio funcional no aprobado -> *Stop-the-Line* (`RN-SDD-FAIL-CLOSED`) y devolución a Gate 1.
   - Si el expediente evoluciona tokens tras el `Done` de `Design System Foundation`, confirmar la regla de cardinalidad (`RN-07`): **1 único CR** sobre `Design System Foundation` para re-skins puros (sin mutar `specs/features/` en `Done`) y **1 CR por cada feature `Done`** solo si cambia el comportamiento funcional de sus pantallas.
 
-### Paso 6: Sign-off Humano Explícito `[x] Visual Sign-off (Human)` + Gate 2
+### Paso 6: Sign-off Humano Explícito `[x] Gate 2 Visual Sign-off (Human)` + Gate 2
 - **Responsable**: Stakeholder Humano (presentado por `@orchestrator`).
 - **Acciones**:
   - El usuario revisa los prototipos hi-fi, la evidencia WCAG 2.2 AA de `@a11y-architect` y `02-tech-spec.md` §6.1.
-  - Solo tras aprobación expresa del usuario en el chat se marcan `[x] Visual Sign-off (Human)` y `[x] Gate 2 Aprobado por el Usuario` en `02-tech-spec.md` §8 (`RN-SDD-HUMAN-GATE-OWNERSHIP`).
+  - Solo tras aprobación expresa del usuario en el chat se marcan `[x] Gate 2 Visual Sign-off (Human)` y `[x] Gate 2 Approved (Human Sign-off)` en `02-tech-spec.md` §8 (`RN-SDD-HUMAN-GATE-OWNERSHIP`).
   - Desbloqueado Gate 2, `@orchestrator` puede avanzar a Gate 3 propagando `SCR-XXX`, `MASTER@versión`, `pages/SCR-XXX.md` y tokens al DoR de las tareas frontend.

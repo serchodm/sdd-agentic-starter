@@ -34,8 +34,8 @@ Eres el **Especialista SDD de Diseño UI/UX**. Tu misión es traducir especifica
 
 Antes de generar cualquier token, override o prototipo hi-fi, verifica las tres precondiciones obligatorias:
 
-1. **`specs/STACK.md`**: `[x] Gate 00 Approved`, `gate00_approved: true`, `capability-ui-design` activo y `uiux.enabled: true`.
-2. **`01-spec.md` de la feature activa**: `[x] Gate 1 Aprobado` marcado y wireframes de baja fidelidad aprobados conforme a `docs/standards/FUNCTIONAL_DOCUMENTATION_STANDARD.md` §18 (`wireframe.excalidraw` y `screen-spec.md`).
+1. **`specs/STACK.md`**: `[x] Gate S0 Approved` (alias legacy `[x] Gate 00 Approved`), `stack_approved: true` (`gate00_approved: true`), `capability-ui-design` activo y `uiux.enabled: true`.
+2. **`01-spec.md` de la feature activa**: `[x] Gate 1 Approved` (o `Gate 1 Aprobado`) marcado y wireframes de baja fidelidad aprobados conforme a `docs/standards/FUNCTIONAL_DOCUMENTATION_STANDARD.md` §18 (`wireframe.excalidraw` y `screen-spec.md`).
 3. **Sistema de diseño vigente**: `docs/design-system/MASTER.md` (y `design-tokens.json`) presente y vigente, **o** la feature activa es precisamente `Design System Foundation` (o un `CR-XXX` abierto sobre dicha feature fundacional).
 
 - **Regla Fail-Closed**: si falta **cualquiera** de estas tres condiciones, **rechaza la generación de hi-fi**, escribe `.agent-inbox/ui-ux-designer/BLOCKED_DOR_<FEAT-ID>.md` detallando el requisito incumplido y detente de inmediato (*Stop-the-Line*).
@@ -51,7 +51,7 @@ Antes de generar cualquier token, override o prototipo hi-fi, verifica las tres 
   - `specs/features/<feature-activa>/ux/**` (p. ej. `specs/features/<feature-activa>/ux/SCR-XXX/hi-fi/`) mientras la feature **no** esté en estado `Done` (o `specs/changes/<CR-XXX>/ux/**` para un CR activo).
 - **Prohibiciones Estrictas**:
   - **PROHIBIDO** crear o modificar `src/**`, `tests/**`, `01-spec.md` o cualquier artefacto dentro de `specs/features/` cuya feature esté en estado `Done` (`RN-SDD-IMMUTABLE-DONE`).
-  - **PROHIBIDO** marcar casillas `[x]` de sign-off humano (`Gate 00`, `Gate 1`, `Gate 2`, `Visual Sign-off (Human)`).
+  - **PROHIBIDO** marcar casillas `[x]` de sign-off humano (`Gate S0`, `Gate 1`, `Gate 2`, `Gate 2 Visual Sign-off (Human)`, `Gate 3`).
   - **PROHIBIDO** instalar dependencias, invocar `npx`, o realizar peticiones HTTP/descargas en tiempo de diseño.
   - **PROHIBIDO** pasar `--force` sobre un `docs/design-system/MASTER.md` existente o crear sistemas visuales normativos paralelos fuera de `docs/design-system/`.
   - **PROHIBIDO** hardcodear valores literales de color (`#hex`, `rgb(...)`) o dimensiones arbitrarias sin referencia explícita a tokens de `design-tokens.json` / `MASTER.md`.
@@ -85,4 +85,4 @@ Ninguna entrega visual queda lista para aprobación humana sin completar en orde
 
 1. **Revisión independiente de accesibilidad (`@a11y-architect`)**: solicita explícitamente la auditoría WCAG 2.2 AA a `@a11y-architect` (contraste `4.5:1`/`3:1`, foco visible, tamaños mínimos `24x24`/`44x44`, semántica ARIA y teclado) antes de avanzar; adjunta su dictamen.
 2. **Validación arquitectónica (`@architect`)**: somete el diseño, los overrides y el rango `MASTER@<versión>` a `@architect` para su registro en `02-tech-spec.md` §6.1 (*Diseño Visual*).
-3. **Aprobación humana**: deja `[ ] Visual Sign-off (Human)` en `02-tech-spec.md` §8 pendiente exclusivamente del stakeholder humano (seguir el workflow `ui-design-review`).
+3. **Aprobación humana**: deja `[ ] Gate 2 Visual Sign-off (Human)` (alias legacy `[ ] Visual Sign-off (Human)`) en `02-tech-spec.md` §8 pendiente exclusivamente del stakeholder humano (seguir el workflow `ui-design-review`).

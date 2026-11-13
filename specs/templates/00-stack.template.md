@@ -1,7 +1,7 @@
-# Especificación del Stack Tecnológico (Gate 00: Stack Definition)
+# Especificación del Stack Tecnológico (Gate S0: Stack Lock)
 
-> **ESTADO DE LA PUERTA:** `[ ] Gate 00 Approved (Human Sign-off)`  
-> *(El código de producción en `src/` permanece estrictamente BLOQUEADO por la regla RN-SDD-GATE00-STACK-LOCK hasta que esta casilla cuente con la firma explícita del usuario tras su revisión).*
+> **ESTADO DE LA PUERTA:** `[ ] Gate S0 Approved (Human Sign-off)`  
+> *(El código de producción en `src/` permanece estrictamente BLOQUEADO por la regla RN-SDD-GATE-S0-STACK-LOCK hasta que esta casilla cuente con la firma explícita del usuario tras su revisión).*
 
 ---
 
@@ -50,7 +50,7 @@
 - **Gestión de Secretos**: `[ej: Vercel Environment Variables / .env con .env.example tipado / Azure Key Vault / AWS Secrets Manager]`
 
 ### 2.5. Comandos Deterministas de Verificación DoD (Zero Discovery Overhead)
-*(Definir obligatoriamente en Gate 00 para que ningún subagente queme tokens descubriendo comandos o explorando configuraciones)*:
+*(Definir obligatoriamente en Gate S0 para que ningún subagente queme tokens descubriendo comandos o explorando configuraciones)*:
 - **Lint & Typecheck:** `[ej: cd backend && ruff check . && mypy . | cd frontend && npx tsc --noEmit]`
 - **Prueba Unitaria Acotada (In-memory, mocks, 0 DB externa):** `[ej: pytest <path/to/test.py> -q | npx vitest run <path/to/test.ts>]`
 - **Prueba de Integración (Con servicios auxiliares/BD levantada):** `[ej: pytest tests/integration/<path/to/test.py> -q]`
@@ -93,7 +93,7 @@
 *(Packs de lenguaje, framework, capacidad y configuración visual activados desde `.sdd/catalog/packs/`)*:
 
 ```yaml sdd:stack-config
-gate00_approved: false
+stack_approved: false           # Canónico Gate S0 (alias retrocompatible: gate00_approved)
 preset: compact                 # compact | granular | api-only | spa-only
 packs: []                       # ej: [lang-python, framework-fastapi, capability-web-frontend, capability-ui-design]
 uiux:
@@ -106,10 +106,10 @@ uiux:
 
 - **`packs`**: Identificadores de packs del catálogo (p. ej. `lang-python`, `framework-fastapi`, `capability-database`, `capability-web-frontend`, `capability-ui-design`).
 - **`uiux`**: Configuración del proveedor de inteligencia visual (`enabled: false` por defecto; omitir o mantener `enabled: false` en proyectos `api-only` / CLI). Si `uiux.enabled: true`, deben figurar `capability-web-frontend` y `capability-ui-design` en `packs` y registrarse la feature `Design System Foundation` en `specs/BACKLOG.md`.
-- *(Se materializan en la sesión tras aprobar Gate 00 mediante `uv run python scripts/sdd_agent_generator.py --materialize`)*.
+- *(Se materializan en la sesión tras aprobar Gate S0 mediante `uv run python scripts/sdd_agent_generator.py --materialize`)*.
 
 ### 3.4. Gobernanza Git y Aislamiento de Entorno (`git_governance`)
-*(Configuración agnóstica acordada en Gate 00 para la gestión de ramas, worktrees y fusiones automáticas)*:
+*(Configuración agnóstica acordada en Gate S0 para la gestión de ramas, worktrees y fusiones automáticas)*:
 
 ```yaml
 git_governance:
@@ -171,7 +171,7 @@ src/
 
 ---
 
-## ✍️ 7. Firmas de Aprobación de Gate 00
+## ✍️ 7. Firmas de Aprobación de Gate S0
 
 - [ ] `@orchestrator`: Especificación del stack, arquitectura, contratos y escuadrón agéntico validados formalmente.
-- [ ] **Usuario Humano**: `[ ] Gate 00 Approved (Human Sign-off)`
+- [ ] **Usuario Humano**: `[ ] Gate S0 Approved (Human Sign-off)`

@@ -5,7 +5,7 @@ description: Audits unit, integration, and E2E tests to eliminate "suspicious gr
 
 # Skill: `sdd-test-quality-audit`
 
-Activate this skill during Phase 6 (`back-test`), Phase 9 (`front-test`), and Phase 11.5 (`pipeline-run`) to ensure tests provide genuine semantic guarantees rather than superficial green checkmarks.
+Activate this skill during Gate 4 test execution (tasks for `@back-test`, `@front-test`, and Block D QA verification of `pipeline-run`) to ensure tests provide genuine semantic guarantees rather than superficial green checkmarks.
 
 ## 1. BDD Scenario Traceability Matrix
 1. List every `Given-When-Then` scenario in `<spec-dir>/01-spec.md`.

@@ -9,7 +9,7 @@ El desarrollo de software bajo este marco se rige por el principio de **Especifi
 > *"El código es la consecuencia determinista y verificable de una especificación validada, nunca el medio exploratorio para descubrir requerimientos en caliente."*
 
 ### 1.1. La Regla de Oro Innegociable
-> **Queda estrictamente prohibido crear, modificar o eliminar una sola línea de código de producción sin haber superado de forma explícita el Gate 2 (`02-tech-spec.md` para Features o `02-fix-spec.md` para Incidencias) con aprobación formal.**
+> **Queda estrictamente prohibido crear, modificar o eliminar una sola línea de código de producción (`src/`) sin haber superado Gate S0 (`specs/STACK.md`) a nivel de proyecto y de forma explícita el Gate 2 (`02-tech-spec.md` para Features o `02-fix-spec.md` para Incidencias) con aprobación formal.**
 
 ### 1.2. Política de Cero Atajos (Zero Shortcut Policy)
 - **Alcance total:** La metodología aplica a cualquier cambio, sin importar su tamaño o aparente simplicidad:
@@ -33,15 +33,19 @@ El framework unifica los conceptos clave de gestión ágil (Scrum) con el rigor 
          │
          ├── Gate 1: [ USER STORIES & CRITERIOS DE ACEPTACIÓN ] (01-spec.md)
          ├── Gate 2: [ ARQUITECTURA TÉCNICA & CONTRATOS ] (02-tech-spec.md)
-         └── Gate 3: [ TAREAS ATÓMICAS POR CAPAS ] (03-tasks.md)
+         └── Gate 3: [ PLAN DE TAREAS DAG ] (03-tasks.md)
                │
-               └── [ CÓDIGO VERIFICABLE & TESTS ] — Implementación paso a paso
+               ├── Gate 4: [ IMPLEMENTACIÓN & QA ] — Código verificable, tests y auditorías QA
+               └── Gate 5: [ LIVING DOCS (0DD) & CIERRE ] — Documentación viva, trazabilidad y push
 
 [ INCIDENCIA (Bug) ] — Desviación entre el comportamiento real y la especificación
    │
-   ├── [ REPORTE & TEST DE REPRODUCCIÓN EN ROJO ] (01-bug-report.md)
-   ├── [ ANÁLISIS DE CAUSA RAÍZ & DISEÑO DEL FIX ] (02-fix-spec.md)
-   └── [ TAREAS DE CORRECCIÓN & TEST EN VERDE ] (03-tasks.md)
+   ├── Gate 1: [ REPORTE & TEST DE REPRODUCCIÓN EN ROJO ] (01-bug-report.md)
+   ├── Gate 2: [ ANÁLISIS DE CAUSA RAÍZ & DISEÑO DEL FIX ] (02-fix-spec.md)
+   └── Gate 3: [ TAREAS DE CORRECCIÓN & TEST EN VERDE ] (03-tasks.md)
+         │
+         ├── Gate 4: [ IMPLEMENTACIÓN & QA ] — Arreglo quirúrgico y batería de regresión
+         └── Gate 5: [ LIVING DOCS (0DD) & CIERRE ] — Trazabilidad y cierre de incidencia
 ```
 
 ### 2.1. Definición de Entidades
@@ -78,6 +82,7 @@ $$\text{Experiencia} \longrightarrow \text{Observación} \longrightarrow \text{H
 
 ```text
 specs/
+├── STACK.md                            # Definición y bloqueo del stack tecnológico (Gate S0)
 ├── SYSTEM_VISION.md                    # Visión global del sistema, arquitectura e invariantes
 ├── SDD_FRAMEWORK.md                    # Este estándar de gobernanza (fuente de verdad metodológica)
 ├── BACKLOG.md                          # Registro priorizado de Épicas, Features y Deuda Técnica
@@ -89,9 +94,11 @@ specs/
 ├── roadmap/                            # Planificación estratégica por etapas (0 a 8)
 │   └── IMPLEMENTATION_ROADMAP.md
 ├── templates/                          # Plantillas oficiales del proyecto
+│   ├── 00-stack.template.md            # Plantilla para Gate S0 (Stack Lock)
 │   ├── 01-functional-spec.template.md  # Plantilla para Gate 1
 │   ├── 02-technical-spec.template.md   # Plantilla para Gate 2
-│   └── 03-tasks.template.md            # Plantilla para Gate 3
+│   ├── 03-tasks.template.md            # Plantilla para Gate 3
+│   └── 04-change-request-spec.template.md # Plantilla para Change Requests (CR)
 ├── features/                           # Especificaciones vivas de funcionalidades
 │   └── <ID>-<kebab-case-name>/         # Ej: FEAT-001-core-scaffolding/
 │       ├── 01-spec.md                  # Gate 1: Requerimientos funcionales y US
@@ -116,39 +123,49 @@ specs/
 
 ## 🚦 4. Ciclo de Vida y Gates de Calidad
 
-El avance entre fases es estrictamente secuencial y está controlado por compuertas de calidad (**Quality Gates**). Cada gate actúa como un filtro que impide propagar errores de diseño hacia la fase de codificación.
+El avance entre gates es estrictamente secuencial y está controlado por compuertas de calidad (**Quality Gates**). Cada gate actúa como un filtro que impide propagar errores de diseño hacia la implementación y producción.
 
 ```mermaid
 flowchart TD
-    G0[Gate 0: Backlog Priorizado] --> F1[Fase 1: 01-spec.md Requerimientos & US]
-    F1 --> G1{Gate 1: ¿Aprobación Funcional?}
-    G1 -- Ajustar requerimientos --> F1
-    G1 -- Aprobado --> F2[Fase 2: 02-tech-spec.md Arquitectura & Contratos]
-    F2 --> G2{Gate 2: ¿Aprobación Técnica?}
-    G2 -- Ajustar arquitectura --> F2
-    G2 -- Aprobado por Usuario --> F3[Fase 3: 03-tasks.md Plan Atómico]
-    F3 --> G3{Gate 3: ¿DoR Cumplido?}
-    G3 -- Refinar tareas --> F3
-    G3 -- Listo para código --> F4[Fase 4: Implementación Guiada por Capas]
-    F4 --> F5[Fase 5: Verificación Integral & E2E]
-    F5 --> DoD{Gate 5: ¿Cumple DoD al 100%?}
-    DoD -- Deficiencias detectadas --> F4
-    DoD -- Cumplido --> F6[Cierre de Feature & Sync Backlog]
+    GS0[Gate S0: Bloqueo de Stack] --> G0[Gate 0: Registro en Backlog]
+    G0 --> S1[Gate 1: 01-spec.md Requerimientos & US]
+    S1 --> G1{Gate 1: ¿Aprobación Funcional?}
+    G1 -- Ajustar requerimientos --> S1
+    G1 -- Aprobado --> S2[Gate 2: 02-tech-spec.md Arquitectura & Contratos]
+    S2 --> G2{Gate 2: ¿Aprobación Técnica y Visual?}
+    G2 -- Ajustar arquitectura --> S2
+    G2 -- Aprobado por Usuario --> S3[Gate 3: 03-tasks.md Plan de Tareas DAG]
+    S3 --> G3{Gate 3: ¿DoR Cumplido?}
+    G3 -- Refinar tareas --> S3
+    G3 -- Listo para código --> S4[Gate 4: Implementación y QA]
+    S4 --> G4{Gate 4: ¿Tests y Auditorías QA en Verde?}
+    G4 -- Deficiencias detectadas --> S4
+    G4 -- Aprobado QA --> S5[Gate 5: Documentación Viva 0DD y Cierre]
+    S5 --> G5{Gate 5: ¿0DD y Trazabilidad Completa?}
+    G5 -- Documentación incompleta --> S5
+    G5 -- Cumplido --> S6[Cierre de Work Item & Git Push]
 ```
 
-### Gate 0: Trazabilidad en Backlog
+### Gate S0: Bloqueo de Stack (Stack Lock)
+- **Ámbito:** Proyecto (1 vez al iniciar el repositorio o ante evoluciones estructurales de stack).
+- Antes de comenzar cualquier desarrollo, el stack tecnológico del proyecto debe ser definido y validado en `specs/STACK.md`.
+- El código de producción (`src/`) permanece **estrictamente bloqueado** hasta la aprobación humana formal de Gate S0 (`[x] Gate S0 Approved (Human Sign-off)` / `stack_approved: true`).
+- **Criterio de salida:** `specs/STACK.md` completado y firmado formalmente por el usuario.
+
+### Gate 0: Registro en Backlog (Backlog Intake)
+- **Ámbito:** Work Item (`FEAT-XXX`, `CR-XXX`, `BUG-XXX`, `FWK-XXX`).
 - Toda iniciativa debe estar registrada formalmente en `specs/BACKLOG.md` con su identificador unívoco, descripción del problema, prioridad e impacto.
-- **Criterio de salida:** Identificador asignado y alcance preliminar acordado.
+- **Criterio de salida:** Identificador asignado en `specs/BACKLOG.md`, estado inicial `Candidate` o `Backlog` y carpeta del expediente creada (`specs/features/`, `specs/changes/`, `specs/bugs/` o `.sdd/framework/work-items/`).
 
 ### Gate 1: Especificación Funcional (`01-spec.md`)
 - Se redacta la definición funcional enfocándose en el *qué* y el *para qué*, sin condicionar la tecnología interna.
 - **Contenido obligatorio:**
   - Contexto de negocio y actores involucrados.
   - Historias de Usuario estructuradas.
-  - Matriz exhaustiva de criterios de aceptación con ejemplos y datos concretos.
+  - Matriz exhaustiva de criterios de aceptación con ejemplos y datos concretos (formato Given-When-Then / EARS).
   - Flujo principal, flujos alternativos y flujos de excepción (fallos de red, accesos no autorizados, datos inválidos).
   - Casos explícitamente fuera de alcance (*Out of Scope*) para evitar desviaciones.
-- **Aprobación:** Requiere revisión y validación explícita del usuario/propietario del producto.
+- **Aprobación:** Requiere revisión y visto bueno explícito del usuario (`[x] Gate 1 Approved (Human Sign-off)`).
 
 ### Gate 2: Especificación Técnica y Contratos (`02-tech-spec.md`)
 - Se diseña la solución técnica que satisfará la especificación funcional.
@@ -159,26 +176,33 @@ flowchart TD
   - Esquema de base de datos, índices, estrategias de persistencia y migraciones.
   - Algoritmos críticos y tratamiento de concurrencia/idempotencia.
   - Análisis de riesgos, impacto en seguridad y estrategia de mitigación.
-- **Aprobación:** **Visto bueno explícito e innegociable del usuario.** Sin esta confirmación, está prohibido abrir cualquier archivo de código fuente para implementar la funcionalidad.
+- **Aprobación:** **Visto bueno explícito e innegociable del usuario** (`[x] Gate 2 Approved (Human Sign-off)`).
+- **Sub-Gate 2V (Visual Sign-off):** Si la funcionalidad involucra interfaces de usuario (`SCR-###`), requiere además la validación visual y de accesibilidad con su sign-off correspondiente (`[x] Gate 2 Visual Sign-off (Human)`).
 
-### Gate 3: Desglose de Tareas Atómicas y DoR (`03-tasks.md`)
-- Descomposición de la solución en tareas de ingeniería atómicas, ordenadas estrictamente por orden de dependencias arquitectónicas:
+### Gate 3: Plan de Tareas DAG y DoR (`03-tasks.md`)
+- Descomposición de la solución en tareas de ingeniería atómicas organizadas en un grafo dirigido acíclico (DAG) por bloques de ejecución (`Block_A`, `Block_B`...):
   1. **Dominio / Núcleo:** Entidades, objetos de valor, interfaces y lógica pura.
   2. **Persistencia / Infraestructura:** Esquemas, migraciones, adaptadores de datos y clientes externos.
   3. **Servicios / Casos de Uso:** Orquestación de negocio, comandos y consultas.
   4. **Exposición / APIs:** Endpoints, controladores, middleware y serialización.
   5. **Interfaz de Usuario (Frontend):** Tipos, estado local/remoto, componentes y vistas.
   6. **Pruebas Automatizadas:** Tests unitarios, integración y pruebas end-to-end.
+- Cada tarea atómica define su comando determinista de verificación DoD.
+- **Aprobación:** Visto bueno explícito del usuario (`[x] Gate 3 Approved (Human Sign-off)`).
 - **Criterio de salida:** Cumplimiento total de la Definition of Ready (DoR).
 
-### Gate 4: Implementación Guiada por Tareas
-- Se codifica de forma estrictamente secuencial, resolviendo tarea por tarea.
-- Conforme se completa una tarea y se valida su comando de comprobación, se marca su casilla (`- [x]`).
+### Gate 4: Implementación y QA (Implementation & QA)
+- Se codifica de forma estrictamente secuencial o en paralelo según las dependencias del grafo de bloques DAG.
+- Conforme se completa una tarea y se valida su comando determinista de comprobación, se marca su casilla (`- [x]`).
+- Ejecución completa de pruebas automatizadas (unitarias, integración, E2E) y auditorías de calidad QA (cumplimiento de especificación, calidad de tests, fallos silenciosos y telemetría de tokens).
 - Si surge un obstáculo o contradicción imprevista, se detiene la codificación inmediatamente (ver [Sección 7: Gestión del Cambio](#-7-protocolo-de-gestión-del-cambio-stop-the-line)).
+- **Criterio de salida:** Código implementado, tests en verde, 4 auditorías QA aprobadas y CI verde.
 
-### Gate 5: Verificación Integral y DoD
-- Ejecución completa de las pruebas de regresión, integración y verificación en entorno real.
-- **Criterio de salida:** Cumplimiento total y demostrable de la Definition of Done (DoD).
+### Gate 5: Documentación Viva (0DD) y Cierre (Living Docs & Closure)
+- Actualización obligatoria de la documentación funcional viva (`docs/es/` y `docs/en/`), base de conocimiento (`docs/knowledge/`) y matriz de trazabilidad (`docs/traceability/TRACEABILITY-MATRIX.md`) garantizando Deuda Cero de Documentación (0DD).
+- Actualización del estado del Work Item a `Done` en `specs/BACKLOG.md`.
+- Sincronización y push en la rama de trabajo (`RN-SDD-BRANCH-SYNC`).
+- **Criterio de salida:** Cumplimiento total y demostrable de la Definition of Done (DoD), documentación 0DD al 100% y push de la rama.
 
 ---
 
@@ -186,19 +210,21 @@ flowchart TD
 
 ### 5.1. Definition of Ready (DoR) — Condiciones para Iniciar Codificación
 Una Feature o corrección solo se declara **lista para codificar** si se cumplen todos los puntos:
+- [ ] `specs/STACK.md` aprobado formalmente a nivel de proyecto (Gate S0 superado).
 - [ ] `01-spec.md` aprobado formalmente (Gate 1 superado).
-- [ ] `02-tech-spec.md` aprobado formalmente por el usuario (Gate 2 superado).
+- [ ] `02-tech-spec.md` aprobado formalmente por el usuario (Gate 2 superado, incluyendo Sub-Gate 2V si involucra interfaz de usuario).
 - [ ] Todos los contratos de datos y APIs están completamente tipados y cerrados.
-- [ ] El desglose en `03-tasks.md` está completo, secuenciado por dependencias y cada tarea tiene un comando o método de verificación explícito.
+- [ ] El desglose en `03-tasks.md` está completo, organizado en grafo DAG por bloques de ejecución, cada tarea tiene un comando determinista de verificación DoD y cuenta con sign-off formal (Gate 3 superado).
 - [ ] No existen dependencias externas no resueltas o bloqueantes.
 - [ ] El entorno de desarrollo y arnés de pruebas están operativos.
 
 ### 5.2. Definition of Done (DoD) — Condiciones para Declarar Entrega Final
 Una Feature o corrección solo se declara **terminada y aceptada** cuando satisface los **7 criterios innegociables**:
 
-1. **Documentación Viva Completa y Sincronizada:**
+1. **Documentación Viva Completa y Sincronizada (0DD):**
    - `01-spec.md`, `02-tech-spec.md` y `03-tasks.md` están actualizados reflejando el código final real.
    - 100% de las tareas en `03-tasks.md` están marcadas como completadas (`- [x]`).
+   - Documentación funcional viva actualizada en `docs/es/` y `docs/en/`, catálogo técnico en `docs/knowledge/` y trazabilidad 100% cerrada en `docs/traceability/TRACEABILITY-MATRIX.md`.
 2. **Cobertura Automatizada de Criterios de Aceptación:**
    - Cada criterio de aceptación definido en Gate 1 cuenta con al menos una prueba automatizada asociada (unitaria o de integración) que se ejecuta en verde.
    - Las reglas de negocio y algoritmos de dominio cuentan con tests unitarios exhaustivos (cubriendo casos nominales y casos límite).
@@ -209,11 +235,12 @@ Una Feature o corrección solo se declara **terminada y aceptada** cuando satisf
 5. **Compilación Limpia y Calidad de Código:**
    - El código compila sin errores ni advertencias críticas.
    - Las herramientas de análisis estático (linter, verificador de tipos) pasan sin incidencias.
+   - Las 4 auditorías de calidad QA (especificación, calidad de tests, fallos silenciosos y telemetría de tokens) están aprobadas.
 6. **Seguridad e Invariantes Preservadas:**
    - Sin secretos, claves o contraseñas expuestas en código ni en historiales.
    - Manejo explícito de accesos no autorizados, expiraciones y validaciones de entrada.
 7. **Trazabilidad Cerrada y Sincronización de Ramas (`RN-SDD-BRANCH-SYNC`):**
-   - Estado actualizado en `specs/BACKLOG.md` a `Completado`.
+   - Estado actualizado en `specs/BACKLOG.md` a `Done`.
    - Registro de cambios documentado con referencia a la especificación.
    - **Commit y Push en Rama de Trabajo:** Una vez superadas las validaciones y aprobada la entrega, todos los cambios deben registrarse con `git commit` semántico y subirse a su rama de trabajo (`feat/*`, `change/*`, `fix/*`) o `develop`. La rama `main` permanece blindada contra commits directos y solo recibe cambios mediante PRs de Release o Hotfix aprobadas.
 
@@ -221,7 +248,7 @@ Una Feature o corrección solo se declara **terminada y aceptada** cuando satisf
 
 ## 🐞 6. Protocolo de Resolución de Incidencias (Bug Protocol)
 
-Ante cualquier anomalía, fallo inesperado o desviación de una especificación en cualquier fase:
+Ante cualquier anomalía, fallo inesperado o desviación de una especificación en cualquier gate:
 
 ```mermaid
 flowchart LR
@@ -253,7 +280,7 @@ flowchart LR
 
 ## ⚠️ 7. Protocolo de Gestión del Cambio (Stop-the-Line)
 
-En proyectos de software es común descubrir impedimentos o requerimientos imprevistos durante la codificación (Fase 4). Cuando esto ocurre, rige el principio industrial de la parada de línea (*Andon Cord*):
+En proyectos de software es común descubrir impedimentos o requerimientos imprevistos durante la codificación (Gate 4). Cuando esto ocurre, rige el principio industrial de la parada de línea (*Andon Cord*):
 
 ### 7.1. Detonantes de Parada Obligatoria
 - Se detecta una limitación técnica no prevista que hace inviable el diseño de `02-tech-spec.md`.
@@ -271,18 +298,20 @@ En proyectos de software es común descubrir impedimentos o requerimientos impre
 5. **Reanudación:** Solo entonces se reanuda la codificación. **Nunca se aplican cambios sobre la marcha sin haber actualizado primero la especificación.**
 
 ### 7.3. Expedientes Formales de Cambio (Change Requests - CR) e Inmutabilidad del Baseline
-Cuando una alteración cambia el diseño visual, la tecnología, las dependencias o el comportamiento de una feature ya implementada (`Done` / `Completado` en `specs/BACKLOG.md`):
+Cuando una alteración cambia el diseño visual, la tecnología, las dependencias o el comportamiento de una feature ya implementada (`Done` en `specs/BACKLOG.md`):
 
 1. **Regla de Inmutabilidad del Baseline Histórico (`RN-SDD-IMMUTABLE-DONE`):**
-   - Una vez que una Feature (`FEAT-XXX`) supera el Gate 5 y figura como `Done` / `Completado` en `specs/BACKLOG.md`, su carpeta `specs/features/<FEAT-ID>/` (`01-spec.md`, `02-tech-spec.md`, `03-tasks.md`) queda **CONGELADA EN MODO LECTURA (READ-ONLY)** como registro histórico auditable de lo que se construyó y certificó originalmente.
+   - Una vez que una Feature (`FEAT-XXX`) supera el Gate 5 y figura como `Done` en `specs/BACKLOG.md`, su carpeta `specs/features/<FEAT-ID>/` (`01-spec.md`, `02-tech-spec.md`, `03-tasks.md`) queda **CONGELADA EN MODO LECTURA (READ-ONLY)** como registro histórico auditable de lo que se construyó y certificó originalmente.
    - **Queda terminantemente prohibido** reescribir o sobrescribir `01-spec.md`, `02-tech-spec.md` o `03-tasks.md` de una Feature `Done` para inyectar nuevos requerimientos, cambios de motor/librería o rediseños.
 2. **Cardinalidad Estricta 1:1 (`RN-SDD-1-TO-1-CR`):**
    - Todo cambio sobre una Feature `Done` exige crear un expediente independiente bajo `specs/changes/CR-<NUM>-<kebab-case-name>/`.
    - Si un cambio transversal impacta a $N$ Features ya completadas, **se deben crear $N$ Change Requests independientes (1 CR por cada Feature afectada)**, aislando el delta funcional, técnico y de tareas de cada módulo.
 3. **Estructura y Gates del Expediente (`specs/changes/CR-<NUM>-<kebab-case-name>/`):**
-   - **Gate 1 (`01-spec.md`):** Requerimientos del cambio, alcance delta respecto a la Feature base, nuevas US y criterios de aceptación Given-When-Then. **Requiere validación y aprobación explícita del usuario.**
-   - **Gate 2 (`02-tech-spec.md`):** Arquitectura delta modificada, contratos y análisis de impacto/rendimiento. **Requiere validación y aprobación explícita del usuario.**
-   - **Gate 3 (`03-tasks.md`):** Desglose atómico de tareas secuenciadas con comandos de verificación. **Requiere validación y aprobación explícita del usuario.**
+   - **Gate 1 (`01-spec.md`):** Requerimientos del cambio, alcance delta respecto a la Feature base, nuevas US y criterios de aceptación Given-When-Then. **Requiere validación y aprobación explícita del usuario (`[ ] Gate 1 Approved (Human Sign-off)`).**
+   - **Gate 2 (`02-tech-spec.md`):** Arquitectura delta modificada, contratos y análisis de impacto/rendimiento. **Requiere validación y aprobación explícita del usuario (`[ ] Gate 2 Approved (Human Sign-off)`).**
+   - **Gate 3 (`03-tasks.md`):** Desglose atómico de tareas secuenciadas en bloques DAG con comandos deterministas de verificación. **Requiere validación y aprobación explícita del usuario (`[ ] Gate 3 Approved (Human Sign-off)`).**
+   - **Gate 4:** Implementación delta guiada por bloques DAG, tests y 4 auditorías QA en verde.
+   - **Gate 5:** Documentación viva 0DD, sincronización en `specs/BACKLOG.md` a `Done` y push de la rama.
 4. **Propiedad Humana de los Gates (`RN-SDD-HUMAN-GATE-OWNERSHIP`):**
    - Ningún agente de IA puede auto-aprobar un Gate ni marcar casillas de validación humana (`[ ]`) en nombre del usuario.
 5. **Trazabilidad sin Mutación Destructiva (Cero Spec Drift):**
@@ -293,8 +322,8 @@ Cuando una alteración cambia el diseño visual, la tecnología, las dependencia
 Antes de ejecutar cualquier herramienta de escritura o edición sobre `specs/` o sobre el código fuente, el agente debe evaluar:
 1. **¿Qué `FEAT-XXX` se ven afectadas según `specs/BACKLOG.md`?**
    - **No existe la Feature:** Registrar en `specs/BACKLOG.md` (Gate 0) y crear `specs/features/FEAT-XXX-<slug>/`.
-   - **Feature en estado `Pending` o `In Progress` (Gate 5 NO superado):** Aplicar el ajuste en `specs/features/FEAT-XXX-<slug>/` siguiendo el protocolo Stop-the-Line (Sección 7.2).
-   - **Feature en estado `Done` / `Completado` (Gate 5 SUPERADO):**
+   - **Feature en estado `Candidate`, `Backlog`, `In Progress` o `In Review` (Gate 5 NO superado):** Aplicar el ajuste en `specs/features/FEAT-XXX-<slug>/` siguiendo el protocolo Stop-the-Line (Sección 7.2).
+   - **Feature en estado `Done` (Gate 5 SUPERADO):**
      - Si es un fallo respecto a la spec aprobada $\rightarrow$ Crear `specs/bugs/BUG-XXX-<slug>/`.
      - Si es una evolución, nueva librería, nuevo contrato o rediseño $\rightarrow$ **Prohibido tocar `specs/features/FEAT-XXX/`**. Crear un `specs/changes/CR-XXX-<slug>/` por cada Feature `Done` afectada.
 

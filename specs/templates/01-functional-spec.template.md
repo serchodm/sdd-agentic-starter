@@ -1,7 +1,7 @@
 # Especificación Funcional: [Título de la Feature]
 
 - **ID de la Feature**: [Ej. FEAT-006-declarative-agents]
-- **Estado**: [Borrador | En Revisión | Aprobado | En Implementación | Completado]
+- **Estado**: [Draft | In Review | Approved | Done]
 - **Analista Funcional (Ingeniería de Requisitos)**: `@functional-analyst`
 - **Arquitecto Cognitivo / IA**: `@ai-architect`
 - **Tech Lead**: `@orchestrator`
@@ -63,16 +63,16 @@
 ---
 
 ## 4. Requisitos del Sistema bajo Protocolo EARS (Easy Approach to Requirements Syntax)
-> ⚠️ **Obligatorio para `@functional-analyst` y `@ai-architect`**: Todo requisito y regla de negocio debe formularse siguiendo uno de los patrones canónicos EARS ([`.agents/rules/08-ears-requirements-standard.md`](file:///c:/Projects/sdd-agentic-starter/.agents/rules/08-ears-requirements-standard.md)). `@orchestrator` auditará esta tabla como Definition of Ready antes de autorizar Gate 2.
+> ⚠️ **Obligatorio para `@functional-analyst` y `@ai-architect`**: Todo requisito y regla de negocio debe formularse siguiendo uno de los patrones canónicos EARS ([`.agents/rules/03-ears-requirements.md`](file:///c:/Projects/sdd-agentic-starter/.agents/rules/03-ears-requirements.md)). `@orchestrator` auditará esta tabla como Definition of Ready antes de autorizar Gate 2.
 
 | ID Requisito | Fuente | Patrón EARS | Cláusula EARS (Sintaxis Formal Canónica) | Componente Afectado |
 |---|---|---|---|---|
-| `RF-001` | `SRC-001` | `Ubiquitous` | `El sistema Project deberá [comportamiento global permanente]` | [Core / Seguridad] |
-| `RF-002` | `SRC-001` | `Event-driven` | `CUANDO [evento disparador / orden], el sistema Project deberá [respuesta]` | [API / UI] |
-| `RF-003` | `SRC-001` | `State-driven` | `MIENTRAS [el sistema esté en estado X], el sistema Project deberá [respuesta]` | [FSM / Audio / UI] |
-| `RF-004` | `SRC-001` | `Unwanted` | `SI [condición anómala, timeout o error], ENTONCES el sistema Project deberá [respuesta fail-closed]` | [Error Handling] |
-| `RF-005` | `SRC-001` | `Optional` | `DONDE [funcionalidad o API key esté configurada], el sistema Project deberá [respuesta]` | [Config / Plugins] |
-| `RF-006` | `SRC-001` | `Complex` | `MIENTRAS [estado], CUANDO/SI [evento o silencio], el sistema Project deberá [respuesta]` | [Multi-Estado] |
+| `RF-001` | `SRC-001` | `Ubiquitous` | `El sistema [Sistema] deberá [comportamiento global permanente]` | [Core / Seguridad] |
+| `RF-002` | `SRC-001` | `Event-driven` | `CUANDO [evento disparador / orden], el sistema [Sistema] deberá [respuesta]` | [API / UI] |
+| `RF-003` | `SRC-001` | `State-driven` | `MIENTRAS [el sistema esté en estado X], el sistema [Sistema] deberá [respuesta]` | [FSM / Audio / UI] |
+| `RF-004` | `SRC-001` | `Unwanted` | `SI [condición anómala, timeout o error], ENTONCES el sistema [Sistema] deberá [respuesta fail-closed]` | [Error Handling] |
+| `RF-005` | `SRC-001` | `Optional` | `DONDE [funcionalidad o API key esté configurada], el sistema [Sistema] deberá [respuesta]` | [Config / Plugins] |
+| `RF-006` | `SRC-001` | `Complex` | `MIENTRAS [estado], CUANDO/SI [evento o silencio], el sistema [Sistema] deberá [respuesta]` | [Multi-Estado] |
 
 ---
 
@@ -139,4 +139,4 @@
 
 ## 8. Aprobación Formal Gate 1 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 > ⚠️ **Exclusivo para el Stakeholder Humano** (Los agentes de IA tienen prohibido marcar esta casilla por su cuenta):
-- [ ] **Gate 1 Aprobado por el Usuario**: El alcance funcional, requisitos EARS, ejemplos concretos, métricas Planguage y criterios BDD han sido revisados y validados.
+- [ ] **Gate 1 Approved (Human Sign-off):** El alcance funcional, requisitos EARS, ejemplos concretos, métricas Planguage y criterios BDD han sido revisados y validados.

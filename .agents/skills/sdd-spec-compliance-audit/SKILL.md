@@ -5,7 +5,7 @@ description: Audits 1:1 compliance between approved 02-tech-spec.md contracts an
 
 # Skill: `sdd-spec-compliance-audit`
 
-Activate this skill during Phase 11.5 of `pipeline-run` (or before declaring any Feature `FEAT-XXX` or Change Request `CR-XXX` Done at Gate 5) to perform a fresh-context compliance review.
+Activate this skill during Block D of `pipeline-run` (or before declaring any Feature `FEAT-XXX` or Change Request `CR-XXX` Done at Gate 5) to perform a fresh-context compliance review.
 
 ## 1. Mirror Contract & Type Invariant Audit (`type-design-analyzer`)
 1. Read `<spec-dir>/02-tech-spec.md` and extract every declared:
