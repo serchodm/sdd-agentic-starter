@@ -5,7 +5,7 @@
 # `MOD-002`: Pack `capability-ui-design` y Gobernanza Visual SDD
 
 - **Identificador de Módulo:** `MOD-002`
-- **Work Item / RFC de Origen:** `FWK-002-capability-ui-design` ([`RFC-001` v2](../../../../../.sdd/framework/rfcs/RFC-001-ui-ux-pro-max.md))
+- **Work Item / RFC de Origen:** `FWK-002-capability-ui-design` y `FWK-003-conditional-visual-gates` ([`RFC-001` v2](../../../../../.sdd/framework/rfcs/RFC-001-ui-ux-pro-max.md))
 - **Estado Funcional:** `Verified` (Confirmado y verificado por pruebas offline deterministas)
 - **Índice Maestro:** [DOCUMENTATION-INDEX.md](../../../00-governance/DOCUMENTATION-INDEX.md)
 
@@ -26,10 +26,11 @@ Para lograrlo, incorpora el pack independiente `.sdd/catalog/packs/capability-ui
 - Poda dinámica en `sdd-bootstrap` (ES-ES y EN-GB) para proyectos sin UI (`Solo Backend / API Only`, `CLI / Herramienta Local`), preguntas `uiux` condicionales en proyectos con UI y alta automática de `Design System Foundation` en `specs/BACKLOG.md` al aprobar Gate 00 con `uiux.enabled: true`.
 - Contrato estricto de `@ui-ux-designer`, workflow `ui-design-review.md` en Gate 2 (`@ui-ux-designer` → `@a11y-architect` → `@architect` → `[ ] Visual Sign-off (Human)`), subsección §6.1 en `02-technical-spec.template.md`, orquestación en `.agents/agents/orchestrator.md` y DoR de tokens en arquetipos frontend (`front-ui`, `front-engineer`, `tier-frontend`).
 - Esquema canónico semver para `docs/design-system/` (`MASTER.md`, `design-tokens.json`, `CHANGELOG.md`, `pages/SCR-XXX.md`) definido dentro de `skills/sdd-ui-design/SKILL.md`.
+- Suite de Quality Gates visuales condicionales y validador determinista offline `scripts/sdd_tokens_validator.py` (Python 3.12 stdlib, `<= 500` líneas) para cotejo bidireccional JSON ↔ `MASTER.md`, escaneo estático de literales prohibidos (`--check-sources`), 4ª auditoría en `@qa-tester`, arquetipo `front-test.archetype.md` y gobernanza estricta de baselines (`INCONCLUSIVE` ante ausencias, prohibición de auto-actualización agéntica de snapshots) (`FWK-003`).
 
 ### 1.3. Excluido Explícitamente (Alcance Futuro)
 - **No** se crea una carpeta `docs/design-system/` vacía en el repositorio starter; dicha estructura nace únicamente en el proyecto usuario al ejecutar la feature fundacional `Design System Foundation`.
-- *Quality gates* visuales automáticos en `@qa-tester`, `@a11y-architect` y CI/CD (contraste, teclado, capturas con baseline humana): corresponde a **`FWK-003`**.
+
 - Unificación global de terminología de Gates en `SDD_FRAMEWORK.md`, `BACKLOG.md` y `AGENTS.md`: corresponde a **`FWK-004`**.
 - Soporte operativo para `targets` distintos de `web` (solo preparado a nivel de metadato en `pack.json`).
 
@@ -138,6 +139,7 @@ En la plantilla limpia (con `[ ] Gate 00 Approved`):
 | `RF-009`, `RF-010`, `RN-04`, `RN-05`, `RN-06` | DoR Gate 1 + wireframes §18 (`BLOCKED_DOR_`), Stop-the-Line funcional, cadena `@ui-ux-designer` → `@a11y-architect` → `@architect` → `[ ] Visual Sign-off (Human)` y fronteras de escritura. | `Verified` |
 | `RF-011`, `RN-07` | Esquema semver `docs/design-system/`, prohibición `--force`, referencias a tokens en `SCR-XXX` / arquetipos frontend y cardinalidad 1:1 en CRs post-`Done`. | `Verified` |
 | `RF-012` | Preservación byte a byte de `capability-ui-design` frente a `scripts/sdd_catalog_import.py`. | `Verified` |
-| `PERF-FWK-TESTS-01` | Suite completa offline en `tests/` (`37` tests totales, objetivo `< 3.0s` / límite `<= 8.0s`, `0` llamadas de red reales, módulos `<= 500` líneas). | `Verified` |
+| `FWK-003: RF-001`..`RF-010`, `RN-01`..`RN-05` | Validador determinista `sdd_tokens_validator.py`, anti-deriva estilística, 4ª auditoría en `@qa-tester`, baselines `INCONCLUSIVE` y poda en `api-only`. | `Verified` |
+| `PERF-FWK-TESTS-01` / `03` | Suite completa offline en `tests/` (`45` tests totales, `0` llamadas de red reales, módulos `<= 500` líneas). | `Verified` |
 
 *(Para la correspondencia exacta con ficheros fuente y métodos de prueba, véase [TRACEABILITY-MATRIX.md](../../../../traceability/TRACEABILITY-MATRIX.md)).*

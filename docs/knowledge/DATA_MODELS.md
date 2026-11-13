@@ -1,6 +1,6 @@
 # Catálogo de Entidades y Modelos de Datos
 
-## 1. Modelos Inmutables del Framework (`FWK-001` & `FWK-002`)
+## 1. Modelos Inmutables del Framework (`FWK-001`, `FWK-002` & `FWK-003`)
 
 | Entidad / Modelo | Capa / Módulo | Propósito | Campos Clave | Relaciones / Restricciones |
 | :--- | :--- | :--- | :--- | :--- |
@@ -12,6 +12,9 @@
 | `PlannedFile` | `scripts/sdd_agent_generator.py` (`@dataclass(frozen=True)`) | Unidad determinista planificada para prevalidación *fail-closed* y escritura. | `rel_path: str`, `content: bytes`, `sha256: str`, `owner: str`, `kind: Literal["agent", "skill", "rule", "workflow"]` | `rel_path` POSIX relativo al repo; `owner` es `"builder:<name>"`, `"specialists"` o `"pack:<dir_name>"`. |
 | `PackDefinition` | `scripts/sdd_catalog_import.py` (`TypedDict`) | Definición tipada de cada pack integrado en `STACK_PACKS`. | `id`, `family`, `requires`, `description`, `rules`, `specialists`, `skills`, `workflows` | Mapea el catálogo importable desde `affaan-m/ecc` (sin incluir `capability-ui-design`). |
 | `BuilderSpec` / `PresetSpec` | `scripts/sdd_agent_generator.py` (`TypedDict`) | Definición de builders y presets (`compact`, `granular`, `api-only`, `spa-only`). | `name`, `archetype`, `zone_paths`, `dod`, `forbidden` / `description`, `builders` | Compilados vía arquetipos o `.agents/overrides/<name>.md`. |
+| `ValidationSeverity` | `scripts/sdd_tokens_validator.py` (`Enum(str)`) | Severidad de violaciones detectadas durante la validación de tokens. | `ERROR`, `WARNING`, `INFO` | `ERROR` invalida el resultado (`exit 1`); `WARNING` invalida solo si `strict=True` (`FWK-003`). |
+| `TokenViolation` | `scripts/sdd_tokens_validator.py` (`@dataclass`) | Registro atómico de una discrepancia de tokens o literal de estilo prohibido. | `severity: ValidationSeverity`, `category: str`, `message: str`, `file_path: str`, `line_number: int`, `token_name: str`, `literal_value: str` | Trazabilidad por fichero y línea exacta en código fuente o specs (`FWK-003`). |
+| `TokenValidationResult` | `scripts/sdd_tokens_validator.py` (`@dataclass`) | Resultado consolidado de la suite de validación de tokens de diseño. | `is_valid: bool`, `total_tokens_checked: int`, `total_sources_scanned: int`, `missing_in_master: list[str]`, `missing_in_json: list[str]`, `violations: list[TokenViolation]`, `skipped_reason: str \| None` | Serialización a JSON (`--format json`) o informe legible en texto plano (`FWK-003`). |
 
 ---
 
@@ -82,6 +85,61 @@ Ubicado en `.sdd/catalog/packs/capability-ui-design/vendor/ui-ux-pro-max/VENDOR.
 | `docs/design-system/design-tokens.json` | Tokens estructurados sincronizados 1:1 con `MASTER.md` | Claves raíz obligatorias: `version`, `meta` (`owner_feature`, `provider`, `hifi_format`, `brand_constraints`), `colors`, `typography`, `spacing`, `radii`, `shadows`, `motion`, `breakpoints`. |
 | `docs/design-system/CHANGELOG.md` | Historial semver trazado a `FEAT-XXX` / `CR-XXX` | `MAJOR` (`X.0.0`, incompatible, lista obligatoria de `SCR-###` afectados), `MINOR` (`0.X.0`, adiciones retrocompatibles), `PATCH` (`0.0.X`, ajuste de valor sin ruptura). |
 | `docs/design-system/pages/SCR-XXX.md` | Overrides específicos por pantalla (`SCR-XXX`) | Cabecera (`screen_id`, `owner_feature`, `design_system: MASTER@<rango>`), referencia exclusiva a tokens de `design-tokens.json` (cero literales `#hex`/`px` sin token). |
+
+### 2.7. Estructura Canónica DTCG de `design-tokens.json` y Convención de Escape (`FWK-003`)
+
+El validador `scripts/sdd_tokens_validator.py` valida la jerarquía normalizada de tokens basada en el estándar W3C DTCG (*Design Tokens Community Group*):
+
+```json
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "version": "1.0.0",
+  "color": {
+    "brand": {
+      "primary": { "value": "#2563eb", "type": "color", "description": "Color principal de marca" },
+      "secondary": { "value": "#475569", "type": "color" }
+    },
+    "feedback": {
+      "error": { "value": "#dc2626", "type": "color" },
+      "success": { "value": "#16a34a", "type": "color" },
+      "warning": { "value": "#f59e0b", "type": "color" }
+    },
+    "background": {
+      "default": { "value": "#ffffff", "type": "color" },
+      "subtle": { "value": "#f8fafc", "type": "color" }
+    },
+    "text": {
+      "primary": { "value": "#0f172a", "type": "color" },
+      "muted": { "value": "#64748b", "type": "color" }
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "base": { "value": "Inter, sans-serif", "type": "fontFamily" },
+      "heading": { "value": "Inter, sans-serif", "type": "fontFamily" }
+    },
+    "fontSize": {
+      "sm": { "value": "0.875rem", "type": "dimension" },
+      "base": { "value": "1rem", "type": "dimension" },
+      "lg": { "value": "1.125rem", "type": "dimension" },
+      "xl": { "value": "1.25rem", "type": "dimension" }
+    }
+  },
+  "spacing": {
+    "1": { "value": "0.25rem", "type": "dimension" },
+    "2": { "value": "0.5rem", "type": "dimension" },
+    "4": { "value": "1rem", "type": "dimension" },
+    "6": { "value": "1.5rem", "type": "dimension" },
+    "8": { "value": "2rem", "type": "dimension" }
+  }
+}
+```
+
+- **Aplanamiento a Dot-Notation**: Las hojas del árbol que contienen `value` o `$value` se aplanan a notación de puntos (p. ej. `color.brand.primary` con valor `#2563eb`, `spacing.4` con `1rem`). Los metadatos (`$schema`, `version`, `meta`) son excluidos automáticamente del aplanamiento.
+- **Convención de Escape de Literales en Ficheros Fuente**: Cuando sea estrictamente necesario emplear un literal de estilo sin token (casos de borde o estilos de depuración aislados), se admiten comentarios de escape en la misma línea:
+  - En TypeScript / TSX / JavaScript / JSX: `// sdd-token-ignore`
+  - En CSS / SCSS / SASS / Less / HTML / Vue / Svelte: `/* sdd-token-ignore */`
+  El escáner `--check-sources` ignora cualquier línea que contenga estos marcadores, evitando falsos positivos sin relajar las restricciones globales.
 
 ---
 

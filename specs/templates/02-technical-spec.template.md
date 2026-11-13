@@ -101,6 +101,12 @@ sequenceDiagram
 ## 7. Pruebas, Auditoría Semántica y Criterios de Verificación
 - **Backend**: Tests unitarios y de integración con `pytest backend/tests/`.
 - **Frontend**: Tests con `vitest` y chequeo de tipos con `npx tsc --noEmit`.
+- **Quality Gates Visuales (Features con pantallas `SCR-###`)**:
+  - Coherencia de tokens: `uv run python scripts/sdd_tokens_validator.py --check-sources frontend/` (cero literales hardcodeados).
+  - Accesibilidad WCAG 2.2 AA: Contraste >= 4.5:1 y navegación por teclado certificada.
+  - Responsive: Verificación en 375px, 768px y 1440px.
+  - Regresión visual: Baselines aprobados; falta de captura catalogada como `INCONCLUSIVE` (prohibida auto-actualización por IA).
+  *(Indicar `N/A` si la feature no toca pantallas).*
 - **Auditoría de Calidad (`rea` + `ecc`)**:
   - `verify_architecture_boundaries.py` en verde.
   - Verificación de perturbación semántica (los tests deben fallar si se rompe la regla de negocio).

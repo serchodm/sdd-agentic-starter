@@ -35,7 +35,8 @@ flowchart TD
 | `.gitattributes` | Fija `text eol=lf` para `.sdd/catalog/packs/capability-ui-design/**` y `.agents/**`. | Evita discrepancias CRLF/LF en Windows frente a hashes SHA-256 de `VENDOR.lock.json` y `squad.lock.json`. |
 | `.agents/pack-rules/<pack>/` | Aloja reglas específicas de packs activos (p. ej. `coding-style.md`) fuera de `.agents/rules/00-..07-`. | Cumple `RN-SDD-SELECTIVE-CONTEXT`; se poda automáticamente al desactivar el pack si no hay ediciones manuales. |
 | `.agents/squad.lock.json` | Fuente de verdad de estado materializado (`schema_version: 2`, `active_packs`, `files` con `sha256`/`owner`/`kind`). | No se sincroniza en `sdd_sync.py`; en plantilla base con Gate 00 sin aprobar mantiene `active_packs: []` y 22 ficheros base (2 builders + 20 especialistas). |
-| `tests/test_sdd_pack_materialization.py` & `tests/test_sdd_ui_design.py` | Suites unitarias y de aceptación 100% offline (`37` tests totales en `tests/`, cubriendo `FWK-001` y los 7 grupos / Escenarios 1–7 de `FWK-002`, ambos `<= 500` líneas). | Usan `tempfile.TemporaryDirectory`, *fetcher* y *runner* mockeados con `0` llamadas de red reales. |
+| `scripts/sdd_tokens_validator.py` | Validador determinista offline de tokens de diseño y anti-deriva estilística. Comprueba la estructura DTCG de `design-tokens.json`, el cotejo bidireccional contra `MASTER.md` y el escaneo estático de ficheros frontend (`--check-sources`) para detectar literales de color hardcodeados. | Solo librería estándar Python 3.12+; *fail-closed* ante discrepancias o literales prohibidos; soporte de comentarios de escape y flags `--allow-missing`, `--strict` y `--format json` (`<= 500` líneas). |
+| `tests/test_sdd_pack_materialization.py`, `tests/test_sdd_ui_design.py` & `tests/test_sdd_visual_gates.py` | Suites unitarias y de aceptación 100% offline (`45` tests totales en `tests/`: 13 en pack materialization, 24 en ui design y 8 en visual gates; todos `<= 500` líneas). | Usan `tempfile.TemporaryDirectory`, fixtures sintéticas y runner offline con `0` llamadas de red reales. |
 
 ### 1.1. Flujo Condicional de Diseño Visual en Gate 2 (`FWK-002`)
 
@@ -53,6 +54,47 @@ flowchart LR
 
 - **Poda UI-Only:** En proyectos `api-only` o CLI, `sdd-bootstrap` poda las preguntas `uiux` y no activa `capability-ui-design`; con `capability-web-frontend` y `uiux.enabled: false`, permanecen activos `@a11y-architect` y las skills ECC (`design-system`, `accessibility`, `browser-qa`) sin `@ui-ux-designer`.
 - **Plantilla Base Limpia:** El repositorio starter **no** crea `docs/design-system/` vacío; dicha carpeta nace únicamente en el proyecto usuario durante la feature fundacional `Design System Foundation` (registrada en `specs/BACKLOG.md` tras Gate 00 cuando `uiux.enabled: true`).
+
+### 1.2. Flujo Bi-Nivel de Quality Gates Visuales y Anti-Deriva en Gate 4 (`FWK-003`)
+
+Cuando una feature afecta a pantallas (`SCR-###`) con `capability-ui-design` o interfaz web activa, `@qa-tester` y el arquetipo `front-test` ejecutan el protocolo de verificación bi-nivel en Gate 4:
+
+```mermaid
+flowchart TD
+    G4["Gate 4: Implementación y QA (@qa-tester / front-test)"] --> CHECK_UI{"¿El proyecto tiene UI / pantallas SCR-###?"}
+    
+    CHECK_UI -->|No: api-only / CLI| SKIP["Zero Overhead: Omitir Quality Gate Visual (PASS directo / SKIPPED_NO_UI)"]
+    
+    CHECK_UI -->|Sí| L1["NIVEL 1: Validación Estática de Tokens (100% Offline / Obligatorio)"]
+    L1 --> EXEC_TOKENS["uv run python scripts/sdd_tokens_validator.py --check-sources <dir>"]
+    EXEC_TOKENS --> TOK_RES{"¿Tokens y MASTER.md coherentes y sin literales prohibidos?"}
+    TOK_RES -->|No| FAIL_TOK["FAIL (Fail-Closed): Reportar deriva o literales -> Detener Gate 4"]
+    TOK_RES -->|Sí| L2["NIVEL 2: Pruebas Dinámicas de Navegador (Condicional a Stack)"]
+
+    L2 --> TOOL_AVAIL{"¿Herramientas de navegador configuradas e instaladas?"}
+    TOOL_AVAIL -->|No instaladas| DEG["Degradación Elegante: SKIPPED_UNAVAILABLE_TOOL<br/>(Aviso explícito, nunca PASS falso; exige verificación manual)"]
+    TOOL_AVAIL -->|Instaladas: Playwright / axe-core| DYN_EXEC["Ejecutar suite de tests visuales (contraste, teclado, responsive, capturas)"]
+
+    DYN_EXEC --> BASE_EXISTS{"¿Existen capturas baseline previas?"}
+    BASE_EXISTS -->|No| INCONC["INCONCLUSIVE (Bloqueante): Requiere generar baseline y sign-off humano"]
+    BASE_EXISTS -->|Sí| PIX_DIFF{"¿Diferencia de píxeles / layout shift > umbral?"}
+    PIX_DIFF -->|Sí| REG_FAIL["FAIL: Regresión visual bloqueante (Prohibido --update-snapshots por IA)"]
+    PIX_DIFF -->|No| PASS_ALL["PASS: Certificar 4ª Auditoría de Calidad en Gate 4"]
+
+    FAIL_TOK --> STOP["Stop-the-Line"]
+    INCONC --> STOP
+    REG_FAIL --> STOP
+    PASS_ALL --> G5["Habilitar paso a Gate 5 (@documentator)"]
+    DEG --> G5
+    SKIP --> G5
+```
+
+#### Estados de Ejecución del Quality Gate Visual:
+- **`PASS`**: Todas las comprobaciones visuales, ratios de contraste WCAG 2.2 AA (`>= 4.5:1`), foco accesible por teclado, responsive y comparación de capturas están dentro del umbral de tolerancia (`< 0.1%` de píxeles).
+- **`FAIL`**: Violación explícita de contraste, ausencia de indicador de foco, desbordamiento horizontal inesperado o regresión de píxeles (`>= 0.1%`). Bloqueante para Gate 4.
+- **`INCONCLUSIVE`**: No existe captura de referencia previa (baseline) para la pantalla o componente en la ruta designada. Bloquea la aprobación de Gate 4 hasta que el baseline sea generado y revisado/aprobado expresamente por un humano (`RN-SDD-HUMAN-GATE-OWNERSHIP`).
+- **`SKIPPED_UNAVAILABLE_TOOL`**: El proyecto requiere pruebas dinámicas pero los navegadores/herramientas no están instalados en el entorno de ejecución. No bloquea automáticamente el pipeline si el Nivel 1 está en verde, pero emite una advertencia formal y exige verificación visual manual humana (nunca emite un aprobado falso).
+- **`SKIPPED_NO_UI`**: El proyecto está configurado sin interfaz gráfica (`api-only`, CLI o `uiux.enabled: false`). Salida exitosa directa con coste cero en tiempo y tokens.
 
 ---
 

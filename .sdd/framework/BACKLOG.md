@@ -12,7 +12,7 @@
 | :--- | :--- | :--- | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | `FWK-001` | RFC-001 | Materialización y activación fiables de packs | P0 | — | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-002` | RFC-001 | Pack `capability-ui-design` (UI UX Pro Max) | P1 | FWK-001 | [x] | [x] | [x] | [x] | [x] | Done |
-| `FWK-003` | RFC-001 | Quality gates visuales condicionales | P2 | FWK-002 | [ ] | [ ] | [ ] | [ ] | [ ] | Backlog |
+| `FWK-003` | RFC-001 | Quality gates visuales condicionales | P2 | FWK-002 | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-004` | — | Unificar terminología de Gates | P3 | — | [ ] | [ ] | [ ] | [ ] | [ ] | Candidato |
 
 *Estados: `Candidato` → `Backlog` → `In Progress` → `In Review` → `Done`. Los items de un RFC solo pasan a `In Progress` tras su aceptación.*
