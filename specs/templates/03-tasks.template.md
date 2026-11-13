@@ -114,10 +114,16 @@ graph TD
 - [ ] **Tarea D.2** [`@front-test`]: Ejecución de tests frontend y typecheck estricto
   - *Comando de verificación DoD*: `cd frontend && npx tsc --noEmit && npm test -- --run` (100% verde)
 
-- [ ] **Tarea D.3** [`@qa-auditor`]: Auditoría estricta de límites arquitectónicos (`rea` + `ecc`)
+- [ ] **Tarea D.3** [`@front-test` / `@qa-tester`]: Certificar Quality Gate Visual y Coherencia de Tokens (Condicional a pantallas `SCR-###`)
+  - *Ámbito permitido*: `frontend/tests/`, `specs/features/<feat>/`
+  - *Archivos exactos*: `frontend/tests/visual/test_[pantalla].test.ts`
+  - *Contrato de referencia*: `02-tech-spec.md` Sección 6.1 y 7
+  - *Comando de verificación DoD*: `uv run python scripts/sdd_tokens_validator.py --check-sources frontend/ && npm run test:visual`
+
+- [ ] **Tarea D.4** [`@qa-auditor`]: Auditoría estricta de límites arquitectónicos (`rea` + `ecc`)
   - *Comando de verificación DoD*: `python .agents/scripts/verify_architecture_boundaries.py && python .agents/scripts/sdd_healthcheck.py`
 
-- [ ] **Tarea D.4** [`@documentator`]: Consolidación documental y actualización de Conocimiento Vivo
+- [ ] **Tarea D.5** [`@documentator`]: Consolidación documental y actualización de Conocimiento Vivo
   - *Ámbito permitido*: `docs/es/`, `docs/en/`, `docs/knowledge/`
   - *Archivos a actualizar*:
     - `docs/es/...` y `docs/en/...` (Documentación viva de usuario y arquitectura)

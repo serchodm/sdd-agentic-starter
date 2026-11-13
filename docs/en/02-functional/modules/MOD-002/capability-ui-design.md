@@ -5,7 +5,7 @@
 # `MOD-002`: `capability-ui-design` Pack and SDD Visual Governance
 
 - **Module Identifier:** `MOD-002`
-- **Source Work Item / RFC:** `FWK-002-capability-ui-design` ([`RFC-001` v2](../../../../../.sdd/framework/rfcs/RFC-001-ui-ux-pro-max.md))
+- **Source Work Item / RFC:** `FWK-002-capability-ui-design` and `FWK-003-conditional-visual-gates` ([`RFC-001` v2](../../../../../.sdd/framework/rfcs/RFC-001-ui-ux-pro-max.md))
 - **Functional Status:** `Verified` (Confirmed and verified by deterministic offline tests)
 - **Master Index:** [DOCUMENTATION-INDEX.md](../../../00-governance/DOCUMENTATION-INDEX.md)
 
@@ -26,10 +26,11 @@ It introduces the standalone `.sdd/catalog/packs/capability-ui-design/` pack, th
 - Dynamic pruning in `sdd-bootstrap` (ES-ES and EN-GB) for non-UI projects (`Backend Only / API Only`, `CLI`), conditional `uiux` prompts for UI projects, and automatic registration of `Design System Foundation` in `specs/BACKLOG.md` upon Gate 00 approval when `uiux.enabled: true`.
 - Strict `@ui-ux-designer` contract, 6-step Gate 2 `ui-design-review.md` workflow (`@ui-ux-designer` → `@a11y-architect` → `@architect` → `[ ] Visual Sign-off (Human)`), §6.1 subsection in `02-technical-spec.template.md`, orchestration rules in `.agents/agents/orchestrator.md`, and Design System DoR/DoD tokens in frontend archetypes (`front-ui`, `front-engineer`, `tier-frontend`).
 - Canonical semantic-versioned schema for `docs/design-system/` (`MASTER.md`, `design-tokens.json`, `CHANGELOG.md`, `pages/SCR-XXX.md`) defined inside `skills/sdd-ui-design/SKILL.md`.
+- Conditional visual Quality Gates suite and deterministic offline validator `scripts/sdd_tokens_validator.py` (Python 3.12 stdlib, `<= 500` lines) for bidirectional JSON ↔ `MASTER.md` verification, static forbidden literals scanning (`--check-sources`), 4th audit in `@qa-tester`, `front-test.archetype.md` archetype, and strict baseline governance (`INCONCLUSIVE` upon missing snapshots, prohibiting AI auto-approvals) (`FWK-003`).
 
 ### 1.3. Explicitly Out-of-Scope (Future Scope)
 - **No** empty `docs/design-system/` directory is created in the starter repository; that directory originates solely in a target project during the `Design System Foundation` feature.
-- Automated visual quality gates in `@qa-tester`, `@a11y-architect`, and CI/CD (contrast, keyboard, human-baselined screenshots): belongs to **`FWK-003`**.
+
 - Global Gate terminology unification across `SDD_FRAMEWORK.md`, `BACKLOG.md`, and `AGENTS.md`: belongs to **`FWK-004`**.
 - Operational support for non-`web` `targets` (prepared as metadata in `pack.json` only).
 
@@ -138,6 +139,7 @@ In the clean starter template (with `[ ] Gate 00 Approved`):
 | `RF-009`, `RF-010`, `RN-04`, `RN-05`, `RN-06` | Gate 1 + §18 wireframe DoR (`BLOCKED_DOR_`), functional Stop-the-Line, `@ui-ux-designer` → `@a11y-architect` → `@architect` → `[ ] Visual Sign-off (Human)` chain, and write boundaries. | `Verified` |
 | `RF-011`, `RN-07` | Semver `docs/design-system/` schema, `--force` prohibition, token references in `SCR-XXX` / frontend archetypes, and 1:1 CR cardinality post-`Done`. | `Verified` |
 | `RF-012` | Byte-for-byte preservation of `capability-ui-design` during `scripts/sdd_catalog_import.py`. | `Verified` |
-| `PERF-FWK-TESTS-01` | Full offline test suite in `tests/` (`37` total tests, target `< 3.0s` / ceiling `<= 8.0s`, `0` real network requests, modules `<= 500` lines). | `Verified` |
+| `FWK-003: RF-001`..`RF-010`, `RN-01`..`RN-05` | Deterministic `sdd_tokens_validator.py` validator, anti-drift checks, 4th audit in `@qa-tester`, `INCONCLUSIVE` baselines, and `api-only` pruning. | `Verified` |
+| `PERF-FWK-TESTS-01` / `03` | Full offline test suite in `tests/` (`45` total tests, `0` real network requests, modules `<= 500` lines). | `Verified` |
 
 *(For exact source file and test method mappings, see [TRACEABILITY-MATRIX.md](../../../../traceability/TRACEABILITY-MATRIX.md)).*
