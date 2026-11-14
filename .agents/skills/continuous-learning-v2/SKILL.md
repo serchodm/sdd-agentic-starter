@@ -1,37 +1,19 @@
 ---
 name: continuous-learning-v2
-description: Motor de aprendizaje continuo basado en Instintos Atómicos (Instincts v2 de affaan-m/ECC) con puntuación de confianza (0.3-0.9), alcance (agent/project/global) y evolución hacia skills/reglas.
+description: Motor de aprendizaje continuo basado en Instintos Atómicos (affaan-m/ECC) con puntuación de confianza (0.3-0.95), alcance (agent/project/global) y evolución hacia skills/reglas.
 ---
 
-# Skill: `continuous-learning-v2` (Motor de Aprendizaje por Instintos de `affaan-m/ECC`)
+# Skill: `continuous-learning-v2` (Instintos Atómicos de `affaan-m/ECC`)
 
-Esta meta-skill implementa la arquitectura **`continuous-learning-v2`** de `affaan-m/ECC` tanto para los agentes de la Sala de Consejo (`backend/agents/`) como para el arnés de ingeniería (`.agents/`). Convierte correcciones del usuario, preferencias descubiertas y lecciones operativas en **Instintos Atómicos** reutilizables.
+Convierte correcciones del usuario, preferencias descubiertas y lecciones operativas del arnés (`.agents/`) en **Instintos Atómicos** reutilizables gestionados con `scripts/sdd_instincts.py` y `.agents/instincts.json`.
 
-## 1. Modelo de un Instinto Atómico (`Instinct`)
+## 1. Modelo de Instinto (`Instinct`)
+- **`trigger`**: Condición exacta de activación (ej. *"al validar contratos espejo en `02-tech-spec.md`"*).
+- **`action`**: Comportamiento concreto esperado.
+- **`confidence`** (`0.30` – `0.95`): `0.30–0.50` tentativo, `0.70` fuerte (corrección explícita), `0.85–0.95` consolidado.
+- **`scope`**: `agent` (privado del rol), `project` (repositorio actual en `.agents/instincts.json`) o `global` (transversal).
 
-Un instinto es una regla conductual pequeña, explícita y verificable vinculada a un disparador claro:
-
-- **`trigger`**: La situación o condición exacta en la que se activa (ej. *"al responder una consulta técnica junto a un especialista"* o *"al modificar un DTO en `backend/src/api/dtos/`"*).
-- **`action`**: La acción concreta que el agente debe ejecutar (ej. *"limitar la intervención de Project a un Highlight Ejecutivo de 2-3 frases sin duplicar el listado del experto"*).
-- **`confidence`**: Nivel de certeza entre `0.30` y `0.95`:
-  - `0.30 - 0.50`: Tentativo (observado una sola vez).
-  - `0.70`: Fuerte (preferencia o corrección explícita del usuario — valor por defecto en *motu proprio*).
-  - `0.85 - 0.95`: Consolidado (validado repetidamente sin contradicciones).
-- **`scope`**:
-  - `agent`: Privado de la entidad (persiste en `MEMORY.md` del agente y en `MnemoConsolidationService` con `scope="agent"`).
-  - `project` / `global`: Compartido con todo el Consejo o el repositorio (persiste en `USER.md` o `MnemoConsolidationService` con `scope="global"`).
-
-## 2. Destinos de Persistencia Atómica (`AutonomousLearningService`)
-
-| Categoría (`category`) | Archivo Físico en `backend/agents/<id>/` | Consolidación Semántica (`Mnemo`) |
-| :--- | :--- | :--- |
-| `user_preference` | `USER.md` (`## Preferencias y Estilo del Usuario Aprendidos`) | `scope="global"` |
-| `self_lesson` | `MEMORY.md` (`## Instintos y Lecciones Aprendidas`) | `scope="agent"` |
-| `council_fact` | `MEMORY.md` (`## Instintos y Lecciones Aprendidas`) | `scope="global"` |
-| `skill_refinement` | `skills/<target_skill_slug>/SKILL.md` (`## Refinamientos Aprendidos en Ejecución`) | `scope="agent"` |
-
-## 3. Ciclo de Evolución (`/learn` $\rightarrow$ `/evolve`)
-
-1. **Captura en Caliente**: Durante cualquier turno, el agente invoca `learn_and_remember` *motu proprio* cuando detecta una preferencia, corrección o hecho relevante.
-2. **Invalidación Inmediata de Caché**: `AutonomousLearningService` escribe de forma atómica (`tempfile` + `os.replace`) e invalida la caché de `AgentAnatomyHydrator` para que el siguiente turno ya opere con el nuevo instinto.
-3. **Promoción (`/evolve`)**: Cuando $\ge 3$ instintos convergen en un mismo dominio con confianza $\ge 0.75$, `@conversation-analyzer` los agrupa en una nueva skill o regla permanente.
+## 2. Ciclo de Vida (`/learn` $\rightarrow$ `/evolve`)
+1. **Captura (`/learn`):** Registrar nuevos instintos vía `uv run python scripts/sdd_instincts.py` en `.agents/instincts.json`.
+2. **Decaimiento y Similitud:** Los instintos antiguos decaen hasta `0.30` si no se refuerzan y evitan duplicados por similitud semántica.
+3. **Promoción (`/evolve`):** Cuando $\ge 3$ instintos convergen con confianza $\ge 0.75$ (evaluables por `@conversation-analyzer`), se consolidan en `.agents/skills/<slug>/SKILL.md` o en `.agents/rules/`.

@@ -1,15 +1,13 @@
 ---
 name: dev
-description: Modo de contexto de Implementación Activa (Gate 4) de affaan-m/ECC orientado a construcción limpia, TDD y verificación determinista DoD.
+description: Contexto de Implementación Activa (Gate 4, affaan-m/ECC) orientado a código tipado, TDD y verificación DoD.
 ---
 
-# Contexto Operativo: `dev.md` (Modo Implementación — Gate 4)
+# Contexto: `dev.md` (Gate 4)
 
-- **Modo**: Desarrollo e Implementación Activa (`Gate 4`).
-- **Foco Principal**: Construir código limpio, tipado y alineado 1:1 con `02-tech-spec.md` y `03-tasks.md`, respaldado por pruebas unitarias deterministas.
-
-## Comportamiento en Modo `dev`
-1. **Respeto Estricto a Contratos Sellados**: Implementar exactamente las firmas, DTOs (`camelCase`) e interfaces especificadas en `02-tech-spec.md`.
-2. **Ciclo Corto Código $\rightarrow$ Verificación**: Tras cada archivo creado o editado, ejecutar el comando determinista de compilación o test (`py_compile`, `pytest`, `tsc --noEmit`, `vitest`).
-3. **Cero Fallos Silenciosos**: Manejar errores explícitamente con logs estructurados y tipos seguros.
-4. **Prioridad de Herramientas**: `read_file` (acotado al ámbito) $\rightarrow$ `write_file` / `edit_file` $\rightarrow$ `run_command` (verificación DoD).
+- **Foco:** Código limpio y tipado 1:1 con `02-tech-spec.md` y `03-tasks.md`, respaldado por pruebas deterministas.
+- **Reglas de Ejecución:**
+  1. Respetar exactamente DTOs, firmas e interfaces selladas en `02-tech-spec.md`.
+  2. Ciclo corto código $\rightarrow$ comando DoD de `specs/STACK.md` (§2.5).
+  3. Cero fallos silenciosos; usar tipos explícitos y logging estructurado.
+  4. Lectura acotada (`view_file` por rangos) $\rightarrow$ edición mínima $\rightarrow$ verificación.

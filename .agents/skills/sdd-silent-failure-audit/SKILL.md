@@ -1,20 +1,12 @@
 ---
 name: sdd-silent-failure-audit
-description: Hunts swallowed exceptions, empty catch blocks, silent fallback defaults, and unpropagated errors in Python and TypeScript code. Inspired by affaan-m/ecc (silent-failure-hunter) and morluto/rea (Fail-Closed Engineering).
+description: Hunts swallowed exceptions, empty catch blocks, silent fallback defaults, and unpropagated errors in Python and TypeScript code (affaan-m/ecc silent-failure-hunter & morluto/rea Fail-Closed).
 ---
 
 # Skill: `sdd-silent-failure-audit`
 
-Activate this skill before Gate 5 closure to ensure the implementation adheres to **Fail-Closed Engineering** and never masks runtime or contract failures silently.
+Run before Gate 5 closure to enforce **Fail-Closed Engineering** across all files touched by the active work item:
 
-## 1. Automated & Manual Anti-Pattern Scan
-Inspect all files created or modified by the current `FEAT-XXX`, `CR-XXX`, or `BUG-XXX` for:
-
-1. **Swallowed Exceptions in Python (`backend/src/`):**
-   - `except Exception: pass` or bare `except:` without structured logging (`structlog`/`logging`) or domain error re-raising.
-   - Returning `None` or `{}` inside an `except` block when the contract does not explicitly model an optional/fallback state in `02-tech-spec.md`.
-2. **Swallowed Rejections & Silent Catches in TypeScript (`frontend/src/`):**
-   - `.catch(() => {})` or `catch (err) { /* ignore */ }` without updating error state or emitting a diagnostic telemetry event.
-   - Silent early `return;` when receiving malformed WebSocket/SSE or Event Bus payloads without recording a warning or error counter.
-3. **Unauthorized Fallback Masquerading (`morluto/rea` Fail-Closed Rule):**
-   - Verify that if a required dependency, WebGL2 context, OIDC provider, or database connection fails, the system transitions to an explicit, observable degraded/error state defined in `01-spec.md` rather than pretending the operation succeeded.
+1. **Swallowed Exceptions (Python):** Flag `except Exception: pass` or bare `except:` without structured logging or typed re-raise; reject returning `None` / `{}` on unexpected failures unless explicitly modeled in `02-tech-spec.md`.
+2. **Swallowed Rejections (TypeScript/JS):** Flag `.catch(() => {})`, empty `catch (err) {}`, or silent early `return;` on malformed payloads without error state or diagnostic logs.
+3. **Unauthorized Fallbacks (`morluto/rea` Fail-Closed):** Verify failing dependencies, storage, auth, or render contexts transition to an explicit observable error state from `01-spec.md` instead of masquerading success.

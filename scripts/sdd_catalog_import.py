@@ -19,7 +19,9 @@ RAW_BASE = "https://raw.githubusercontent.com/affaan-m/ecc/main"
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 CATALOG_DIR = REPO_ROOT / ".sdd" / "catalog"
 SPECIALISTS_DIR = CATALOG_DIR / "specialists"
+SPECIALISTS_OPTIN_DIR = CATALOG_DIR / "specialists-optin"
 PACKS_DIR = CATALOG_DIR / "packs"
+DEFAULT_SPECIALISTS: tuple[str, ...] = ("security-reviewer",)
 
 TextFetcher = Callable[[str], str | None]
 
@@ -354,11 +356,18 @@ tools:
 def import_specialists(
     fetcher: TextFetcher = fetch_text,
     specialists_dir: pathlib.Path = SPECIALISTS_DIR,
+    optin_dir: pathlib.Path | None = None,
 ) -> list[str]:
-    """Import universal ECC specialists into specialists_dir via an injectable fetcher."""
+    """Import universal ECC specialists into default and opt-in catalog directories."""
     warnings: list[str] = []
     specialists_dir.mkdir(parents=True, exist_ok=True)
-    print(f"\n[+] Importando Especialistas Universales ECC a {specialists_dir}...")
+    resolved_optin = (
+        optin_dir
+        if optin_dir is not None
+        else (SPECIALISTS_OPTIN_DIR if specialists_dir == SPECIALISTS_DIR else specialists_dir)
+    )
+    resolved_optin.mkdir(parents=True, exist_ok=True)
+    print(f"\n[+] Importando Especialistas Universales ECC a {specialists_dir} (opt-in: {resolved_optin})...")
     for name in UNIVERSAL_SPECIALISTS:
         rel_path = f"agents/{name}.md"
         content = _fetch_or_warn(fetcher, f"specialist '{name}'", rel_path, warnings)
@@ -367,9 +376,10 @@ def import_specialists(
 
         read_only = name not in {"build-error-resolver", "code-simplifier", "refactor-cleaner"}
         adapted = adapt_agent_frontmatter(name, content, read_only=read_only)
-        target = _safe_target(specialists_dir, f"{name}.md")
+        dest_dir = specialists_dir if name in DEFAULT_SPECIALISTS else resolved_optin
+        target = _safe_target(dest_dir, f"{name}.md")
         target.write_text(adapted, encoding="utf-8")
-        print(f"  -> [OK] Guardado especialista: {name}.md")
+        print(f"  -> [OK] Guardado especialista: {dest_dir.name}/{name}.md")
     return warnings
 
 

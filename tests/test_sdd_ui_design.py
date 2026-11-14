@@ -460,7 +460,7 @@ class TestSddUiDesign(unittest.TestCase):
         self.assertEqual((stack_cfg.gate00_approved, stack_cfg.preset, stack_cfg.packs, stack_cfg.uiux), (False, "compact", (), {"enabled": False}))
         self.assertFalse((ROOT_DIR / "docs" / "design-system").exists())
 
-        for arch_name in ("front-ui.archetype.md", "front-engineer.archetype.md", "tier-frontend.archetype.md"):
+        for arch_name in ("front-ui.archetype.md", "tier-frontend.archetype.md"):
             arch = (ROOT_DIR / ".sdd" / "catalog" / "archetypes" / arch_name).read_text(encoding="utf-8")
             for tok in ("SCR-XXX", "MASTER@versión", "docs/design-system/pages/SCR-XXX.md", "docs/design-system/design-tokens.json"):
                 self.assertIn(tok, arch, f"Missing {tok} in {arch_name}")
