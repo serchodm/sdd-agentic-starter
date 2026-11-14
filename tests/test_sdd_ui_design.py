@@ -37,6 +37,7 @@ UI_PACK_DIR = CATALOG_PACKS_DIR / "capability-ui-design"
 UI_VENDOR_DIR = UI_PACK_DIR / "vendor" / "ui-ux-pro-max"
 GENERATED_MARKER = sdd_agent_generator.GENERATED_MARKER
 _IGNORE_PYCACHE = shutil.ignore_patterns("__pycache__", "*.pyc")
+_GROUP2_VERIF = "\n```yaml sdd:verification-commands\nlint: ruff check .\nunit_test: pytest tests/unit -q\nintegration_test: pytest tests/integration -q\nbuild: npm run build\ninfra: alembic check\n```\n"
 
 
 def _write_text(path: pathlib.Path, content: str) -> pathlib.Path:
@@ -57,14 +58,14 @@ def _snapshot_tree(root: pathlib.Path) -> dict[str, bytes]:
 
 def _stack_doc(
     *, checkbox: bool = True, gate00_yaml: object = True, preset: str = "spa-only",
-    packs: Sequence[str] = (), uiux_yaml: str = "",
+    packs: Sequence[str] = (), uiux_yaml: str = "", verif_yaml: str = "",
 ) -> str:
     signoff = "[x] Gate 00 Approved" if checkbox else "[ ] Gate 00 Approved"
     gate_val = str(gate00_yaml).lower() if isinstance(gate00_yaml, bool) else repr(gate00_yaml)
     return (
         f"# Stack\n\n> **ESTADO DE LA PUERTA:** `{signoff} (Human Sign-off)`\n\n"
         f"```yaml sdd:stack-config\ngate00_approved: {gate_val}\npreset: {preset}\n"
-        f"packs: {json.dumps(list(packs))}\n{uiux_yaml}```\n"
+        f"packs: {json.dumps(list(packs))}\n{uiux_yaml}```\n{verif_yaml}"
     )
 
 
@@ -208,19 +209,19 @@ class TestSddUiDesign(unittest.TestCase):
     # Group 2 / BDD Scenarios 2, 3, 4 (RFC-001 #7, #8, #9): Topology activation & pruning
     def test_group2_topology_activation_and_pruning(self) -> None:
         ws = self._new_ws(
-            _stack_doc(preset="api-only", packs=["lang-python", "framework-fastapi"]),
+            _stack_doc(preset="api-only", packs=["lang-python", "framework-fastapi"], verif_yaml=_GROUP2_VERIF),
             copy_packs=("capability-web-frontend", "capability-ui-design"),
             dummy_packs=("lang-python", "framework-fastapi"),
         )
         lock_api = self._materialize(ws)
-        self.assertEqual([a["name"] for a in lock_api["active_packs"]], ["lang-python", "framework-fastapi"])
+        self.assertEqual([a["name"] for a in lock_api["active_packs"]], ["framework-fastapi", "lang-python"])
         for absent in ("agents/ui-ux-designer.md", "skills/sdd-ui-design", "skills/ui-ux-pro-max", "workflows/ui-design-review.md"):
             self.assertFalse((ws / ".agents" / absent).exists(), f"Should not materialize on api-only: {absent}")
         self.assertFalse((ws / ".agent-inbox" / "ui-ux-designer").exists())
 
         _write_text(ws / "specs" / "STACK.md", _stack_doc(
             preset="spa-only", packs=["capability-web-frontend", "capability-ui-design"],
-            uiux_yaml="uiux:\n  enabled: true\n  provider: ui-ux-pro-max\n  version: \"2.15.0\"\n  hifi_format: html\n  brand_constraints: null\n",
+            uiux_yaml="uiux:\n  enabled: true\n  provider: ui-ux-pro-max\n  version: \"2.15.0\"\n  hifi_format: html\n  brand_constraints: null\n", verif_yaml=_GROUP2_VERIF,
         ))
         self.assertEqual(self._run_gen_cli(ws, ["--materialize"])[0], 0)
         lock_spa = json.loads((ws / ".agents" / "squad.lock.json").read_text(encoding="utf-8"))
@@ -240,14 +241,14 @@ class TestSddUiDesign(unittest.TestCase):
         for rel in (".agents/agents/ui-ux-designer.md", ".agents/skills/ui-ux-pro-max/scripts/search.py", ".agents/workflows/ui-design-review.md"):
             self.assertFalse(sdd_sync.is_syncable_framework_file(rel, ws / rel, managed))
 
-        _write_text(ws / "specs" / "STACK.md", _stack_doc(preset="spa-only", packs=["capability-web-frontend"], uiux_yaml="uiux:\n  enabled: false\n"))
+        _write_text(ws / "specs" / "STACK.md", _stack_doc(preset="spa-only", packs=["capability-web-frontend"], uiux_yaml="uiux:\n  enabled: false\n", verif_yaml=_GROUP2_VERIF))
         self._materialize(ws)
         for pruned in (ws / ".agents" / "agents" / "ui-ux-designer.md", ws / ".agents" / "skills" / "sdd-ui-design", ws / ".agents" / "skills" / "ui-ux-pro-max", ws / ".agents" / "workflows" / "ui-design-review.md", ws / ".agent-inbox" / "ui-ux-designer"):
             self.assertFalse(pruned.exists())
         self.assertTrue((ws / ".agents" / "agents" / "a11y-architect.md").is_file())
 
         ws_ecc = self._new_ws(
-            _stack_doc(preset="spa-only", packs=["lang-typescript", "framework-react", "capability-web-frontend"], uiux_yaml="uiux:\n  enabled: false\n"),
+            _stack_doc(preset="spa-only", packs=["lang-typescript", "framework-react", "capability-web-frontend"], uiux_yaml="uiux:\n  enabled: false\n", verif_yaml=_GROUP2_VERIF),
             copy_packs=("capability-web-frontend",),
             dummy_packs=("lang-typescript", "framework-react"),
         )

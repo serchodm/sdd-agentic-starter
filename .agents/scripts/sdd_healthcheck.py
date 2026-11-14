@@ -23,17 +23,19 @@ import subprocess
 import sys
 
 _SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
-if str(_SCRIPT_DIR) not in sys.path:
-    sys.path.insert(0, str(_SCRIPT_DIR))
+_REPO_ROOT = _SCRIPT_DIR.parents[1]
+for _p in (str(_SCRIPT_DIR), str(_REPO_ROOT)):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
+from scripts.sdd_dag import DagError, build_and_validate_dag, parse_tasks_markdown  # noqa: E402
 from verify_architecture_boundaries import run_boundary_audit  # noqa: E402
 
 GATE1_INITIAL_STATES = frozenset({"draft", "proposed", "propuesto", "gate 1"})
 ACTIVE_WORK_STATES = frozenset({"in progress", "in review", "en progreso", "en revision", "en revisión"})
 DONE_STATES = frozenset({"done", "completed", "completado", "completed / done"})
-KNOWN_STATUS_VALUES = (
-    GATE1_INITIAL_STATES | ACTIVE_WORK_STATES | DONE_STATES
-    | frozenset({"candidate", "backlog", "cancelled", "canceled", "rejected", "blocked", "bloqueado"})
+KNOWN_STATUS_VALUES = GATE1_INITIAL_STATES | ACTIVE_WORK_STATES | DONE_STATES | frozenset(
+    {"candidate", "backlog", "cancelled", "canceled", "rejected", "blocked", "bloqueado"}
 )
 
 SPEC_CATEGORIES = (
@@ -211,16 +213,34 @@ def check_prompt_injection_risks(md_path: pathlib.Path, display_path: str) -> li
     return []
 
 
+def check_task_dags(specs_root: pathlib.Path) -> list[str]:
+    """Validate 03-tasks.md DAGs under specs/{features,changes,bugs}/*/, skipping 0-task prose docs."""
+    errors: list[str] = []
+    for category, _prefix, _req in SPEC_CATEGORIES:
+        cat_dir = specs_root / category
+        if not cat_dir.is_dir():
+            continue
+        for item_dir in sorted(cat_dir.iterdir()):
+            tasks_path = item_dir / "03-tasks.md"
+            if not item_dir.is_dir() or not tasks_path.is_file():
+                continue
+            try:
+                tasks = parse_tasks_markdown(tasks_path)
+                if tasks:
+                    build_and_validate_dag(tasks)
+            except DagError as exc:
+                errors.append(f"[SDD DAG Error] '{_safe_rel(tasks_path, specs_root.parent)}': {exc}")
+    return errors
+
+
 def check_spec_triads(specs_root: pathlib.Path, backlog_path: pathlib.Path) -> list[str]:
-    """Validate spec triads, non-empty artifacts, backlog orphan items, and prompt-injection safety."""
+    """Validate spec triads, DAG acyclicity, backlog orphan items, and prompt-injection safety."""
     errors: list[str] = []
     backlog_text = backlog_path.read_text(encoding="utf-8", errors="ignore") if backlog_path.exists() else ""
     statuses, _ = _parse_backlog_entries(backlog_text)
     found_dirs_by_id: dict[str, list[pathlib.Path]] = {}
-
     if backlog_path.exists():
         errors.extend(check_prompt_injection_risks(backlog_path, _safe_rel(backlog_path, specs_root.parent)))
-
     for category, _prefix, required_files in SPEC_CATEGORIES:
         cat_dir = specs_root / category
         if not cat_dir.exists():
@@ -231,7 +251,6 @@ def check_spec_triads(specs_root: pathlib.Path, backlog_path: pathlib.Path) -> l
             m = re.match(r"^([A-Za-z]+-\d{3,4})", item_dir.name)
             item_id = m.group(1).upper() if m else item_dir.name.upper()
             found_dirs_by_id.setdefault(item_id, []).append(item_dir)
-
             files_to_check = (required_files[0],) if statuses.get(item_id, "") in GATE1_INITIAL_STATES else required_files
             rel_item = _safe_rel(item_dir, specs_root.parent)
             for req in files_to_check:
@@ -246,17 +265,13 @@ def check_spec_triads(specs_root: pathlib.Path, backlog_path: pathlib.Path) -> l
                     continue
                 if not content.strip():
                     errors.append(f"[SDD Triad Incomplete] '{rel_item}' has empty '{req}'.")
-
             for md_file in sorted(item_dir.glob("*.md")):
                 errors.extend(check_prompt_injection_risks(md_file, _safe_rel(md_file, specs_root.parent)))
-
     for item_id, status in sorted(statuses.items()):
         prefix = item_id.split("-", 1)[0]
         if prefix in PREFIX_TO_CATEGORY and status in (ACTIVE_WORK_STATES | DONE_STATES) and item_id not in found_dirs_by_id:
-            errors.append(
-                f"[SDD Backlog Orphan] '{item_id}' is marked '{status}' in specs/BACKLOG.md "
-                f"but has no folder under 'specs/{PREFIX_TO_CATEGORY[prefix]}/'."
-            )
+            errors.append(f"[SDD Backlog Orphan] '{item_id}' is marked '{status}' in specs/BACKLOG.md but has no folder under 'specs/{PREFIX_TO_CATEGORY[prefix]}/'.")
+    errors.extend(check_task_dags(specs_root))
     return errors
 
 
@@ -269,13 +284,7 @@ def _cr_linked_features(repo_root: pathlib.Path, backlog_text: str) -> set[str]:
     changes_dir = repo_root / "specs" / "changes"
     if not changes_dir.exists():
         return set()
-    existing_crs = {
-        m.group(1).upper()
-        for d in changes_dir.iterdir()
-        if d.is_dir()
-        for m in [re.match(r"^(CR-\d{3,4})(?:-|$)", d.name, re.I)]
-        if m
-    }
+    existing_crs = {m.group(1).upper() for d in changes_dir.iterdir() if d.is_dir() and (m := re.match(r"^(CR-\d{3,4})(?:-|$)", d.name, re.I))}
     return {feat for cr_id, feats in cr_links.items() if cr_id in existing_crs for feat in feats}
 
 
@@ -291,19 +300,13 @@ def _resolve_base_commit(repo_root: pathlib.Path, head_sha: str) -> tuple[str | 
     return None, set()
 
 
-def _check_committed_done_mutations(
-    repo_root: pathlib.Path, feat_id: str, rel_dir: str, base_commit: str | None, done_at_base: set[str]
-) -> list[str]:
+def _check_committed_done_mutations(repo_root: pathlib.Path, feat_id: str, rel_dir: str, base_commit: str | None, done_at_base: set[str]) -> list[str]:
     if base_commit and feat_id in done_at_base:
         diff_res = _run_git(repo_root, ["diff", "--name-only", base_commit, "HEAD", "--", rel_dir])
         if diff_res.returncode != 0:
             return [f"[RN-SDD-IMMUTABLE-DONE Error] git diff failed for '{rel_dir}': {diff_res.stderr.strip()}"]
         if diff_res.stdout.strip():
-            return [
-                f"[RN-SDD-IMMUTABLE-DONE Violation] Completed feature '{rel_dir}' has committed modifications "
-                f"vs base {base_commit[:8]} without a linked CR-XXX:\n{diff_res.stdout.strip()}"
-            ]
-
+            return [f"[RN-SDD-IMMUTABLE-DONE Violation] Completed feature '{rel_dir}' has committed modifications vs base {base_commit[:8]} without a linked CR-XXX:\n{diff_res.stdout.strip()}"]
     log_range = [f"{base_commit}..HEAD"] if base_commit else ["-n", "20", "HEAD"]
     log_res = _run_git(repo_root, ["log", "--no-merges", "--format=%H", *log_range, "--", rel_dir])
     if log_res.returncode != 0:
@@ -313,10 +316,7 @@ def _check_committed_done_mutations(
             continue
         prev_bl = _run_git(repo_root, ["show", f"{sha}^:specs/BACKLOG.md"])
         if prev_bl.returncode == 0 and feat_id in parse_done_features_from_text(prev_bl.stdout):
-            return [
-                f"[RN-SDD-IMMUTABLE-DONE Violation] Completed feature '{rel_dir}' was modified after "
-                f"being marked Done (commit {sha[:8]}) without a linked CR-XXX."
-            ]
+            return [f"[RN-SDD-IMMUTABLE-DONE Violation] Completed feature '{rel_dir}' was modified after being marked Done (commit {sha[:8]}) without a linked CR-XXX."]
     return []
 
 
@@ -429,19 +429,13 @@ def check_git_sync_status(repo_root: pathlib.Path) -> list[str]:
     res_curr_branch = _run_git(repo_root, ["branch", "--show-current"])
     current_branch = res_curr_branch.stdout.strip() if res_curr_branch.returncode == 0 else "main"
     target_push = f"origin {current_branch}" if current_branch else "origin <branch>"
-
     res_status = _run_git(repo_root, ["status", "--porcelain"])
     if res_status.returncode == 0 and res_status.stdout.strip():
         count = len(res_status.stdout.strip().splitlines())
-        warnings.append(
-            f"[RN-SDD-BRANCH-SYNC Reminder] Working tree has {count} uncommitted file(s)/folder(s). "
-            f"Remember to run `git add`, `git commit`, and `git push {target_push}` once validated."
-        )
+        warnings.append(f"[RN-SDD-BRANCH-SYNC Reminder] Working tree has {count} uncommitted file(s)/folder(s). Remember to run `git add`, `git commit`, and `git push {target_push}` once validated.")
     res_branch = _run_git(repo_root, ["status", "-sb"])
     if res_branch.returncode == 0 and "ahead" in res_branch.stdout:
-        warnings.append(
-            f"[RN-SDD-BRANCH-SYNC Reminder] Local branch '{current_branch}' is ahead of remote. Remember to run `git push {target_push}`."
-        )
+        warnings.append(f"[RN-SDD-BRANCH-SYNC Reminder] Local branch '{current_branch}' is ahead of remote. Remember to run `git push {target_push}`.")
     return warnings
 
 
@@ -455,30 +449,27 @@ def main() -> int:
     done_features = parse_done_features_from_text(backlog_text)
     errors: list[str] = []
     warnings: list[str] = []
-
     print("=== Project SDD & Agent Harness 2.0 Healthcheck ===")
     print(f"Detected Done/Immutable Features ({len(done_features)}): {', '.join(sorted(done_features))}")
-
-    errors.extend(check_spec_triads(specs_root, backlog_path))
-    errors.extend(check_done_features_git_clean(repo_root, done_features, backlog_text))
-    errors.extend(check_cr_backlog_registration(repo_root, backlog_text))
-    errors.extend(check_subprocess_shell_safety(repo_root))
-    errors.extend(check_inbox_and_stack_safety(repo_root))
-
+    for check in (
+        check_spec_triads(specs_root, backlog_path),
+        check_done_features_git_clean(repo_root, done_features, backlog_text),
+        check_cr_backlog_registration(repo_root, backlog_text),
+        check_subprocess_shell_safety(repo_root),
+        check_inbox_and_stack_safety(repo_root),
+    ):
+        errors.extend(check)
     arch_errors, arch_warnings = run_boundary_audit(repo_root)
     errors.extend(arch_errors)
     warnings.extend(arch_warnings)
     warnings.extend(check_git_sync_status(repo_root))
-
     for w in warnings:
         print(f"  [WARN]  {w}")
     for e in errors:
         print(f"  [ERROR] {e}")
-
     if errors:
         print(f"\n❌ SDD Healthcheck FAILED with {len(errors)} error(s) and {len(warnings)} warning(s).")
         return 1
-
     print(f"\n✅ SDD Healthcheck PASSED (0 errors, {len(warnings)} warning(s)).")
     return 0
 
