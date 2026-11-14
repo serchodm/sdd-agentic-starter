@@ -145,7 +145,7 @@ def is_generic_dod_placeholder(command: str) -> bool:
 
 def _extract_verification_yaml(content: str) -> str | None:
     explicit, yaml_blocks, buf, in_comment, in_sec25, sec25_lvl, ticks, info = [], [], [], False, False, 0, 0, ""
-    for line in content.replace("\r\n", "\n").replace("\r", "\n").split("\n"):
+    for line in content.lstrip("\ufeff").replace("\r\n", "\n").replace("\r", "\n").split("\n"):
         if ticks:
             if re.match(rf"^[ \t]*`{{{ticks},}}[ \t]*$", line):
                 body = "\n".join(buf)

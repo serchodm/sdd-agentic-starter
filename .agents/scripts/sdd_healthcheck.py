@@ -24,12 +24,6 @@ import sys
 
 _SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 _REPO_ROOT = _SCRIPT_DIR.parents[1]
-for _p in (str(_SCRIPT_DIR), str(_REPO_ROOT)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
-
-from scripts.sdd_dag import DagError, build_and_validate_dag, parse_tasks_markdown  # noqa: E402
-from verify_architecture_boundaries import run_boundary_audit  # noqa: E402
 
 GATE1_INITIAL_STATES = frozenset({"draft", "proposed", "propuesto", "gate 1"})
 ACTIVE_WORK_STATES = frozenset({"in progress", "in review", "en progreso", "en revision", "en revisión"})
@@ -213,23 +207,39 @@ def check_prompt_injection_risks(md_path: pathlib.Path, display_path: str) -> li
     return []
 
 
+def _load_sdd_dag():
+    for path_str in (str(_REPO_ROOT / "scripts"), str(_REPO_ROOT)):
+        if path_str not in sys.path:
+            sys.path.insert(0, path_str)
+    try:
+        from scripts.sdd_dag import DagError, build_and_validate_dag, parse_tasks_markdown
+    except ImportError:
+        from sdd_dag import DagError, build_and_validate_dag, parse_tasks_markdown
+    return DagError, build_and_validate_dag, parse_tasks_markdown
+
+
 def check_task_dags(specs_root: pathlib.Path) -> list[str]:
     """Validate 03-tasks.md DAGs under specs/{features,changes,bugs}/*/, skipping 0-task prose docs."""
+    task_files = [
+        d / "03-tasks.md"
+        for cat, _p, _r in SPEC_CATEGORIES if (specs_root / cat).is_dir()
+        for d in sorted((specs_root / cat).iterdir())
+        if d.is_dir() and (d / "03-tasks.md").is_file()
+    ]
+    if not task_files:
+        return []
+    try:
+        dag_error_cls, build_and_validate_dag, parse_tasks_markdown = _load_sdd_dag()
+    except ImportError:
+        return ["[SDD DAG Error] Missing 'scripts.sdd_dag' to validate task DAG(s)."]
     errors: list[str] = []
-    for category, _prefix, _req in SPEC_CATEGORIES:
-        cat_dir = specs_root / category
-        if not cat_dir.is_dir():
-            continue
-        for item_dir in sorted(cat_dir.iterdir()):
-            tasks_path = item_dir / "03-tasks.md"
-            if not item_dir.is_dir() or not tasks_path.is_file():
-                continue
-            try:
-                tasks = parse_tasks_markdown(tasks_path)
-                if tasks:
-                    build_and_validate_dag(tasks)
-            except DagError as exc:
-                errors.append(f"[SDD DAG Error] '{_safe_rel(tasks_path, specs_root.parent)}': {exc}")
+    for tasks_path in task_files:
+        try:
+            tasks = parse_tasks_markdown(tasks_path)
+            if tasks:
+                build_and_validate_dag(tasks)
+        except dag_error_cls as exc:
+            errors.append(f"[SDD DAG Error] '{_safe_rel(tasks_path, specs_root.parent)}': {exc}")
     return errors
 
 
@@ -459,9 +469,16 @@ def main() -> int:
         check_inbox_and_stack_safety(repo_root),
     ):
         errors.extend(check)
-    arch_errors, arch_warnings = run_boundary_audit(repo_root)
-    errors.extend(arch_errors)
-    warnings.extend(arch_warnings)
+    try:
+        if str(_SCRIPT_DIR) not in sys.path:
+            sys.path.insert(0, str(_SCRIPT_DIR))
+        from verify_architecture_boundaries import run_boundary_audit
+    except ImportError as exc:
+        errors.append(f"[Architecture Audit Error] Missing 'verify_architecture_boundaries': {exc}")
+    else:
+        arch_errors, arch_warnings = run_boundary_audit(repo_root)
+        errors.extend(arch_errors)
+        warnings.extend(arch_warnings)
     warnings.extend(check_git_sync_status(repo_root))
     for w in warnings:
         print(f"  [WARN]  {w}")

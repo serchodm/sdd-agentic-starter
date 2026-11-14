@@ -18,27 +18,31 @@ import pathlib
 import sys
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
-try:
-    from scripts.sdd_ownership import (
-        OwnershipError,
-        detect_zone_overlaps,
-        parse_ownership_map,
-        validate_repo_coverage,
-        zone_matches_path,
-    )
-except ImportError:
-    _SCRIPTS_DIR = _REPO_ROOT / "scripts"
-    if str(_SCRIPTS_DIR) not in sys.path:
-        sys.path.insert(0, str(_SCRIPTS_DIR))
-    from sdd_ownership import (
-        OwnershipError,
-        detect_zone_overlaps,
-        parse_ownership_map,
-        validate_repo_coverage,
-        zone_matches_path,
-    )
+
+
+def _load_sdd_ownership():
+    if str(_REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(_REPO_ROOT))
+    try:
+        from scripts.sdd_ownership import (
+            OwnershipError,
+            detect_zone_overlaps,
+            parse_ownership_map,
+            validate_repo_coverage,
+            zone_matches_path,
+        )
+    except ImportError:
+        scripts_dir = _REPO_ROOT / "scripts"
+        if str(scripts_dir) not in sys.path:
+            sys.path.insert(0, str(scripts_dir))
+        from sdd_ownership import (
+            OwnershipError,
+            detect_zone_overlaps,
+            parse_ownership_map,
+            validate_repo_coverage,
+            zone_matches_path,
+        )
+    return OwnershipError, detect_zone_overlaps, parse_ownership_map, validate_repo_coverage, zone_matches_path
 
 DEFAULT_FORBIDDEN_DOMAIN_IMPORTS = {
     "fastapi",
@@ -196,22 +200,43 @@ def _run_ownership_audit(repo_root: pathlib.Path) -> tuple[list[str], list[str]]
     errors: list[str] = []
     warnings: list[str] = []
     stack_path = repo_root / "specs" / "STACK.md"
+    if not stack_path.exists() and not stack_path.is_symlink():
+        return [], []
+    try:
+        (
+            ownership_error_cls,
+            detect_zone_overlaps,
+            parse_ownership_map,
+            validate_repo_coverage,
+            zone_matches_path,
+        ) = _load_sdd_ownership()
+    except ImportError as exc:
+        if not stack_path.is_file():
+            return [f"[Ownership Map Error] Cannot inspect '{stack_path}' without 'scripts.sdd_ownership': {exc}"], []
+        try:
+            stack_text = stack_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as read_exc:
+            return [f"[Ownership Map Error] Cannot read '{stack_path}' without 'scripts.sdd_ownership': {read_exc}"], []
+        if "sdd:ownership-map" in stack_text.lower():
+            return [f"[Ownership Map Error] Missing 'scripts.sdd_ownership' to validate sdd:ownership-map: {exc}"], []
+        return [], []
+
     try:
         ownership_cfg = parse_ownership_map(stack_path)
-    except OwnershipError as exc:
+    except ownership_error_cls as exc:
         return [f"[Ownership Map Error] {exc}"], []
     if ownership_cfg is None:
         return [], []
 
     try:
         detect_zone_overlaps(ownership_cfg)
-    except OwnershipError as exc:
+    except ownership_error_cls as exc:
         errors.append(f"[Ownership Overlap Error] {exc}")
 
     try:
         cov_warnings = validate_repo_coverage(ownership_cfg, repo_root)
         warnings.extend(f"[Ownership Coverage Warning] {w}" for w in cov_warnings)
-    except OwnershipError as exc:
+    except ownership_error_cls as exc:
         errors.append(f"[Ownership Coverage Error] {exc}")
 
     if any(zone.forbid_imports for zone in ownership_cfg.zones):
