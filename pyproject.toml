@@ -1,0 +1,16 @@
+[project]
+name = "sdd-agentic-starter"
+version = "0.1.0"
+description = "Spec-Driven Development (SDD) Agentic Starter Framework"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = []
+
+[tool.uv]
+managed = false
+
+[tool.unittest]
+start_directory = "tests"
+pattern = "test_*.py"
+top_level_directory = "."
