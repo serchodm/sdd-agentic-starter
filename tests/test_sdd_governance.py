@@ -17,7 +17,13 @@ sys.path.insert(0, str(ROOT_DIR))
 sys.path.insert(0, str(ROOT_DIR / "scripts"))
 
 from scripts.sdd_cli import DISPATCH_MAP
-from scripts.sdd_git import load_git_governance, resolve_branch_name
+from scripts.sdd_git import (
+    DEFAULT_GOVERNANCE,
+    build_pr_compare_url,
+    format_web_remote_url,
+    load_git_governance,
+    resolve_branch_name,
+)
 from scripts.sdd_hooks import CONFLICT_PATTERNS, SECRET_PATTERNS, validate_pre_push
 from scripts.sdd_instincts import (
     calculate_decayed_confidence,
@@ -117,6 +123,53 @@ class TestSDDGovernance(unittest.TestCase):
         root = get_repo_root()
         self.assertTrue(root.exists())
         self.assertTrue((root / ".git").exists() or (root / "specs").exists())
+
+    def test_load_git_governance_deepcopy_isolation_and_bools(self):
+        """Verifica aislamiento deepcopy de DEFAULT_GOVERNANCE (AUD-003) y booleanos YAML."""
+        baseline_prod = DEFAULT_GOVERNANCE["branches"]["production"]
+        baseline_wt = DEFAULT_GOVERNANCE["worktrees"]["enabled"]
+        with tempfile.TemporaryDirectory() as tmp:
+            stack = pathlib.Path(tmp) / "STACK.md"
+            stack.write_text(
+                "```yaml\n"
+                "git_governance:\n"
+                "  provider: gitlab\n"
+                "  branches:\n"
+                "    production: release-prod\n"
+                "    integration: trunk\n"
+                "  worktrees:\n"
+                "    enabled: false\n"
+                "    directory: .custom-wt\n"
+                "  auto_merge:\n"
+                "    develop: false\n"
+                "    main: true\n"
+                "```\n",
+                encoding="utf-8",
+            )
+            loaded = load_git_governance(stack_path=stack)
+            self.assertEqual(loaded["provider"], "gitlab")
+            self.assertEqual(loaded["branches"]["production"], "release-prod")
+            self.assertIs(loaded["worktrees"]["enabled"], False)
+            self.assertIs(loaded["auto_merge"]["develop"], False)
+            self.assertIs(loaded["auto_merge"]["main"], True)
+            loaded["branches"]["production"] = "mutated-later"
+
+            fresh = load_git_governance(stack_path=pathlib.Path(tmp) / "missing.md")
+            self.assertEqual(DEFAULT_GOVERNANCE["branches"]["production"], baseline_prod)
+            self.assertEqual(DEFAULT_GOVERNANCE["worktrees"]["enabled"], baseline_wt)
+            self.assertEqual(fresh["branches"]["production"], baseline_prod)
+
+    def test_dynamic_web_remote_and_compare_url(self):
+        """Verifica normalización SSH/HTTPS sin credenciales ni remotos hardcodeados."""
+        self.assertEqual(
+            format_web_remote_url("git@github.com:acme/project-x.git"),
+            "https://github.com/acme/project-x",
+        )
+        self.assertEqual(
+            format_web_remote_url("https://x-access-token:secret@gitlab.example.com:8443/team/app.git"),
+            "https://gitlab.example.com:8443/team/app",
+        )
+        self.assertIsNotNone(build_pr_compare_url("github", "develop", "feat/FEAT-100"))
 
 
 if __name__ == "__main__":
