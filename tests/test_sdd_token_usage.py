@@ -1,14 +1,19 @@
+import importlib
 import json
 import os
+import sqlite3
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 # Add project root to sys.path so we can import sdd_token_usage
-SCRIPT_DIR = Path(__file__).resolve().parent.parent / ".agents" / "scripts"
+ROOT_DIR = Path(__file__).resolve().parent.parent
+SCRIPT_DIR = ROOT_DIR / ".agents" / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
 
+import sdd_repo_map
 import sdd_token_usage
 
 
@@ -192,6 +197,82 @@ class TestSddTokenUsage(unittest.TestCase):
 
         footer_red = sdd_token_usage.render_footer(metrics, turn=15, blocks=1, gate="4")
         self.assertIn("🔴 **Context Health (copilot):** Turn 15/15", footer_red)
+
+        self.assertEqual(sdd_token_usage.evaluate_context_health(11, 0), ("🟡", "yellow"))
+        self.assertEqual(sdd_token_usage.evaluate_context_health(1, 2), ("🟡", "yellow"))
+        self.assertTrue(sdd_token_usage.evaluate_context_status(metrics, turn=15, blocks=1, gate="4")["should_handoff"])
+
+    def test_sqlite_provider_and_explicit_transcript(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            db_path = tmp_path / "state.vscdb"
+            conn = sqlite3.connect(db_path)
+            conn.execute("CREATE TABLE ItemTable (key TEXT PRIMARY KEY, value TEXT)")
+            conn.execute(
+                "INSERT INTO ItemTable (key, value) VALUES (?, ?)",
+                ("chatdata.session", json.dumps({"usage": {"promptTokens": 400, "completionTokens": 100, "cachedTokens": 500}})),
+            )
+            conn.execute(
+                "INSERT INTO ItemTable (key, value) VALUES (?, ?)",
+                (
+                    "interactive.sessions",
+                    json.dumps({"usage": {"prompt_tokens": 200, "completion_tokens": 50, "prompt_tokens_details": {"cached_tokens": 100}}}),
+                ),
+            )
+            conn.commit()
+            conn.close()
+
+            cursor_metrics = sdd_token_usage.CursorProvider().extract_usage(db_path)
+            self.assertEqual(cursor_metrics["ide"], "cursor")
+            self.assertTrue(cursor_metrics["is_available"])
+            self.assertEqual(cursor_metrics["total_in"], 600)
+            self.assertEqual(cursor_metrics["total_out"], 150)
+            self.assertEqual(cursor_metrics["total_cache"], 600)
+
+            missing = sdd_token_usage.get_token_usage(transcript_path=str(tmp_path / "missing.jsonl"))
+            self.assertFalse(missing["is_available"])
+
+    def test_package_import_and_repo_map_contract(self):
+        agents_dir = str(ROOT_DIR / ".agents")
+        added = False
+        if agents_dir not in sys.path:
+            sys.path.insert(0, agents_dir)
+            added = True
+        try:
+            pkg_tok = importlib.import_module("scripts.sdd_token_usage")
+            pkg_map = importlib.import_module("scripts.sdd_repo_map")
+            self.assertTrue(callable(pkg_tok.get_token_usage))
+            self.assertIn(".py", pkg_map.EXTENSION_PARSERS)
+        finally:
+            if added and agents_dir in sys.path:
+                sys.path.remove(agents_dir)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            sample = Path(tmpdir) / "sample.py"
+            sample.write_text("class Demo:\n    def greet(self, name: str) -> str:\n        return name\n", encoding="utf-8")
+            lines, total_files, total_symbols = sdd_repo_map.build_repo_map_lines(sample)
+            self.assertEqual(total_files, 1)
+            self.assertEqual(total_symbols, 2)
+            self.assertTrue(any("def greet(self, name: str) -> str" in ln for ln in lines))
+
+        help_res = subprocess.run(
+            [sys.executable, str(SCRIPT_DIR / "sdd_repo_map.py"), "--help"],
+            capture_output=True, text=True, encoding="utf-8",
+        )
+        self.assertEqual(help_res.returncode, 0)
+        self.assertIn("SDD Universal AST", help_res.stdout)
+
+    def test_split_modules_within_500_lines(self):
+        for rel in (
+            ".agents/scripts/sdd_token_usage.py",
+            ".agents/scripts/sdd_token_parsers.py",
+            ".agents/scripts/sdd_token_report.py",
+            ".agents/scripts/sdd_repo_map.py",
+            ".agents/scripts/sdd_repo_map_parsers.py",
+            "tests/test_sdd_token_usage.py",
+        ):
+            line_count = len((ROOT_DIR / rel).read_text(encoding="utf-8").splitlines())
+            self.assertLessEqual(line_count, 500, f"{rel} exceeds 500-line ceiling ({line_count})")
 
 
 if __name__ == "__main__":
