@@ -1,7 +1,7 @@
 # RFC-003: Endurecimiento Integral Post-Auditoría Adversarial, Ownership Compiler, Concurrencia y Slimming
 
 - **ID:** `RFC-003`
-- **Estado:** `Aceptado` *(Autorización explícita PO: `2026-11-14T16:05:46+01:00` — Pre-autorización A1/A2/A3/A4)*
+- **Estado:** `Implementado / Done` *(Autorización explícita PO: `2026-11-14T16:05:46+01:00` — Pre-autorización A1/A2/A3/A4; Gate 5 cerrado en `develop` con `FWK-005`..`FWK-009` `Done` y `115/115` tests en verde)*
 - **Rama base:** `develop` (prohibido tocar `main` directamente)
 - **Alcance de auditoría origen:** `.worktrees/audit-env/audit/09-findings-register.md`, `10-remediation-roadmap.md`, `11-independent-review.md`, `12-final-verdict.md` (`AUD-001`..`AUD-019`, `AUD-021`..`AUD-025`, más adopción DX `BUG-XXX` y `domains/` de `facuzarate04/sdd-starter`).
 

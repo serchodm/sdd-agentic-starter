@@ -64,3 +64,12 @@ Asegura que desarrolladores humanos y agentes de IA compartan un modelo mental i
 | `Gate 3` | Work Item | Task Graph (DAG) | Plan de Tareas (DAG) | `[x] Gate 3 Approved (Human Sign-off)` |
 | `Gate 4` | Work Item | Implementation & QA | Implementación y QA | Tests + 4 auditorías de calidad en verde |
 | `Gate 5` | Work Item | Living Docs (0DD) & Closure | Documentación Viva (0DD) y Cierre | `docs/`, `TRACEABILITY-MATRIX.md`, `git push` |
+
+---
+
+## 4. Endurecimiento `RFC-003`, Flujo `/bug-fast-track` y Contexto `domains/` (`FWK-005`..`FWK-009`)
+
+- **Seguridad Fail-Closed P0 (`FWK-005`):** `.agents/hooks.json` (UTF-8 sin BOM) invoca `sdd_immutable_feature_guard.py` y `sdd_code_gate_guard.py`, exigiendo `Gate S0` aprobado y marcadores `[x] Gate 1/2/3 Approved` reales en `01..03.md` antes de editar `src/`, `tests/`, `.agents/` o `specs/STACK.md`. `sdd_trim_exec.py` ejecuta comandos con `shell=False` y `sdd_hooks.py` elimina `SDD_FORCE_MAIN_PUSH`.
+- **Compilador `sdd:ownership-map`, Transaccionalidad y Motor DAG (`FWK-006`):** `scripts/sdd_ownership.py` compila zonas y valida `forbid_imports` por AST en `verify_architecture_boundaries.py`; `scripts/sdd_generator_tx.py` materializa con backup/rollback y `content_digest` (`--verify`, `--strict-agents`, `--drain-inboxes`); `scripts/sdd_dag.py` (`--verify`, `--plan`) valida aciclicidad en `03-tasks.md` y gobierna transiciones en `.agent-inbox/`.
+- **Slimming `< 25k` Tokens, `/bug-fast-track` y `domains/` (`FWK-007`):** El starter mantiene **9 agentes base activos** en `.agents/agents/` (`~18.0k` tokens de contexto Markdown), **19 especialistas opt-in** en `.sdd/catalog/specialists-optin/` y **12 arquetipos canónicos únicos** en `.sdd/catalog/archetypes/`. Los defectos acotados utilizan `/bug-fast-track` (`specs/bugs/BUG-XXX-<slug>/{01-bug-report,02-fix-spec,03-tasks}.md` desde `05-bug-fast-track.template.md` preservando `Gate S0` y `[x] Gate 1/2/3 Approved`), y el conocimiento de dominio se carga bajo demanda desde `domains/<domain-slug>/` (`_template/{overview,decisions}.md`).
+- **Concurrencia Multi-Worktree y Sync Seguro `<= 500L` (`FWK-008` & `FWK-009`):** `sdd_git_state.py` y `sdd_git_worktree.py` aíslan estado (`.agents/worktree_states/<wt_id>.json`) y puertos (`ports_registry.json`), sincronizando `.agents/ACTIVE_STATE.md`. `sdd_sync.py` opera sin rutas hardcodeadas con `--dry-run`, `--force` y rollback sobre `.agents/.sdd-sync-state.json`. Todos los módulos Python del repositorio cumplen `<= 500` líneas (`115/115` tests en verde).

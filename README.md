@@ -100,14 +100,14 @@ The framework enforces engineering discipline through verifiable Python tooling 
 
 ### 4. Multi-Agent Squad & Opt-In Catalog
 
-The starter keeps **9 active base agents** loaded by default and stores **19 opt-in universal specialists** in `.sdd/catalog/specialists/` (`20` universal specialists total in the catalog, plus `30` stack-specific specialists in `.sdd/catalog/packs/`).
+The starter keeps **9 active base agents** loaded by default (`1` default universal reviewer `@security-reviewer` from `.sdd/catalog/specialists/`) and stores **19 opt-in universal specialists** in `.sdd/catalog/specialists-optin/` (`20` universal specialists total across the catalog, plus `30` stack-specific specialists in `.sdd/catalog/packs/`).
 
 | Group | Agents | Mode |
 | :--- | :--- | :--- |
 | **Core Governance (6)** | `@orchestrator`, `@functional-analyst`, `@architect`, `@qa-tester`, `@documentator`, `@devops` | Always active in `.agents/agents/` |
 | **Compact Builders (2)** | `@back-engineer`, `@front-engineer` | Starter `compact` templates compiled/replaced from `specs/STACK.md` (`sdd:ownership-map`) |
 | **Default Security Reviewer (1)** | `@security-reviewer` | Active universal reviewer from `.sdd/catalog/specialists/` |
-| **Opt-In Universal Specialists (19)** | `accessibility-auditor`, `ai-ml-engineer`, `api-designer`, `cloud-architect`, `compliance-officer`, `data-engineer`, `data-scientist`, `dba-specialist`, `finops-engineer`, `i18n-specialist`, `legacy-archaeologist`, `mobile-engineer`, `observability-engineer`, `performance-engineer`, `product-manager`, `release-manager`, `seo-specialist`, `technical-writer`, `ux-ui-designer` | Activated on demand in `specs/STACK.md` or via CLI |
+| **Opt-In Universal Specialists (19)** | `build-error-resolver`, `code-architect`, `code-explorer`, `code-simplifier`, `comment-analyzer`, `conversation-analyzer`, `docs-lookup`, `e2e-runner`, `gan-evaluator`, `gan-generator`, `gan-planner`, `opensource-sanitizer`, `performance-optimizer`, `pr-test-analyzer`, `refactor-cleaner`, `silent-failure-hunter`, `spec-miner`, `tdd-guide`, `type-design-analyzer` | Stored in `.sdd/catalog/specialists-optin/`; activated on demand |
 
 ---
 
@@ -115,7 +115,7 @@ The starter keeps **9 active base agents** loaded by default and stores **19 opt
 
 ### 5. Stack Packs & Layer Archetypes
 
-`specs/STACK.md` declares active technologies from **19 Stack Packs** (`.sdd/catalog/packs/`), which materialize **30 dynamic specialists** and **70 specialized pack skills (`SKILL.md`)** along with **12 canonical layer archetypes** (`19` archetype files in `.sdd/catalog/archetypes/` including legacy compatibility aliases).
+`specs/STACK.md` declares active technologies from **19 Stack Packs** (`.sdd/catalog/packs/`), which materialize **30 dynamic specialists** and **70 specialized pack skills (`SKILL.md`)** along with **12 unique canonical layer archetypes** in `.sdd/catalog/archetypes/` (`cli-tool`, `front-logic`, `front-test`, `front-ui`, `layer-api`, `layer-db`, `layer-domain`, `layer-infra`, `layer-test`, `mobile-app`, `tier-backend`, `tier-frontend`).
 
 - **Languages (`lang-*`):** Python, TypeScript, Go, Rust, Java, C#.
 - **Frameworks (`framework-*`):** FastAPI, Django, Next.js, React, Spring Boot, Angular, Vue, NestJS, Astro, Flutter, React Native.
@@ -299,12 +299,12 @@ El framework verifica el cumplimiento mediante herramientas Python deterministas
 
 ### 4. Escuadrón Base y Catálogo Opt-In
 
-El starter arranca con **9 agentes base activos** y mantiene **19 especialistas universales opt-in** en `.sdd/catalog/specialists/` (**20** especialistas universales en total, además de **30** especialistas de stack en `.sdd/catalog/packs/`):
+El starter arranca con **9 agentes base activos** (`1` revisor universal por defecto `@security-reviewer` en `.sdd/catalog/specialists/`) y mantiene **19 especialistas universales opt-in** en `.sdd/catalog/specialists-optin/` (**20** especialistas universales en total, además de **30** especialistas de stack en `.sdd/catalog/packs/`):
 
 - **Núcleo de Gobernanza (6):** `@orchestrator`, `@functional-analyst`, `@architect`, `@qa-tester`, `@documentator`, `@devops`.
 - **Constructores Compactos (2):** `@back-engineer`, `@front-engineer` (compilados/reemplazados mediante `sdd:ownership-map` en `specs/STACK.md`).
 - **Revisor de Seguridad por Defecto (1):** `@security-reviewer`.
-- **Especialistas Universales Opt-In (19):** activables bajo demanda según dominio y requisitos en `specs/STACK.md`.
+- **Especialistas Universales Opt-In (19 en `.sdd/catalog/specialists-optin/`):** `build-error-resolver`, `code-architect`, `code-explorer`, `code-simplifier`, `comment-analyzer`, `conversation-analyzer`, `docs-lookup`, `e2e-runner`, `gan-evaluator`, `gan-generator`, `gan-planner`, `opensource-sanitizer`, `performance-optimizer`, `pr-test-analyzer`, `refactor-cleaner`, `silent-failure-hunter`, `spec-miner`, `tdd-guide`, `type-design-analyzer`.
 
 ---
 
@@ -315,7 +315,7 @@ El starter arranca con **9 agentes base activos** y mantiene **19 especialistas 
 Al completar `specs/STACK.md`, el motor materializa bajo demanda desde **19 Stack Packs** (`.sdd/catalog/packs/`):
 - **30 especialistas dinámicos de stack** (Python, TypeScript, Go, Rust, Java, C#, FastAPI, Django, Next.js, React, Spring Boot, Angular, Vue, NestJS, Astro, Flutter, React Native, UI Design y DevOps).
 - **70 skills especializadas de pack (`SKILL.md`)**.
-- **12 arquetipos canónicos de capa** (almacenados en `19` ficheros de `.sdd/catalog/archetypes/` con alias de compatibilidad).
+- **12 arquetipos canónicos únicos de capa** en `.sdd/catalog/archetypes/` (`cli-tool`, `front-logic`, `front-test`, `front-ui`, `layer-api`, `layer-db`, `layer-domain`, `layer-infra`, `layer-test`, `mobile-app`, `tier-backend`, `tier-frontend`).
 
 ---
 

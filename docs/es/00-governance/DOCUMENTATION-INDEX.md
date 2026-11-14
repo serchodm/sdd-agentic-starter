@@ -7,8 +7,8 @@
 ## Información del Producto
 - **Producto:** `sdd-agentic-starter` (Plantilla Agéntica bajo Spec-Driven Development)
 - **Descripción breve:** Plantilla multi-stack gobernada por compuertas SDD (Gate S0, Gate 0 a Gate 5), con catálogo inerte de arquetipos, especialistas universales y packs de tecnología activables de forma determinista y *fail-closed*, incluyendo gobernanza UI/UX offline (`capability-ui-design`) y orquestación unificada DAG.
-- **Versión / Baseline funcional vigente:** `FWK-001` + `FWK-002` + `FWK-003` + `FWK-004` (`RFC-001` v2 y `RFC-002` — Materialización Fiable de Packs, Pack `capability-ui-design`, Quality Gates Visuales Condicionales y Unificación de Terminología de Gates)
-- **Estado global:** `Verified` (para `FWK-001`, `FWK-002`, `FWK-003` y `FWK-004`); aplicación de usuario pendiente de Gate S0
+- **Versión / Baseline funcional vigente:** `FWK-001`..`FWK-009` (`RFC-001` v2, `RFC-002` y `RFC-003` — Materialización Fiable de Packs, Pack `capability-ui-design`, Quality Gates Visuales, Unificación de Terminología de Gates, Seguridad Fail-Closed P0, Compilador `sdd:ownership-map` + Motor DAG, Slimming `< 25k` Tokens + `/bug-fast-track` + `domains/`, Concurrencia Multi-Worktree y Sync Seguro `<= 500L`)
+- **Estado global:** `Verified` (para `FWK-001`..`FWK-009`, `115/115` tests offline); aplicación de usuario pendiente de Gate S0
 - **Responsable funcional:** `@documentator` (supervisado por `@orchestrator`)
 
 ---
@@ -39,7 +39,7 @@
 
 | Aspecto | Situación Actual (Confirmada) |
 | :--- | :--- |
-| **Artefactos aprobados y verificados** | `MOD-001` (`FWK-001`), `MOD-002` (`FWK-002` y `FWK-003`) y `MOD-003` (`FWK-004`: `RF-001`..`RF-007`, `67` tests offline en `tests/`). |
+| **Artefactos aprobados y verificados** | `MOD-001` (`FWK-001`, `FWK-006`, `FWK-009`), `MOD-002` (`FWK-002` y `FWK-003`) y `MOD-003` (`FWK-004`, `FWK-005`, `FWK-007`, `FWK-008`: `115` tests offline en `10` módulos de `tests/`). |
 | **Decisiones abiertas** | Ninguna en `FWK-001`..`FWK-004` (`RFC-001` y `RFC-002` plenamente aceptados e implementados). |
 | **Riesgos mitigados en esta baseline** | Activación accidental por prosa (`FWK-001`), contaminación *always-on* (`ADR-002`), colisión ECC `design-system` / ejecución `npx` (`ADR-003`), corrupción SHA-256 en Windows, deriva de tokens y baselines visuales (`ADR-004`), colisión numérica `Gate 00` vs `Gate 0`, ambigüedad del término Fase vs Gate vs Block, divergencias de estados bilingües y plantillas CR redundantes (`ADR-005`). |
 | **Próximos pasos (fuera de esta baseline)** | Gate S0 del proyecto usuario en `specs/STACK.md`. |

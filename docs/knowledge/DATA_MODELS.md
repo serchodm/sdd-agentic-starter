@@ -15,6 +15,10 @@
 | `ValidationSeverity` | `scripts/sdd_tokens_validator.py` (`Enum(str)`) | Severidad de violaciones detectadas durante la validación de tokens. | `ERROR`, `WARNING`, `INFO` | `ERROR` invalida el resultado (`exit 1`); `WARNING` invalida solo si `strict=True` (`FWK-003`). |
 | `TokenViolation` | `scripts/sdd_tokens_validator.py` (`@dataclass`) | Registro atómico de una discrepancia de tokens o literal de estilo prohibido. | `severity: ValidationSeverity`, `category: str`, `message: str`, `file_path: str`, `line_number: int`, `token_name: str`, `literal_value: str` | Trazabilidad por fichero y línea exacta en código fuente o specs (`FWK-003`). |
 | `TokenValidationResult` | `scripts/sdd_tokens_validator.py` (`@dataclass`) | Resultado consolidado de la suite de validación de tokens de diseño. | `is_valid: bool`, `total_tokens_checked: int`, `total_sources_scanned: int`, `missing_in_master: list[str]`, `missing_in_json: list[str]`, `violations: list[TokenViolation]`, `skipped_reason: str \| None` | Serialización a JSON (`--format json`) o informe legible en texto plano (`FWK-003`). |
+| `OwnershipZone` & `OwnershipMapConfig` | `scripts/sdd_ownership.py` (`@dataclass(frozen=True)`) | Zona individual de propiedad y configuración completa del bloque `yaml sdd:ownership-map` en `specs/STACK.md`. | `OwnershipZone`: `zone_id`, `owner`, `paths`, `archetype`, `dod`, `forbid_imports`; `OwnershipMapConfig`: `zones`, `unowned_policy` (`"error"` \| `"warn"`), `preset` | Prohibido solapamiento de globs entre zonas; `forbid_imports` validado por AST en `verify_architecture_boundaries.py` (`FWK-006`). |
+| `VerificationCommands` | `scripts/sdd_generator_tx.py` (`@dataclass(frozen=True)`) | Comandos deterministas DoD extraídos de `specs/STACK.md §2.5` (`yaml sdd:verification-commands`). | `lint`, `unit_test`, `integration_test`, `build`, `infra`, `full_suite`, `builders` (`Mapping[str, str]`) | Rechaza placeholders genéricos (`todo`, `tbd`, `test command`, `migration check`) cuando Gate S0 está aprobado (`FWK-006`). |
+| `DagTask`, `DagPlan` & `InboxTicket` | `scripts/sdd_dag.py` (`@dataclass(frozen=True)`) | Nodos del grafo de tareas `03-tasks.md`, plan topológico por olas y transición atómica de tickets en `.agent-inbox/`. | `DagTask`: `task_id`, `title`, `owner`, `owners`, `block`, `mode`, `depends_on`, `status`, `dod_command`, `line_no`; `DagPlan`: `tasks`, `order`, `waves`, `adjacency`, `dependencies`; `InboxTicket`: `task_id`, `agent`, `state`, `previous_state`, `ticket_path`, `depends_on` | Estados válidos: `{"pending", "in_progress", "done", "blocked"}`; prohíbe `pending -> done` directo o iniciar tarea con dependencias no completadas (`FWK-006`). |
+| `SyncPlan` | `scripts/sdd_sync.py` (`@dataclass(frozen=True)`) | Plan calculado y resultado de sincronización bidireccional entre proyecto y plantilla. | `direction`, `source_root`, `target_root`, `added`, `updated`, `conflicts`, `skipped`, `applied`, `dry_run` | Aborta con `SyncConflictError` si `conflicts` no está vacío y `force=False` (`FWK-009`). |
 
 ---
 
@@ -39,14 +43,15 @@ Cuando `uiux` está presente (si es `None` o se omite sigue siendo válido):
 | Campo | Tipo | Descripción |
 | :--- | :--- | :--- |
 | `schema_version` | `int` (`2`) | Versión del esquema de bloqueo y trazabilidad por fichero. |
-| `timestamp` | `str` (ISO-8601 UTC) | Marca temporal de generación; se conserva sin reescribir el fichero si el resto de la carga útil es idéntica. |
+| `timestamp` | `str` (ISO-8601 UTC) | Marca temporal de generación; desacoplada del hash determinista (`content_digest`) y conservada sin reescribir si no hay cambios. |
+| `content_digest` | `str` (SHA-256 hex, 64 chars) | Resumen determinista calculado sobre toda la configuración y hashes de ficheros gestionados (incluyendo `core_agents`), excluyendo `timestamp` (`FWK-006`). |
 | `stack_approved` | `bool` | Estado efectivo de Gate S0 (`has_human_signoff and config.stack_approved`). |
 | `gate00_approved` | `bool` | Alias retrocompatible para lectores v2 existentes (`== stack_approved`). |
 | `preset` | `str` | Preset efectivo aplicado (`compact`, `granular`, `api-only`, `spa-only`). |
 | `tech_stack` | `str` | Etiqueta de stack (`"Multi-Stack"` por defecto). |
-| `core_agents` | `list[str]` | Lista fija de los 6 agentes core (`orchestrator`, `functional-analyst`, `architect`, `qa-tester`, `documentator`, `devops`). |
+| `core_agents` | `list[str]` | Lista ordenada de los 6 agentes core (`architect`, `devops`, `documentator`, `functional-analyst`, `orchestrator`, `qa-tester`), cuyos ficheros también se verifican en `files` con `"owner": "core"` (`FWK-006`). |
 | `builders` | `list[str]` | Builders materializados según el preset activo. |
-| `specialists` | `list[str]` | Especialistas universales materializados desde `.sdd/catalog/specialists/`. |
+| `specialists` | `list[str]` | Especialistas universales activos por defecto desde `.sdd/catalog/specialists/` (`["security-reviewer"]` en starter base; los 19 opt-in residen en `.sdd/catalog/specialists-optin/`). |
 | `active_packs` | `list[object]` | Lista de `{ "name": str, "id": str, "source": "stack-config" \| "manual" }`. |
 | `files` | `dict[str, object]` | Diccionario por ruta POSIX relativa con `{ "sha256": str, "owner": str, "kind": "agent" \| "skill" \| "rule" \| "workflow" }`. |
 
@@ -141,6 +146,11 @@ El validador `scripts/sdd_tokens_validator.py` valida la jerarquía normalizada 
   - En TypeScript / TSX / JavaScript / JSX: `// sdd-token-ignore`
   - En CSS / SCSS / SASS / Less / HTML / Vue / Svelte: `/* sdd-token-ignore */`
   El escáner `--check-sources` ignora cualquier línea que contenga estos marcadores, evitando falsos positivos sin relajar las restricciones globales.
+
+### 2.8. Contratos JSON de Concurrencia Multi-Worktree y Sincronización (`FWK-008` & `FWK-009`)
+- **`.agents/worktree_states/<wt_id>.json` (`scripts/sdd_git_state.py`):** Estado activo aislado por worktree (`work_item_id`, `branch`, `gate`, `spec_dir`, `worktree_path`, `backend_port`, `frontend_port`, `updated_at`), evitando colisiones sobre el singleton global `.agents/active_work_item.json`.
+- **`.agents/worktree_states/ports_registry.json` (`scripts/sdd_git_worktree.py`):** Mapa `{ "<wt_slug>": { "backend_port": int, "frontend_port": int } }` protegido por `.ports.lock` y verificado con bind TCP real en `127.0.0.1`, `0.0.0.0` y `::1` dentro de los rangos `8000..8899` (backend) y `3000..3899` (frontend).
+- **`.agents/.sdd-sync-state.json` (`scripts/sdd_sync.py`):** Instantánea base `{ "schema_version": 1, "direction": "pull" | "push", "files": { "<rel_posix_path>": "<sha256>" } }` usada para detectar divergencias locales frente al último estado sincronizado antes de sobrescribir.
 
 ---
 
