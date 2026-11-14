@@ -53,9 +53,13 @@ _PROTECTED_PREFIX_RE = re.compile(r"^(src|backend|frontend|DDBB|tests|scripts)(/
 _PROTECTED_COMPOSE_RE = re.compile(r"(?:^|/)docker-compose[^/]*\.ya?ml$", re.IGNORECASE)
 _PROTECTED_AGENTS_RE = re.compile(r"^\.agents/(?:hooks\.json$|(?:scripts|rules)(/|$))", re.IGNORECASE)
 _PROTECTED_STACK_RE = re.compile(r"^specs/STACK\.md$", re.IGNORECASE)
-_STACK_APPROVAL_RE = re.compile(
-    r"(?:\[[xX]\]\s*Gate\s+(?:S0|00)\s+Approved|\b(?:stack_approved|gate00_approved)\s*:\s*true\b)",
-    re.IGNORECASE,
+_STACK_CHECKBOX_RE = re.compile(r"\[[xX]\]\s*Gate\s+(?:S0|00)\s+Approved", re.IGNORECASE)
+_STACK_BOOL_APPROVAL_RE = re.compile(r"\b(?:stack_approved|gate00_approved)\s*:\s*true\b", re.IGNORECASE)
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+_STACK_OPEN_FENCE_RE = re.compile(r"^[ \t]*(`{3,}|~{3,})(.*)$")
+_STACK_SELF_APPROVAL_MSG = (
+    "SDD Human Gate Ownership (RN-SDD-HUMAN-GATE-OWNERSHIP): Agents cannot self-approve Gate S0 "
+    "(`[x] Gate S0 Approved` or `stack_approved: true`) inside specs/STACK.md."
 )
 
 
@@ -326,21 +330,80 @@ def validate_active_work_item(repo_root: pathlib.Path) -> tuple[bool, str]:
     return True, canonical_id
 
 
+def _extract_stack_config_bodies(text: str) -> list[str]:
+    """Extract bodies of any fenced `sdd:stack-config` YAML blocks (closed or unclosed)."""
+    bodies, in_target, fence_char, fence_len, current = [], False, "", 0, []
+    for line in text.replace("\r\n", "\n").replace("\r", "\n").split("\n"):
+        if in_target:
+            if re.match(rf"^[ \t]*{re.escape(fence_char)}{{{fence_len},}}[ \t]*$", line):
+                bodies.append("\n".join(current))
+                in_target, current = False, []
+            else:
+                current.append(line)
+            continue
+        match = _STACK_OPEN_FENCE_RE.match(line)
+        if match and re.search(r"(?:^|\s)sdd:stack-config(?:\s|$)", match.group(2), re.IGNORECASE):
+            fence_char, fence_len, in_target, current = match.group(1)[0], len(match.group(1)), True, []
+    if in_target:
+        bodies.append("\n".join(current))
+    return bodies
+
+
+def _has_stack_checkbox_approval(text: str, *, include_raw_markers: bool = True) -> bool:
+    """Detect Gate S0/00 checkbox sign-off outside comments/fences (and raw markers if enabled)."""
+    return bool(_STACK_CHECKBOX_RE.search(strip_non_normative_markdown(text))) or (
+        include_raw_markers and any(m in text for m in ACCEPTED_STACK_MARKERS)
+    )
+
+
+def _has_stack_bool_approval(text: str) -> bool:
+    """Detect `stack_approved: true` or `gate00_approved: true` in stack-config blocks or uncommented text."""
+    return bool(_STACK_BOOL_APPROVAL_RE.search(_HTML_COMMENT_RE.sub("", text))) or any(
+        _STACK_BOOL_APPROVAL_RE.search(body) for body in _extract_stack_config_bodies(text)
+    )
+
+
+def _extract_written_text(tool_name: str, tool_input: dict) -> str:
+    """Extract candidate written/replacement text from write_file or edit_file payloads."""
+    keys = (
+        ("Content", "content") if tool_name == "write_file"
+        else ("Replacement", "replacement") if tool_name == "edit_file"
+        else ("Replacement", "replacement", "Content", "content")
+    )
+    for key in keys:
+        val = tool_input.get(key)
+        if val is not None and val != "":
+            return val if isinstance(val, str) else str(val)
+    return ""
+
+
 def _validate_stack_md_edit(repo_root: pathlib.Path, tool_name: str, tool_input: dict) -> tuple[bool, str]:
     """Guard specs/STACK.md against agent self-approval while allowing unapproved bootstrap/template edits."""
-    written_text = ""
-    if tool_name == "write_file":
-        written_text = str(tool_input.get("Content") or tool_input.get("content") or "")
-    elif tool_name == "edit_file":
-        written_text = str(tool_input.get("Replacement") or tool_input.get("replacement") or "")
+    written_text = _extract_written_text(tool_name, tool_input)
+    if _has_stack_checkbox_approval(written_text, include_raw_markers=True) or _has_stack_bool_approval(written_text):
+        return False, _STACK_SELF_APPROVAL_MSG
 
-    cleaned_write = strip_non_normative_markdown(written_text)
-    if _STACK_APPROVAL_RE.search(cleaned_write) or any(m in written_text for m in ACCEPTED_STACK_MARKERS):
-        return (
-            False,
-            "SDD Human Gate Ownership (RN-SDD-HUMAN-GATE-OWNERSHIP): Agents cannot self-approve Gate S0 "
-            "(`[x] Gate S0 Approved` or `stack_approved: true`) inside specs/STACK.md.",
-        )
+    is_append = tool_name == "write_file" and bool(tool_input.get("Append") or tool_input.get("append"))
+    if tool_name == "edit_file" or is_append:
+        stack_file = repo_root / "specs" / "STACK.md"
+        if is_link_or_junction(stack_file):
+            return False, "SDD Human Gate Ownership (fail-closed): specs/STACK.md cannot be a symlink or junction."
+        if stack_file.is_file():
+            try:
+                existing = stack_file.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError) as exc:
+                return False, f"SDD Human Gate Ownership (fail-closed): Cannot read specs/STACK.md ({exc})."
+            target = tool_input.get("Target") or tool_input.get("target") or ""
+            resulting = (
+                existing + written_text if is_append
+                else existing.replace(target, written_text) if isinstance(target, str) and target and target in existing
+                else ""
+            )
+            if resulting and (
+                (_has_stack_checkbox_approval(resulting, include_raw_markers=False) and not _has_stack_checkbox_approval(existing, include_raw_markers=False))
+                or (_has_stack_bool_approval(resulting) and not _has_stack_bool_approval(existing))
+            ):
+                return False, _STACK_SELF_APPROVAL_MSG
 
     stack_ok, _ = check_stack_gate(repo_root)
     if stack_ok:
