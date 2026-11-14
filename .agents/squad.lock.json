@@ -1,17 +1,18 @@
 {
   "schema_version": 2,
-  "timestamp": "2026-11-13T14:48:59.154677+00:00",
+  "timestamp": "2026-11-14T20:43:12.716036+00:00",
+  "content_digest": "4a8ccc3c9507d8758f02d570c8490908d1e11a1db2d67f5c45f0543a1174a908",
   "stack_approved": false,
   "gate00_approved": false,
   "preset": "compact",
   "tech_stack": "Multi-Stack",
   "core_agents": [
-    "orchestrator",
-    "functional-analyst",
     "architect",
-    "qa-tester",
+    "devops",
     "documentator",
-    "devops"
+    "functional-analyst",
+    "orchestrator",
+    "qa-tester"
   ],
   "builders": [
     "back-engineer",
@@ -41,6 +42,11 @@
   ],
   "active_packs": [],
   "files": {
+    ".agents/agents/architect.md": {
+      "sha256": "f72906ef76a7817339467eaa97d0ea8c5310f933f98c5c77496a8e1420dc7422",
+      "owner": "core",
+      "kind": "agent"
+    },
     ".agents/agents/back-engineer.md": {
       "sha256": "9b8133c4b08012786bb68af8c2a13b09b5a44f56ab8a890943fa134aee095ffa",
       "owner": "builder:back-engineer",
@@ -76,9 +82,19 @@
       "owner": "specialists",
       "kind": "agent"
     },
+    ".agents/agents/devops.md": {
+      "sha256": "9331cccbb0d3a8e2407056215c45839d2048eeec1ef6c88e714abfddb493f14c",
+      "owner": "core",
+      "kind": "agent"
+    },
     ".agents/agents/docs-lookup.md": {
       "sha256": "1bf4bc921c8112b3a330f9430af8dbea1aa41778c7dfeec487c9246534ebd188",
       "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/documentator.md": {
+      "sha256": "e21b19d33b98477b55cbd7d2d671932d1ec44a3f1c06df2dcd6a5dfa635152a2",
+      "owner": "core",
       "kind": "agent"
     },
     ".agents/agents/e2e-runner.md": {
@@ -89,6 +105,11 @@
     ".agents/agents/front-engineer.md": {
       "sha256": "6f372e2514c3967731dfa7c48f09842b9908672591c0f745fab607a7d5a40532",
       "owner": "builder:front-engineer",
+      "kind": "agent"
+    },
+    ".agents/agents/functional-analyst.md": {
+      "sha256": "25b374d0b2752980bdb9996554213983bb1f2371e11bf09e819de5184becd0b0",
+      "owner": "core",
       "kind": "agent"
     },
     ".agents/agents/gan-evaluator.md": {
@@ -111,6 +132,11 @@
       "owner": "specialists",
       "kind": "agent"
     },
+    ".agents/agents/orchestrator.md": {
+      "sha256": "4dfca5d8c9e129b9f416f038151d53898e2beb1bfc8600b07103e95cb40d68d4",
+      "owner": "core",
+      "kind": "agent"
+    },
     ".agents/agents/performance-optimizer.md": {
       "sha256": "c6e91d4cecaf7c2a698c0a4c91a830d2f068bcbea60b8fcdaf5746da917fd0cb",
       "owner": "specialists",
@@ -119,6 +145,11 @@
     ".agents/agents/pr-test-analyzer.md": {
       "sha256": "d6466975861554481e95eb0ec9e3bada76fa3a907b42c5f997502e35a50173c9",
       "owner": "specialists",
+      "kind": "agent"
+    },
+    ".agents/agents/qa-tester.md": {
+      "sha256": "9c1ce3549e4ecd2a57b610fb6abe339d4494d9d31d9898c895fd5a258fe15958",
+      "owner": "core",
       "kind": "agent"
     },
     ".agents/agents/refactor-cleaner.md": {
