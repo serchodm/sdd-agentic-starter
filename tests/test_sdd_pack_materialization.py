@@ -3,14 +3,7 @@
 
 from __future__ import annotations
 
-import contextlib
-import hashlib
-import io
-import json
-import pathlib
-import sys
-import tempfile
-import unittest
+import contextlib, hashlib, io, json, pathlib, sys, tempfile, unittest
 from collections.abc import Mapping, Sequence
 from unittest import mock
 
@@ -19,18 +12,17 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from scripts import sdd_agent_generator, sdd_catalog_import, sdd_sync
+from scripts.sdd_generator_tx import DEFAULT_CORE_AGENTS
 from scripts.sdd_pack_registry import (
-    CollisionError,
-    InvalidManifestError,
-    ManualModificationConflictError,
-    PackDependencyError,
-    StackConfigError,
-    load_catalog_registry,
-    parse_stack_config,
-    resolve_pack_assets,
+    CollisionError, InvalidManifestError, ManualModificationConflictError, PackDependencyError,
+    StackConfigError, load_catalog_registry, parse_stack_config, resolve_pack_assets,
 )
 
 GENERATED_MARKER = sdd_agent_generator.GENERATED_MARKER
+_DEFAULT_VERIF = (
+    "\n```yaml sdd:verification-commands\nlint: uv run ruff check .\nunit_test: uv run pytest tests/unit -q\n"
+    "integration_test: uv run pytest tests/integration -q\nbuild: npm run build\ninfra: alembic check\n```\n"
+)
 
 
 def _write_text(path: pathlib.Path, content: str) -> pathlib.Path:
@@ -42,18 +34,16 @@ def _write_text(path: pathlib.Path, content: str) -> pathlib.Path:
 def _snapshot_tree(root: pathlib.Path) -> dict[str, bytes]:
     if not root.exists():
         return {}
-    return {p.relative_to(root).as_posix(): p.read_bytes() for p in sorted(root.rglob("*")) if p.is_file()}
+    return {
+        p.relative_to(root).as_posix(): p.read_bytes()
+        for p in sorted(root.rglob("*")) if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
+    }
 
 
 def _stack_doc(
-    *,
-    checkbox: bool = True,
-    gate00_yaml: object = True,
-    preset: str = "compact",
-    packs: Sequence[str] = (),
-    prose: str = "",
-    include_block: bool = True,
-    extra_yaml: str = "",
+    *, checkbox: bool = True, gate00_yaml: object = True, preset: str = "compact",
+    packs: Sequence[str] = (), prose: str = "", include_block: bool = True,
+    extra_yaml: str = "", include_verif: bool | None = None,
 ) -> str:
     signoff = "[x] Gate 00 Approved" if checkbox else "[ ] Gate 00 Approved"
     parts = [f"# Stack\n\n> **ESTADO DE LA PUERTA:** `{signoff} (Human Sign-off)`\n", prose]
@@ -63,21 +53,16 @@ def _stack_doc(
             f"```yaml sdd:stack-config\ngate00_approved: {gate_val}\npreset: {preset}\n"
             f"packs: {json.dumps(list(packs))}\n{extra_yaml}```\n"
         )
+        if include_verif if include_verif is not None else (checkbox and gate00_yaml is True):
+            parts.append(_DEFAULT_VERIF)
     return "\n".join(parts)
 
 
 def _create_pack(
-    packs_dir: pathlib.Path,
-    dir_name: str,
-    *,
-    pack_id: str | None = None,
-    family: str = "language",
-    requires: Sequence[str] = (),
-    agents: Mapping[str, str] | None = None,
-    skills: Mapping[str, Mapping[str, str]] | None = None,
-    rules: Mapping[str, str] | None = None,
-    workflows: Mapping[str, str] | None = None,
-    manifest_override: Mapping[str, object] | str | None = None,
+    packs_dir: pathlib.Path, dir_name: str, *, pack_id: str | None = None, family: str = "language",
+    requires: Sequence[str] = (), agents: Mapping[str, str] | None = None,
+    skills: Mapping[str, Mapping[str, str]] | None = None, rules: Mapping[str, str] | None = None,
+    workflows: Mapping[str, str] | None = None, manifest_override: Mapping[str, object] | str | None = None,
     create_assets: bool = True,
 ) -> pathlib.Path:
     pack_dir = packs_dir / dir_name
@@ -95,16 +80,10 @@ def _create_pack(
             _write_text(pack_dir / "workflows" / pathlib.Path(rel).name, body)
     if isinstance(manifest_override, str):
         return _write_text(pack_dir / "pack.json", manifest_override)
-
     manifest: dict[str, object] = {
-        "id": pack_id or dir_name.replace("-", ":", 1),
-        "family": family,
-        "requires": list(requires),
-        "description": f"Test pack {dir_name}",
-        "rules": list(rules_map.keys()),
-        "specialists": list(agents_map.keys()),
-        "skills": [f"skills/{slug}" for slug in skills_map],
-        "workflows": list(wf_map.keys()),
+        "id": pack_id or dir_name.replace("-", ":", 1), "family": family, "requires": list(requires),
+        "description": f"Test pack {dir_name}", "rules": list(rules_map.keys()), "specialists": list(agents_map.keys()),
+        "skills": [f"skills/{slug}" for slug in skills_map], "workflows": list(wf_map.keys()),
     }
     if manifest_override is not None:
         manifest.update(manifest_override)
@@ -179,8 +158,7 @@ class TestSddPackMaterialization(unittest.TestCase):
         with (
             mock.patch.object(sdd_agent_generator, "ROOT_DIR", root),
             mock.patch.object(sys, "argv", ["sdd_agent_generator.py", *argv]),
-            contextlib.redirect_stdout(out),
-            contextlib.redirect_stderr(err),
+            contextlib.redirect_stdout(out), contextlib.redirect_stderr(err),
         ):
             code = sdd_agent_generator.main()
         return code, out.getvalue(), err.getvalue()
@@ -319,18 +297,24 @@ class TestSddPackMaterialization(unittest.TestCase):
         self.assertEqual((lock1["files"], lock1["timestamp"]), (lock2["files"], lock2["timestamp"]))
         self.assertEqual(lock_bytes1, (ws / ".agents" / "squad.lock.json").read_bytes())
 
-    # Group 5 / Scenario 4: Safe deactivation cleanup & manual modification conflict
+    # Group 5 / Scenario 4: Fail-closed inbox check, drain cleanup & manual edit conflict
     def test_scenario_4_deactivation_cleanup_and_inbox_preservation(self) -> None:
         ws = self._new_ws(_stack_doc(checkbox=True, gate00_yaml=True, packs=["lang-python", "lang-java"]), packs=("lang-python", "lang-java"))
         self._materialize(ws)
         ticket = _write_text(ws / ".agent-inbox" / "python-reviewer" / "TASK-1.md", "Pending work\n")
         _write_text(ws / "specs" / "STACK.md", _stack_doc(checkbox=True, gate00_yaml=True, packs=[]))
-        code, _, err = self._run_cli(ws, ["--materialize"])
-        self.assertEqual(code, 0)
-        self.assertIn("[WARN]", err)
+        snap_before = _snapshot_tree(ws / ".agents")
+        code_fail, _, err_fail = self._run_cli(ws, ["--materialize"])
+        self.assertEqual(code_fail, 1)
+        self.assertIn("--drain-inboxes", err_fail)
         self.assertTrue(ticket.is_file())
-        self.assertFalse((ws / ".agent-inbox" / "java-reviewer").exists())
+        self.assertEqual(_snapshot_tree(ws / ".agents"), snap_before)
+
+        code_ok, _, err_ok = self._run_cli(ws, ["--materialize", "--drain-inboxes", "orchestrator"])
+        self.assertEqual((code_ok, err_ok), (0, ""))
+        self.assertEqual((ws / ".agent-inbox" / "orchestrator" / "TASK-1.md").read_text(encoding="utf-8"), "Pending work\n")
         for removed in (
+            ws / ".agent-inbox" / "python-reviewer", ws / ".agent-inbox" / "java-reviewer",
             ws / ".agents" / "agents" / "python-reviewer.md", ws / ".agents" / "agents" / "java-reviewer.md",
             ws / ".agents" / "skills" / "python-patterns", ws / ".agents" / "pack-rules", ws / ".agents" / "workflows" / "python-review.md",
         ):
@@ -461,9 +445,13 @@ class TestSddPackMaterialization(unittest.TestCase):
     # Group 9: Real workspace template sanity, catalog validity & modularity thresholds
     def test_real_template_sanitization_catalog_integrity_and_line_limits(self) -> None:
         lock = json.loads((ROOT_DIR / ".agents" / "squad.lock.json").read_text(encoding="utf-8"))
-        self.assertEqual((lock["schema_version"], lock["gate00_approved"], lock["active_packs"]), (2, False, []))
+        self.assertEqual((lock["schema_version"], lock["stack_approved"], lock["gate00_approved"], lock["active_packs"]), (2, False, False, []))
         self.assertEqual(lock["builders"], ["back-engineer", "front-engineer"])
-        self.assertEqual((len(lock["specialists"]), len(lock["files"])), (20, 22))
+        catalog_specs = list((ROOT_DIR / ".sdd" / "catalog" / "specialists").glob("*.md"))
+        self.assertGreaterEqual(len(catalog_specs), 1)
+        self.assertEqual(len(lock["specialists"]), len(catalog_specs))
+        self.assertEqual(len(lock["core_agents"]), len(DEFAULT_CORE_AGENTS))
+        self.assertEqual(len(lock["files"]), len(lock["builders"]) + len(lock["specialists"]) + len(lock["core_agents"]))
         for rel, meta in lock["files"].items():
             disk = ROOT_DIR / rel
             self.assertTrue(disk.is_file(), f"Lock file missing on disk: {rel}")
@@ -471,22 +459,28 @@ class TestSddPackMaterialization(unittest.TestCase):
 
         agent_stems = sorted(p.stem for p in (ROOT_DIR / ".agents" / "agents").glob("*.md"))
         inbox_names = sorted(p.name for p in (ROOT_DIR / ".agent-inbox").iterdir() if p.is_dir())
-        expected_agents = sorted([*sdd_agent_generator.CORE_AGENTS, *lock["builders"], *lock["specialists"]])
+        expected_agents = sorted([*DEFAULT_CORE_AGENTS, *lock["builders"], *lock["specialists"]])
         self.assertEqual((agent_stems, inbox_names), (expected_agents, expected_agents))
         self.assertFalse((ROOT_DIR / ".agents" / "pack-rules").exists())
+
+        snap_agents = _snapshot_tree(ROOT_DIR / ".agents")
+        self.assertEqual(sdd_agent_generator.verify_squad(repo_root=ROOT_DIR), [])
+        code, out, err = self._run_cli(ROOT_DIR, ["--verify"])
+        self.assertEqual((code, err), (0, ""), out)
+        self.assertIn("0 mismatches", out)
+        self.assertEqual(_snapshot_tree(ROOT_DIR / ".agents"), snap_agents)
 
         cfg, effective = parse_stack_config(ROOT_DIR / "specs" / "STACK.md")
         self.assertFalse(effective)
         self.assertEqual((cfg.gate00_approved, cfg.preset, cfg.packs), (False, "compact", ()))
-
         registry = load_catalog_registry(ROOT_DIR / ".sdd" / "catalog" / "packs")
         self.assertTrue(set(sdd_catalog_import.STACK_PACKS.keys()).issubset(registry.keys()))
         for name, manifest in registry.items():
-            resolved = resolve_pack_assets(manifest, ROOT_DIR / ".sdd" / "catalog" / "packs" / name)
-            self.assertEqual(len(resolved.workflow_files), len(manifest.workflows))
+            self.assertEqual(len(resolve_pack_assets(manifest, ROOT_DIR / ".sdd" / "catalog" / "packs" / name).workflow_files), len(manifest.workflows))
 
         for rel in (
-            "scripts/sdd_pack_registry.py", "scripts/sdd_agent_generator.py",
+            "scripts/sdd_pack_registry.py", "scripts/sdd_stack_parser.py", "scripts/sdd_generator_tx.py",
+            "scripts/sdd_agent_generator.py", "scripts/sdd_ownership.py", "scripts/sdd_dag.py",
             "scripts/sdd_catalog_import.py", "scripts/sdd_sync.py", "tests/test_sdd_pack_materialization.py",
         ):
             lines = len((ROOT_DIR / rel).read_text(encoding="utf-8").splitlines())

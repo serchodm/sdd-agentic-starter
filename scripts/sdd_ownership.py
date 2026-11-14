@@ -11,8 +11,10 @@ from typing import Any, Literal
 
 try:
     from scripts.sdd_pack_registry import SddGeneratorError, StackConfigError, parse_yaml_subset
+    from scripts.sdd_stack_parser import _strip_html_comments_line
 except ImportError:
     from sdd_pack_registry import SddGeneratorError, StackConfigError, parse_yaml_subset
+    from sdd_stack_parser import _strip_html_comments_line
 
 DEFAULT_CANDIDATE_ROOTS: tuple[str, ...] = ("src", "backend", "frontend", "DDBB")
 _OPEN_FENCE_RE = re.compile(r"^[ \t]*(`{3,}|~{3,})(.*)$")
@@ -72,23 +74,31 @@ class OwnershipMapConfig:
 
 
 def _extract_ownership_block(content: str) -> str | None:
-    """Return the single fenced `yaml sdd:ownership-map` body or None if absent."""
-    blocks, in_target, t_char, t_len, o_char, o_len, current = [], False, "`", 0, "", 0, []
-    for line in content.replace("\r\n", "\n").replace("\r", "\n").split("\n"):
-        if in_target:
-            if re.match(rf"^[ \t]*{re.escape(t_char)}{{{t_len},}}[ \t]*$", line):
-                blocks.append("\n".join(current))
-                in_target = False
-            else:
+    """Return the single active fenced `yaml sdd:ownership-map` body or None if absent."""
+    blocks: list[str] = []
+    current: list[str] = []
+    in_comment, fence_char, fence_len, in_target = False, "", 0, False
+
+    for line in content.lstrip("\ufeff").replace("\r\n", "\n").replace("\r", "\n").split("\n"):
+        if fence_char:
+            if re.match(rf"^[ \t]*{re.escape(fence_char)}{{{fence_len},}}[ \t]*$", line):
+                if in_target:
+                    blocks.append("\n".join(current))
+                fence_char, fence_len, in_target, current = "", 0, False, []
+            elif in_target:
                 current.append(line)
-        elif o_len and re.match(rf"^[ \t]*{re.escape(o_char)}{{{o_len},}}[ \t]*$", line):
-            o_len = 0
-        elif not o_len and (m := _OPEN_FENCE_RE.match(line)):
-            fence, info = m.group(1), m.group(2).strip()
-            if fence[0] == "`" and _OWNERSHIP_INFO_RE.match(info):
-                in_target, t_char, t_len, current = True, fence[0], len(fence), []
-            else:
-                o_char, o_len = fence[0], len(fence)
+            continue
+
+        cleaned, in_comment = _strip_html_comments_line(line, in_comment)
+        if m := _OPEN_FENCE_RE.match(cleaned):
+            ticks, info = m.group(1), m.group(2).strip()
+            ch = ticks[0]
+            if not (ch == "`" and "`" in info):
+                fence_char, fence_len = ch, len(ticks)
+                in_target = ch == "`" and bool(_OWNERSHIP_INFO_RE.match(info))
+                current = []
+                continue
+
     if in_target or len(blocks) > 1:
         raise OwnershipError(f"{'Unclosed' if in_target else 'Multiple'} ```yaml sdd:ownership-map block(s) in STACK.md.")
     return blocks[0] if blocks else None
