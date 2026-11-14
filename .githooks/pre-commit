@@ -8,6 +8,8 @@ elif [ -f "./.venv/bin/python" ]; then
     exec "./.venv/bin/python" scripts/sdd_hooks.py pre-commit "$@"
 elif command -v py >/dev/null 2>&1; then
     exec py -3 scripts/sdd_hooks.py pre-commit "$@"
-else
+elif command -v python3 >/dev/null 2>&1; then
     exec python3 scripts/sdd_hooks.py pre-commit "$@"
+else
+    exec python scripts/sdd_hooks.py pre-commit "$@"
 fi

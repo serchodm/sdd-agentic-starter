@@ -249,6 +249,20 @@ class WorktreeManager:
 
     def remove(self, identifier: str, force: bool = False) -> bool:
         """Elimina un worktree por ruta o por nombre de rama o spec."""
+        if not identifier or not identifier.strip():
+            print("[ERROR] Identificador de worktree vacío.")
+            return False
+
+        worktrees_root = self.worktrees_root.resolve(strict=False)
+
+        def _is_contained(path_obj: pathlib.Path) -> Optional[pathlib.Path]:
+            if path_obj.is_symlink() or (hasattr(os.path, "isjunction") and os.path.isjunction(path_obj)):
+                return None
+            resolved = path_obj.resolve(strict=False)
+            if resolved == worktrees_root or not resolved.is_relative_to(worktrees_root):
+                return None
+            return resolved
+
         worktrees = GitRunner.get_worktrees()
         found_path: Optional[pathlib.Path] = None
 
@@ -256,39 +270,64 @@ class WorktreeManager:
         candidate_slug = candidate_branch.replace("/", "-")
 
         for wt in worktrees:
-            p = pathlib.Path(wt.get("path", ""))
+            raw_path = wt.get("path", "")
+            if not raw_path:
+                continue
+            p = pathlib.Path(raw_path)
             b = wt.get("branch", "")
             if identifier in (p.name, str(p), b) or candidate_branch == b or candidate_slug == p.name:
                 found_path = p
                 break
 
         if not found_path:
-            # Fallback a buscar en carpeta
-            target = self.worktrees_root / identifier
-            if target.exists():
-                found_path = target
-            elif (self.worktrees_root / candidate_slug).exists():
-                found_path = self.worktrees_root / candidate_slug
+            # Fallback a buscar en carpeta dentro de worktrees_root
+            direct_target = self.worktrees_root / identifier
+            if _is_contained(direct_target) is None:
+                print(f"[ERROR] Ruta de worktree rechazada por estar fuera de '{worktrees_root}': {identifier}")
+                return False
+            if direct_target.exists():
+                found_path = direct_target
+            else:
+                slug_target = self.worktrees_root / candidate_slug
+                if _is_contained(slug_target) is None:
+                    print(f"[ERROR] Ruta de worktree rechazada por estar fuera de '{worktrees_root}': {candidate_slug}")
+                    return False
+                if slug_target.exists():
+                    found_path = slug_target
 
-        if not found_path or not found_path.exists():
+        if not found_path:
             print(f"[WARN] No se encontró el worktree para: {identifier}")
             return False
 
-        print(f"  -> Desmontando worktree en '{found_path}'...")
-        args = ["worktree", "remove", str(found_path)]
+        resolved_target = _is_contained(found_path)
+        if resolved_target is None:
+            print(f"[ERROR] Ruta de worktree rechazada por estar fuera de '{worktrees_root}': {found_path}")
+            return False
+
+        if not resolved_target.exists():
+            print(f"[WARN] No se encontró el worktree para: {identifier}")
+            return False
+
+        print(f"  -> Desmontando worktree en '{resolved_target}'...")
+        args = ["worktree", "remove", str(resolved_target)]
         if force:
             args.append("--force")
         GitRunner.run(args, check=False)
 
-        # Si aún queda residuo en disco, limpiar
-        if found_path.exists():
+        # Si aún queda residuo en disco, limpiar dentro de la contención verificada
+        if resolved_target.exists():
+            reverified = _is_contained(found_path)
+            if reverified is None or reverified != resolved_target:
+                print(f"[ERROR] Contención invalidada antes de limpiar '{resolved_target}'.")
+                return False
             try:
-                shutil.rmtree(found_path, ignore_errors=True)
-            except Exception:
-                pass
+                shutil.rmtree(reverified)
+            except OSError as exc:
+                print(f"[ERROR] No se pudo eliminar el directorio de worktree '{reverified}': {exc}")
+                return False
 
         GitRunner.run(["worktree", "prune"], check=False)
-        print(f"[OK] Worktree '{found_path.name}' eliminado con éxito.")
+        print(f"[OK] Worktree '{resolved_target.name}' eliminado con éxito.")
         return True
 
     def prune(self) -> None:
