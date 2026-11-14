@@ -27,12 +27,14 @@ _WORK_ITEM_ID_RE = re.compile(r"^((?:FEAT|CR|BUG|FWK)-\d{3,4})$", re.IGNORECASE)
 _TARGET_PATH_KEYS: tuple[str, ...] = (
     "Path",
     "path",
+    "FilePath",
     "file_path",
     "TargetFile",
     "target_file",
     "NotebookPath",
     "notebook_path",
     "AbsolutePath",
+    "absolute_path",
 )
 
 
@@ -109,15 +111,32 @@ def read_hook_payload() -> dict:
     return payload
 
 
+def extract_tool_call(payload: dict) -> tuple[str, dict]:
+    """Extract (tool_name, tool_args) supporting Antigravity (toolCall.args) and legacy tool_input."""
+    if not isinstance(payload, dict):
+        return "", {}
+
+    tool_call = payload.get("toolCall")
+    if isinstance(tool_call, dict):
+        name = tool_call.get("name") or payload.get("tool_name") or payload.get("toolName") or ""
+        args = tool_call.get("args")
+        if isinstance(args, dict):
+            return str(name), args
+
+    name = payload.get("tool_name") or payload.get("toolName") or ""
+    for container_key in ("tool_input", "toolInput", "args", "arguments", "parameters"):
+        container = payload.get(container_key)
+        if isinstance(container, dict):
+            return str(name), container
+
+    return str(name), {}
+
+
 def extract_target_path(payload: dict) -> str:
     """Extract target file path from supported PreToolUse payload formats."""
-    if not isinstance(payload, dict):
-        return ""
-    tool_input = payload.get("tool_input")
-    if not isinstance(tool_input, dict):
-        return ""
+    _, tool_args = extract_tool_call(payload)
     for key in _TARGET_PATH_KEYS:
-        val = tool_input.get(key)
+        val = tool_args.get(key)
         if isinstance(val, str) and val.strip():
             return val.strip()
     return ""
@@ -126,7 +145,7 @@ def extract_target_path(payload: dict) -> str:
 def _walk_and_verify_no_links(
     base: pathlib.Path,
     parts: tuple[str, ...],
-    repo_root_resolved: pathlib.Path,
+    root_resolved: pathlib.Path,
     raw_target: str,
 ) -> None:
     curr = base
@@ -135,8 +154,8 @@ def _walk_and_verify_no_links(
             continue
         if part == "..":
             curr = curr.parent
-            if not curr.is_relative_to(repo_root_resolved):
-                raise ValueError(f"Path traversal escapes repository root: {raw_target!r}")
+            if not curr.is_relative_to(root_resolved):
+                raise ValueError(f"Path traversal escapes containment root: {raw_target!r}")
             continue
         curr = curr / part
         if is_link_or_junction(curr):
@@ -144,13 +163,7 @@ def _walk_and_verify_no_links(
 
 
 def resolve_repo_relative_path(target_path: str, repo_root: pathlib.Path) -> str:
-    """
-    Canonicalize target_path relative to repo_root and enforce strict containment:
-    - Normalizes Win32 \\\\?\\ and \\\\?\\UNC\\ prefixes
-    - Resolves with Path.resolve(strict=False)
-    - Denies escapes outside repo_root.resolve(strict=False)
-    - Denies symlinks or Windows NTFS junctions within the repository tree
-    """
+    """Canonicalize target_path relative to repo_root and enforce strict containment."""
     if not isinstance(target_path, str) or not target_path.strip():
         raise ValueError("Target path must be a non-empty string.")
 
@@ -186,13 +199,53 @@ def resolve_repo_relative_path(target_path: str, repo_root: pathlib.Path) -> str
     return resolved.relative_to(repo_resolved).as_posix()
 
 
+def resolve_target_context(
+    target_path: str, payload: dict, base_repo_root: pathlib.Path
+) -> tuple[pathlib.Path, str, bool]:
+    """Resolve effective (repo_root, rel_posix, is_external_artifact) without weakening containment."""
+    try:
+        rel_posix = resolve_repo_relative_path(target_path, base_repo_root)
+    except ValueError:
+        raw_art = payload.get("artifactDirectoryPath")
+        if isinstance(raw_art, str) and raw_art.strip():
+            art_clean = pathlib.Path(strip_win32_extended_prefix(raw_art.strip()))
+            art_resolved = pathlib.Path(strip_win32_extended_prefix(str(art_clean.resolve(strict=False))))
+            base_resolved = pathlib.Path(strip_win32_extended_prefix(str(base_repo_root.resolve(strict=False))))
+            cand_art = pathlib.Path(strip_win32_extended_prefix(target_path.strip()).replace("\\", "/"))
+            if (
+                cand_art.is_absolute()
+                and ".." not in cand_art.parts
+                and not is_link_or_junction(art_resolved)
+            ):
+                resolved_art = pathlib.Path(strip_win32_extended_prefix(str(cand_art.resolve(strict=False))))
+                if resolved_art.is_relative_to(art_resolved) and not resolved_art.is_relative_to(base_resolved):
+                    _walk_and_verify_no_links(
+                        art_resolved, resolved_art.relative_to(art_resolved).parts, art_resolved, target_path
+                    )
+                    return base_resolved, resolved_art.as_posix(), True
+        raise
+
+    parts = rel_posix.split("/")
+    if len(parts) >= 3 and parts[0] == ".worktrees":
+        wt_candidate = base_repo_root / ".worktrees" / parts[1]
+        if (
+            not is_link_or_junction(base_repo_root / ".worktrees")
+            and not is_link_or_junction(wt_candidate)
+            and (wt_candidate / ".git").exists()
+        ):
+            wt_rel = resolve_repo_relative_path(target_path, wt_candidate)
+            return wt_candidate, wt_rel, False
+
+    return base_repo_root, rel_posix, False
+
+
 def get_done_work_items(backlog_path: pathlib.Path, *, fail_if_missing: bool = False) -> set[str]:
-    """Parse specs/BACKLOG.md and return IDs of work items marked Done/Completado/Completed."""
+    """Parse specs/BACKLOG.md or .sdd/framework/BACKLOG.md and return Done item IDs."""
     if is_link_or_junction(backlog_path):
         raise ValueError(f"BACKLOG.md cannot be a symlink or junction: {backlog_path}")
     if not backlog_path.exists():
         if fail_if_missing:
-            raise FileNotFoundError(f"Missing required specs/BACKLOG.md at {backlog_path}")
+            raise FileNotFoundError(f"Missing required BACKLOG.md at {backlog_path}")
         return set()
     if not backlog_path.is_file():
         raise ValueError(f"BACKLOG.md is not a regular file: {backlog_path}")
@@ -261,8 +314,11 @@ def main() -> int:
         if not target_path:
             return _deny("SDD Immutable Feature Guard (fail-closed): Missing target file path in hook payload.")
 
-        repo_root = get_repo_root()
-        rel_posix = resolve_repo_relative_path(target_path, repo_root)
+        base_repo = get_repo_root()
+        repo_root, rel_posix, is_artifact = resolve_target_context(target_path, payload, base_repo)
+        if is_artifact:
+            print(json.dumps({"decision": "allow"}))
+            return 0
 
         feat_match = re.match(r"^specs/features/(FEAT-\d{3,4})(?:-[^/]*)?(?:/|$)", rel_posix, re.IGNORECASE)
         if not feat_match:
