@@ -6,7 +6,7 @@
 
 - **Module Identifier:** `MOD-003`
 - **Source Work Item / RFC:** `FWK-004-gate-terminology-unification` ([`RFC-002`](../../../../../.sdd/framework/rfcs/RFC-002-gate-terminology-unification.md))
-- **Functional Status:** `Verified` (Confirmed and verified by 67 offline unit tests)
+- **Functional Status:** `Verified` (Confirmed and verified by 123 offline unit tests across 11 suites)
 - **Master Index:** [DOCUMENTATION-INDEX.md](../../../00-governance/DOCUMENTATION-INDEX.md)
 
 ---
@@ -67,9 +67,10 @@ It guarantees that human engineers and AI agents share an unambiguous mental mod
 
 ---
 
-## 4. `RFC-003` Hardening, `/bug-fast-track` Workflow, and `domains/` Context (`FWK-005`..`FWK-009`)
+## 4. `RFC-003` / `RFC-004` Hardening, `/bug-fast-track` Workflow, and `domains/` Context (`FWK-005`..`FWK-010`)
 
 - **P0 Fail-Closed Security (`FWK-005`):** `.agents/hooks.json` (UTF-8 without BOM) invokes `sdd_immutable_feature_guard.py` and `sdd_code_gate_guard.py`, requiring `Gate S0` approval and genuine `[x] Gate 1/2/3 Approved` markers in `01..03.md` before modifying `src/`, `tests/`, `.agents/`, or `specs/STACK.md`. `sdd_trim_exec.py` executes subcommands with `shell=False`, and `sdd_hooks.py` removes the `SDD_FORCE_MAIN_PUSH` bypass.
 - **`sdd:ownership-map` Compiler, Transactionality, and DAG Engine (`FWK-006`):** `scripts/sdd_ownership.py` compiles ownership zones and enforces `forbid_imports` via AST in `verify_architecture_boundaries.py`; `scripts/sdd_generator_tx.py` materialises with backup/rollback and `content_digest` (`--verify`, `--strict-agents`, `--drain-inboxes`); `scripts/sdd_dag.py` (`--verify`, `--plan`) validates acyclicity in `03-tasks.md` and governs `.agent-inbox/` state transitions.
 - **`< 25k` Token Slimming, `/bug-fast-track`, and `domains/` (`FWK-007`):** The starter keeps **9 active base agents** in `.agents/agents/` (`~18.0k` Markdown context tokens), **19 opt-in universal specialists** in `.sdd/catalog/specialists-optin/`, and **12 unique canonical archetypes** in `.sdd/catalog/archetypes/`. Scoped defects use `/bug-fast-track` (`specs/bugs/BUG-XXX-<slug>/{01-bug-report,02-fix-spec,03-tasks}.md` generated from `05-bug-fast-track.template.md` while preserving `Gate S0` and `[x] Gate 1/2/3 Approved`), and bounded-context knowledge loads on demand from `domains/<domain-slug>/` (`_template/{overview,decisions}.md`).
-- **Multi-Worktree Concurrency and Safe Sync `<= 500L` (`FWK-008` & `FWK-009`):** `sdd_git_state.py` and `sdd_git_worktree.py` isolate per-worktree state (`.agents/worktree_states/<wt_id>.json`) and ports (`ports_registry.json`), auto-synchronising `.agents/ACTIVE_STATE.md`. `sdd_sync.py` operates without hardcoded paths using `--dry-run`, `--force`, and transactional rollback backed by `.agents/.sdd-sync-state.json`. Every Python module in the repository strictly obeys `<= 500` lines (`115/115` tests green).
+- **Multi-Worktree Concurrency and Safe Sync `<= 500L` (`FWK-008` & `FWK-009`):** `sdd_git_state.py` and `sdd_git_worktree.py` isolate per-worktree state (`.agents/worktree_states/<wt_id>.json`) and ports (`ports_registry.json`), auto-synchronising `.agents/ACTIVE_STATE.md`. `sdd_sync.py` operates without hardcoded paths using `--dry-run`, `--force`, and transactional rollback backed by `.agents/.sdd-sync-state.json`. Every Python module in the repository strictly obeys `<= 500` lines.
+- **Level L5 Hardening: Cryptographic SHA-256 Gate Seals, Polyglot Boundaries, DAG Write-Set Overlap Detection, and CI Audit (`FWK-010` / `RFC-004`):** `scripts/sdd_gate_seal.py` (`sdd approve-gate`, `sdd verify-gates`) records SHA-256 digests in `.agents/active_work_item.json` (`gate_seals`) and inline comments `<!-- sdd:gate-seal ... -->`, blocking post-approval tampering in `.agents/scripts/sdd_code_gate_guard.py`; `.agents/scripts/verify_architecture_boundaries.py` extends `forbid_imports` via `check_polyglot_imports` across `.ts/.tsx/.js/.jsx/.cs/.go/.rs/.java/.kt` while ignoring comments; `scripts/sdd_dag.py` detects overlapping target paths/globs within parallel waves (`DagWriteSetCollisionError`, `--auto-split`); and `.github/workflows/ci.yml` verifies all `03-tasks.md` files via `sdd_dag.py --verify` while enforcing `>= 120` deterministic tests (`123/123` passing).

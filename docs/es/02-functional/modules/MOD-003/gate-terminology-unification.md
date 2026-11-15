@@ -6,7 +6,7 @@
 
 - **Identificador de Módulo:** `MOD-003`
 - **Work Item / RFC de Origen:** `FWK-004-gate-terminology-unification` ([`RFC-002`](../../../../../.sdd/framework/rfcs/RFC-002-gate-terminology-unification.md))
-- **Estado Funcional:** `Verified` (Confirmado y verificado por 67 tests unitarios offline)
+- **Estado Funcional:** `Verified` (Confirmado y verificado por 123 tests unitarios offline en 11 suites)
 - **Índice Maestro:** [DOCUMENTATION-INDEX.md](../../../00-governance/DOCUMENTATION-INDEX.md)
 
 ---
@@ -67,9 +67,10 @@ Asegura que desarrolladores humanos y agentes de IA compartan un modelo mental i
 
 ---
 
-## 4. Endurecimiento `RFC-003`, Flujo `/bug-fast-track` y Contexto `domains/` (`FWK-005`..`FWK-009`)
+## 4. Endurecimiento `RFC-003` / `RFC-004`, Flujo `/bug-fast-track` y Contexto `domains/` (`FWK-005`..`FWK-010`)
 
 - **Seguridad Fail-Closed P0 (`FWK-005`):** `.agents/hooks.json` (UTF-8 sin BOM) invoca `sdd_immutable_feature_guard.py` y `sdd_code_gate_guard.py`, exigiendo `Gate S0` aprobado y marcadores `[x] Gate 1/2/3 Approved` reales en `01..03.md` antes de editar `src/`, `tests/`, `.agents/` o `specs/STACK.md`. `sdd_trim_exec.py` ejecuta comandos con `shell=False` y `sdd_hooks.py` elimina `SDD_FORCE_MAIN_PUSH`.
 - **Compilador `sdd:ownership-map`, Transaccionalidad y Motor DAG (`FWK-006`):** `scripts/sdd_ownership.py` compila zonas y valida `forbid_imports` por AST en `verify_architecture_boundaries.py`; `scripts/sdd_generator_tx.py` materializa con backup/rollback y `content_digest` (`--verify`, `--strict-agents`, `--drain-inboxes`); `scripts/sdd_dag.py` (`--verify`, `--plan`) valida aciclicidad en `03-tasks.md` y gobierna transiciones en `.agent-inbox/`.
 - **Slimming `< 25k` Tokens, `/bug-fast-track` y `domains/` (`FWK-007`):** El starter mantiene **9 agentes base activos** en `.agents/agents/` (`~18.0k` tokens de contexto Markdown), **19 especialistas opt-in** en `.sdd/catalog/specialists-optin/` y **12 arquetipos canónicos únicos** en `.sdd/catalog/archetypes/`. Los defectos acotados utilizan `/bug-fast-track` (`specs/bugs/BUG-XXX-<slug>/{01-bug-report,02-fix-spec,03-tasks}.md` desde `05-bug-fast-track.template.md` preservando `Gate S0` y `[x] Gate 1/2/3 Approved`), y el conocimiento de dominio se carga bajo demanda desde `domains/<domain-slug>/` (`_template/{overview,decisions}.md`).
-- **Concurrencia Multi-Worktree y Sync Seguro `<= 500L` (`FWK-008` & `FWK-009`):** `sdd_git_state.py` y `sdd_git_worktree.py` aíslan estado (`.agents/worktree_states/<wt_id>.json`) y puertos (`ports_registry.json`), sincronizando `.agents/ACTIVE_STATE.md`. `sdd_sync.py` opera sin rutas hardcodeadas con `--dry-run`, `--force` y rollback sobre `.agents/.sdd-sync-state.json`. Todos los módulos Python del repositorio cumplen `<= 500` líneas (`115/115` tests en verde).
+- **Concurrencia Multi-Worktree y Sync Seguro `<= 500L` (`FWK-008` & `FWK-009`):** `sdd_git_state.py` y `sdd_git_worktree.py` aíslan estado (`.agents/worktree_states/<wt_id>.json`) y puertos (`ports_registry.json`), sincronizando `.agents/ACTIVE_STATE.md`. `sdd_sync.py` opera sin rutas hardcodeadas con `--dry-run`, `--force` y rollback sobre `.agents/.sdd-sync-state.json`. Todos los módulos Python del repositorio cumplen `<= 500` líneas.
+- **Endurecimiento Nivel L5: Sellos Criptográficos SHA-256 de Gates, Fronteras Políglotas, Write-Set DAG y Auditoría CI (`FWK-010` / `RFC-004`):** `scripts/sdd_gate_seal.py` (`sdd approve-gate`, `sdd verify-gates`) registra hashes SHA-256 en `.agents/active_work_item.json` (`gate_seals`) y comentarios inline `<!-- sdd:gate-seal ... -->`, bloqueando cualquier alteración post-aprobación en `.agents/scripts/sdd_code_gate_guard.py`; `.agents/scripts/verify_architecture_boundaries.py` extiende `forbid_imports` con `check_polyglot_imports` a `.ts/.tsx/.js/.jsx/.cs/.go/.rs/.java/.kt` ignorando comentarios; `scripts/sdd_dag.py` detecta solapamientos de rutas/globs en olas paralelas (`DagWriteSetCollisionError`, `--auto-split`); y `.github/workflows/ci.yml` valida todos los `03-tasks.md` con `sdd_dag.py --verify` exigiendo `>= 120` tests deterministas (`123/123` en verde).

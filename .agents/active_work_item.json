@@ -1,21 +1,17 @@
 {
-  "active_work_item_id": null,
-  "type": null,
-  "spec_dir": null,
-  "git": {
-    "base_branch": "develop",
-    "branch_name": null,
-    "worktree_path": null,
-    "pr_number": null,
-    "pr_url": null,
-    "status": "IDLE"
-  },
-  "gate_00_approved": false,
-  "gate_0_approved": false,
-  "gate_1_approved": false,
-  "gate_2_approved": false,
-  "gate_3_approved": false,
-  "approved_by_human": false,
-  "assigned_agent": null,
-  "phase": "STACK_BOOTSTRAP"
+  "active_work_item_id": "FWK-010-l5-perfection-hardening",
+  "spec_dir": ".sdd/framework/work-items/FWK-010-l5-perfection-hardening",
+  "branch": "develop",
+  "worktree": null,
+  "status": "DONE",
+  "gate_1_approved": true,
+  "gate_2_approved": true,
+  "gate_3_approved": true,
+  "approved_by_human": true,
+  "enforce_gate_seals": true,
+  "gate_seals": {
+    "1": "sha256:4fd40e50b6365656e7114cef11a5af3e13f31fbd360a9081afa4cba46f8a011c",
+    "2": "sha256:5f697cef89fc1a0f5de8003f2e5b4bd78f2bd1cb0832540ceaf5b818142e5db5",
+    "3": "sha256:348689a0a3ff5af3e2a63b23f415e1df95ff98d63b3e26c835ebaa5bdba7c84b"
+  }
 }

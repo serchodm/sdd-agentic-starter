@@ -1,12 +1,12 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-15 01:09
-- **Active Work Item:** `IDLE (No Active Work Item)`
+- **Timestamp:** 2026-11-15 01:16
+- **Active Work Item:** `FWK-010-l5-perfection-hardening` (`Done` / `IDLE`)
 - **Active Branch:** `develop`
-- **Spec Folder Path:** `N/A`
-- **Current Gate:** `IDLE`
+- **Spec Folder Path:** `.sdd/framework/work-items/FWK-010-l5-perfection-hardening`
+- **Current Gate:** `Gate 5 (Done)`
 - **Active Worktrees:** None
 - **Recommended Model Tier:** Fast / Balanced Execution
-- **Last Completed Milestone:** `RFC-004` (`FWK-010-l5-perfection-hardening`) completado al 100% en `develop` (`Gates 1–5` cerrados en `Done`, `123/123` tests en verde a través de `11` suites `<= 500` líneas, `39/39` módulos Python `<= 500` líneas, `sdd_gate_seal.py` para sellado criptográfico SHA-256 de Gates, escáner políglota `check_polyglot_imports`, detector `DagWriteSetCollisionError` en `sdd_dag.py`, paso CI `sdd_dag.py --verify` + umbral `>= 120` tests, y Living Docs 0DD + `ADR-009` + `TRACEABILITY-MATRIX.md` sincronizados).
+- **Last Completed Milestone:** `RFC-004` (`FWK-010-l5-perfection-hardening`) completado al 100% en `develop` (`Gate 5 (Done)`, `123/123` tests en verde a través de `11` suites `<= 500` líneas, `39/39` módulos Python `<= 500` líneas, `sdd_gate_seal.py` para sellado criptográfico SHA-256 de Gates, escáner políglota `check_polyglot_imports`, detector `DagWriteSetCollisionError` en `sdd_dag.py`, paso CI `sdd_dag.py --verify` + umbral `>= 120` tests, y Living Docs 0DD bilingües `docs/es/` + `docs/en/` + `ADR-009` + `TRACEABILITY-MATRIX.md` sincronizados).
 - **Next Execution Target:** `IDLE` — Esperando asignación de nuevo Work Item o inicio de bootstrap de stack (`Gate S0` en `specs/STACK.md`).
 - **Mandatory Context Files (MAX 4 FILES):**
   1. `AGENTS.md`

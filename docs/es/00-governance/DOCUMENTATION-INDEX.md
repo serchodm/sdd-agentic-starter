@@ -7,8 +7,8 @@
 ## Información del Producto
 - **Producto:** `sdd-agentic-starter` (Plantilla Agéntica bajo Spec-Driven Development)
 - **Descripción breve:** Plantilla multi-stack gobernada por compuertas SDD (Gate S0, Gate 0 a Gate 5), con catálogo inerte de arquetipos, especialistas universales y packs de tecnología activables de forma determinista y *fail-closed*, incluyendo gobernanza UI/UX offline (`capability-ui-design`) y orquestación unificada DAG.
-- **Versión / Baseline funcional vigente:** `FWK-001`..`FWK-009` (`RFC-001` v2, `RFC-002` y `RFC-003` — Materialización Fiable de Packs, Pack `capability-ui-design`, Quality Gates Visuales, Unificación de Terminología de Gates, Seguridad Fail-Closed P0, Compilador `sdd:ownership-map` + Motor DAG, Slimming `< 25k` Tokens + `/bug-fast-track` + `domains/`, Concurrencia Multi-Worktree y Sync Seguro `<= 500L`)
-- **Estado global:** `Verified` (para `FWK-001`..`FWK-009`, `115/115` tests offline); aplicación de usuario pendiente de Gate S0
+- **Versión / Baseline funcional vigente:** `FWK-001`..`FWK-010` (`RFC-001` v2, `RFC-002`, `RFC-003` y `RFC-004` — Materialización Fiable de Packs, Pack `capability-ui-design`, Quality Gates Visuales, Unificación de Terminología de Gates, Seguridad Fail-Closed P0, Compilador `sdd:ownership-map` + Motor DAG, Slimming `< 25k` Tokens + `/bug-fast-track` + `domains/`, Concurrencia Multi-Worktree, Sync Seguro `<= 500L` y Endurecimiento L5: Sellos Criptográficos SHA-256 de Gates, Fronteras Políglotas, Write-Set DAG y Auditoría CI)
+- **Estado global:** `Verified` (para `FWK-001`..`FWK-010`, `123/123` tests offline en `11` suites); aplicación de usuario pendiente de Gate S0
 - **Responsable funcional:** `@documentator` (supervisado por `@orchestrator`)
 
 ---
@@ -24,11 +24,11 @@
 ## 1. Funcionalidad (`02-functional`)
 - [**`MOD-001`: Materialización y Activación Fiables de Packs**](../02-functional/modules/MOD-001/pack-materialization.md) (`Verified` — cubre `FWK-001`: `RF-001`..`RF-010`, `RN-01`..`RN-05`, flujos operativos y criterios de aceptación BDD 1–7).
 - [**`MOD-002`: Pack `capability-ui-design`, Gobernanza Visual y Quality Gates SDD**](../02-functional/modules/MOD-002/capability-ui-design.md) (`Verified` — cubre `FWK-002` y `FWK-003`: `RF-001`..`RF-012`, `RN-01`..`RN-07` de FWK-002; `RF-001`..`RF-010`, `RN-01`..`RN-05` de FWK-003, validador `sdd_tokens_validator.py`, flujos bi-nivel de Gate 4 y suite de 45 tests offline).
-- [**`MOD-003`: Unificación de Terminología de Gates, Estados y Grafo DAG**](../02-functional/modules/MOD-003/gate-terminology-unification.md) (`Verified` — cubre `FWK-004`: `RF-001`..`RF-007`, canonización de `Gate S0` / `Gate 0..5`, `Block`, `Session Phase`, soporte dual-accept fail-closed en scripts/guardias y suite de 22 tests unitarios en `tests/test_sdd_terminology_unification.py`).
+- [**`MOD-003`: Unificación de Terminología de Gates, Estados y Grafo DAG**](../02-functional/modules/MOD-003/gate-terminology-unification.md) (`Verified` — cubre `FWK-004`..`FWK-010`: `RF-001`..`RF-007`, canonización de `Gate S0` / `Gate 0..5`, `Block`, `Session Phase`, soporte dual-accept fail-closed, seguridad P0, compilador `sdd:ownership-map`, motor DAG con detección de colisiones `Write-Set`, sellado SHA-256 de Gates y escáner políglota de fronteras).
 
 ## 2. Trazabilidad y Conocimiento Técnico (`06-traceability` / `knowledge`)
 - [**Matriz de Trazabilidad Bidireccional (0DD)**](../../traceability/TRACEABILITY-MATRIX.md)
-- [**Registro de Decisiones de Arquitectura (`ADRS.md`)**](../../knowledge/ADRS.md) *(incluye `ADR-001` a `ADR-005`)*
+- [**Registro de Decisiones de Arquitectura (`ADRS.md`)**](../../knowledge/ADRS.md) *(incluye `ADR-001` a `ADR-009`)*
 - [**Topología del Sistema (`SYSTEM_TOPOLOGY.md`)**](../../knowledge/SYSTEM_TOPOLOGY.md)
 - [**Modelos de Datos (`DATA_MODELS.md`)**](../../knowledge/DATA_MODELS.md)
 - [**Catálogo de Interfaces y CLI (`API_CATALOG.md`)**](../../knowledge/API_CATALOG.md)
@@ -39,7 +39,7 @@
 
 | Aspecto | Situación Actual (Confirmada) |
 | :--- | :--- |
-| **Artefactos aprobados y verificados** | `MOD-001` (`FWK-001`, `FWK-006`, `FWK-009`), `MOD-002` (`FWK-002` y `FWK-003`) y `MOD-003` (`FWK-004`, `FWK-005`, `FWK-007`, `FWK-008`: `115` tests offline en `10` módulos de `tests/`). |
-| **Decisiones abiertas** | Ninguna en `FWK-001`..`FWK-004` (`RFC-001` y `RFC-002` plenamente aceptados e implementados). |
-| **Riesgos mitigados en esta baseline** | Activación accidental por prosa (`FWK-001`), contaminación *always-on* (`ADR-002`), colisión ECC `design-system` / ejecución `npx` (`ADR-003`), corrupción SHA-256 en Windows, deriva de tokens y baselines visuales (`ADR-004`), colisión numérica `Gate 00` vs `Gate 0`, ambigüedad del término Fase vs Gate vs Block, divergencias de estados bilingües y plantillas CR redundantes (`ADR-005`). |
+| **Artefactos aprobados y verificados** | `MOD-001` (`FWK-001`, `FWK-006`, `FWK-009`), `MOD-002` (`FWK-002` y `FWK-003`) y `MOD-003` (`FWK-004`, `FWK-005`, `FWK-007`, `FWK-008`, `FWK-010`: `123` tests offline en `11` módulos de `tests/`). |
+| **Decisiones abiertas** | Ninguna en `FWK-001`..`FWK-010` (`RFC-001`..`RFC-004` plenamente aceptados e implementados). |
+| **Riesgos mitigados en esta baseline** | Activación accidental por prosa (`FWK-001`), contaminación *always-on* (`ADR-002`), colisión ECC `design-system` / ejecución `npx` (`ADR-003`), corrupción SHA-256 en Windows, deriva de tokens y baselines visuales (`ADR-004`), colisión numérica `Gate 00` vs `Gate 0` (`ADR-005`), vectores *fail-open* P0 y ownership decorativo (`ADR-006`), inflación de contexto (`ADR-007`), carreras multi-worktree y sync sin conflicto (`ADR-008`), mutación post-aprobación de Gates 1..3, imports prohibidos en stacks políglotas y colisiones de escritura en olas paralelas DAG (`ADR-009`). |
 | **Próximos pasos (fuera de esta baseline)** | Gate S0 del proyecto usuario en `specs/STACK.md`. |

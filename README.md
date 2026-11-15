@@ -85,14 +85,14 @@ flowchart LR
 The framework enforces engineering discipline through verifiable Python tooling under `.agents/scripts/`:
 
 - **Fail-Closed `PreToolUse` & Git Hooks:**
-  - `sdd_code_gate_guard.py`: Blocks writes to `src/` unless `Gate S0` is approved, `specs/BACKLOG.md` tracks an active `In Progress` work item, and `01..03` documents carry valid `[x] Gate 1/2/3 Approved` markers.
+  - `sdd_code_gate_guard.py` & `sdd_gate_seal.py` (`sdd approve-gate`, `sdd verify-gates`): Blocks writes to `src/` unless `Gate S0` is approved, `specs/BACKLOG.md` tracks an active `In Progress` work item, and `01..03` documents carry valid `[x] Gate 1/2/3 Approved` markers and intact SHA-256 cryptographic gate seals (`gate_seals`).
   - `sdd_immutable_feature_guard.py`: Enforces `RN-SDD-IMMUTABLE-DONE` against edits to `Done` feature specs.
   - `sdd_trim_exec.py`: Runs test/lint subcommands with `shell=False`, allowlisted executables, and path containment.
   - `sdd_healthcheck.py`: Validates directory structure, spec triads (`features`, `changes`, `bugs`), prompt-injection hygiene, and catalog integrity.
 - **Declarative `sdd:ownership-map` & Transactional Squad Compiler:** `sdd_agent_generator.py` and `sdd_pack_registry.py` materialize stack specialists and update `.agents/squad.lock.json` transactionally with SHA-256 verification and automatic rollback on error.
-- **Executable DAG Scheduler (`sdd_dag.py`):** Parses `03-tasks.md`, detects dependency cycles, validates `ALLOWED_FILES`, and computes parallel execution batches for `/opsx-delegate`.
+- **Executable DAG Scheduler (`sdd_dag.py`):** Parses `03-tasks.md`, detects dependency cycles and parallel-wave `Write-Set` overlaps (`DagWriteSetCollisionError`, `--auto-split`), validates `ALLOWED_FILES`, and computes parallel execution batches for `/opsx-delegate`.
 - **Multi-Worktree Isolation (`sdd_git.py` & `sdd_dev.py`):** Allocates isolated worktrees and deterministic per-worktree dev ports for parallel task execution without cross-contamination.
-- **Modularity & AST Context:** `verify_architecture_boundaries.py` and guards enforce **`<= 800` lines hard ceiling / `<= 500` warning** in `src/`, and **`<= 500` lines** across framework scripts and tests. `sdd_repo_map.py` builds compressed structural maps across **20+ languages**.
+- **Modularity, Polyglot Boundaries & AST Context:** `verify_architecture_boundaries.py` enforces polyglot `forbid_imports` across Python, TS/JS, C#, Go, Rust, Java, and Kotlin, plus **`<= 800` lines hard ceiling / `<= 500` warning** in `src/`, and **`<= 500` lines** across framework scripts and tests. `sdd_repo_map.py` builds compressed structural maps across **20+ languages**.
 
 ---
 
@@ -284,14 +284,14 @@ Estados documentales: **`Draft` -> `In Review` -> `Approved` -> `Done`**.
 El framework verifica el cumplimiento mediante herramientas Python deterministas en `.agents/scripts/`:
 
 - **Hooks `PreToolUse` y Guardias *Fail-Closed*:**
-  - `sdd_code_gate_guard.py`: Impide modificar `src/` sin `Gate S0` aprobado, work item `In Progress` en `specs/BACKLOG.md` y marcadores `[x] Gate 1/2/3 Approved`.
+  - `sdd_code_gate_guard.py` y `sdd_gate_seal.py` (`sdd approve-gate`, `sdd verify-gates`): Impiden modificar `src/` sin `Gate S0` aprobado, work item `In Progress` en `specs/BACKLOG.md`, marcadores `[x] Gate 1/2/3 Approved` y sellos criptográficos SHA-256 intactos (`gate_seals`).
   - `sdd_immutable_feature_guard.py`: Protege especificaciones de features `Done` frente a mutaciones directas.
   - `sdd_trim_exec.py`: Ejecuta subcomandos permitidos con `shell=False` y contención estricta al workspace.
   - `sdd_healthcheck.py`: Audita estructura, triadas documentales (`features`, `changes`, `bugs`), riesgos de *prompt injection* y consistencia del catálogo.
 - **Compilador Declarativo `sdd:ownership-map`:** `sdd_agent_generator.py` y `sdd_pack_registry.py` materializan especialistas desde `specs/STACK.md` de forma transaccional con validación SHA-256 en `.agents/squad.lock.json` y rollback automático ante errores.
-- **Planificador DAG (`sdd_dag.py`):** Valida dependencias y ciclos en `03-tasks.md` para despachar bloques paralelos sin colisiones de `ALLOWED_FILES`.
+- **Planificador DAG (`sdd_dag.py`):** Valida dependencias, ciclos y colisiones de escritura en olas paralelas (`DagWriteSetCollisionError`, `--auto-split`) en `03-tasks.md` para despachar bloques paralelos sin colisiones de `ALLOWED_FILES`.
 - **Aislamiento Multi-Worktree (`sdd_git.py` y `sdd_dev.py`):** Worktrees Git contenidos en el workspace con aislamiento determinista de puertos de desarrollo.
-- **Techo de Modularidad y Mapa AST:** Límite duro de **`<= 800` líneas (`<= 500` aviso)** en `src/` y **`<= 500` líneas** en scripts/tests del framework. `sdd_repo_map.py` indexa símbolos en **más de 20 lenguajes**.
+- **Techo de Modularidad, Fronteras Políglotas y Mapa AST:** `verify_architecture_boundaries.py` valida `forbid_imports` en Python, TS/JS, C#, Go, Rust, Java y Kotlin junto al límite duro de **`<= 800` líneas (`<= 500` aviso)** en `src/` y **`<= 500` líneas** en scripts/tests del framework. `sdd_repo_map.py` indexa símbolos en **más de 20 lenguajes**.
 
 ---
 
