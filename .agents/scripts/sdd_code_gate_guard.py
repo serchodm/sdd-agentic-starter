@@ -19,9 +19,11 @@ import re
 import sys
 
 _SCRIPTS_DIR = pathlib.Path(__file__).resolve().parent
-if str(_SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS_DIR))
+for _p in (str(_SCRIPTS_DIR), str(_SCRIPTS_DIR.parent.parent / "scripts")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
+from sdd_gate_seal import verify_work_item_gate_seals  # noqa: E402
 from sdd_immutable_feature_guard import (  # noqa: E402
     extract_target_path,
     extract_tool_call,
@@ -41,12 +43,7 @@ from sdd_stack_gate_guard import (  # noqa: E402
 
 MAX_SOURCE_LINES = 800
 CODE_EXTENSIONS = {".py", ".ts", ".tsx", ".js", ".jsx", ".glsl", ".sql"}
-_ALLOWED_SPEC_BUCKETS: tuple[str, ...] = (
-    "specs/features",
-    "specs/changes",
-    "specs/bugs",
-    ".sdd/framework/work-items",
-)
+_ALLOWED_SPEC_BUCKETS: tuple[str, ...] = ("specs/features", "specs/changes", "specs/bugs", ".sdd/framework/work-items")
 _WORK_ITEM_ID_RE = re.compile(r"^((?:FEAT|CR|BUG|FWK)-\d{3,4})(?:-[A-Za-z0-9._-]+)?$", re.IGNORECASE)
 _APP_PREFIX_RE = re.compile(r"^(src|backend|frontend|DDBB)(/|$)", re.IGNORECASE)
 _PROTECTED_PREFIX_RE = re.compile(r"^(src|backend|frontend|DDBB|tests|scripts)(/|$)", re.IGNORECASE)
@@ -313,6 +310,10 @@ def validate_active_work_item(repo_root: pathlib.Path) -> tuple[bool, str]:
         doc_ok, doc_msg = _validate_gate_doc(doc_path, gate_num, spec_info)
         if not doc_ok:
             return False, doc_msg
+
+    seal_ok, seal_msg = verify_work_item_gate_seals(repo_root, state=state, spec_dir=spec_dir)
+    if not seal_ok:
+        return False, seal_msg
 
     backlog_path = repo_root / "specs" / "BACKLOG.md"
     try:

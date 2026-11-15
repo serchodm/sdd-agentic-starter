@@ -7,6 +7,7 @@
 | [`RFC-001`](./rfcs/RFC-001-ui-ux-pro-max.md) | Integración de UI UX Pro Max | v2 | Aceptado | 2026-11-10 |
 | [`RFC-002`](./rfcs/RFC-002-gate-terminology-unification.md) | Unificación de Terminología de Gates, Estados y Ejecución DAG | v1 | Aceptado | 2026-11-13 |
 | [`RFC-003`](./rfcs/RFC-003-audit-remediation-and-hardening.md) | Endurecimiento Integral Post-Auditoría Adversarial, Ownership Compiler, Concurrencia y Slimming (`AUD-001`..`AUD-025`) | v1 | Implementado / Done | 2026-11-14 |
+| [`RFC-004`](./rfcs/RFC-004-l5-perfection-hardening.md) | Endurecimiento Nivel L5 (10/10) — Sello Criptográfico de Gates, Fronteras AST Políglotas, Write-Set DAG y Auditoría CI | v1 | Implementado / Done | 2026-11-15 |
 
 ## Work Items
 
@@ -21,5 +22,6 @@
 | `FWK-007` | RFC-003 | Slimming de Contexto (`<25k` tokens), Limpieza PACO y Fast-Track `BUG-XXX` / `domains/` | P1 | FWK-005 | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-008` | RFC-003 | Concurrencia Multi-Worktree en `sdd_git` (`<=500L`) y Sincronía `ACTIVE_STATE` | P1 | FWK-005 | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-009` | RFC-003 | Sync Seguro (`--dry-run`), Hardening CI/0DD, `pyproject.toml` y Split Modular `<=500L` | P2 | FWK-005 | [x] | [x] | [x] | [x] | [x] | Done |
+| `FWK-010` | RFC-004 | Sello SHA-256 de Gates (`sdd approve-gate`), Fronteras Políglotas, Write-Set DAG y Step CI | P1 | FWK-009 | [x] | [x] | [x] | [x] | [x] | Done |
 
 *Estados: `Candidate` → `Backlog` → `In Progress` → `In Review` → `Done`. Los items de un RFC solo pasan a `In Progress` tras su aceptación.*

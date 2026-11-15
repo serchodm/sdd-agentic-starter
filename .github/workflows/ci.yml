@@ -133,6 +133,22 @@ jobs:
         run: |
           uv run python scripts/sdd_agent_generator.py --verify
 
+      - name: Verify Task DAG Specifications (sdd_dag.py --verify)
+        run: |
+          uv run python - <<'PY'
+          import pathlib, subprocess, sys
+
+          root = pathlib.Path(".").resolve()
+          task_files = sorted(root.glob(".sdd/framework/work-items/*/03-tasks.md")) + sorted(root.glob("specs/*/*/03-tasks.md"))
+          if not task_files:
+              raise SystemExit("[FAIL] No 03-tasks.md files found to verify.")
+          for tf in task_files:
+              res = subprocess.run([sys.executable, "scripts/sdd_dag.py", "--verify", str(tf)], cwd=str(root), capture_output=True, text=True)
+              if res.returncode != 0:
+                  raise SystemExit(f"[FAIL] DAG verification failed for {tf.relative_to(root)}:\n{res.stderr or res.stdout}")
+          print(f"[OK] Verified {len(task_files)} DAG specification(s) with zero cycles and zero parallel write-set collisions.")
+          PY
+
       - name: Verify Git & Worktrees Orchestrator (sdd_git.py status)
         run: |
           uv run python scripts/sdd_git.py status
@@ -145,11 +161,17 @@ jobs:
         run: |
           uv run python scripts/sdd_tokens_validator.py --allow-missing
 
-      - name: Run Deterministic Unit Tests
+      - name: Run Deterministic Unit Tests (Min Threshold >= 120)
         run: |
-          if [ -d "tests" ]; then
-            echo "Running automated test suites..."
-            uv run python -m unittest discover tests -v
-          else
-            echo "No tests directory present yet (Template clean baseline)."
-          fi
+          uv run python - <<'PY'
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover("tests")
+          runner = unittest.TextTestRunner(verbosity=2)
+          result = runner.run(suite)
+          if not result.wasSuccessful():
+              raise SystemExit(f"[FAIL] Unit test suite failed (failures={len(result.failures)}, errors={len(result.errors)}).")
+          if result.testsRun < 120:
+              raise SystemExit(f"[FAIL] Test count regression: ran {result.testsRun} tests, expected >= 120.")
+          print(f"[OK] {result.testsRun} deterministic tests passed (>= 120 required).")
+          PY

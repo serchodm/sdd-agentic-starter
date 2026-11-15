@@ -151,6 +151,8 @@ El validador `scripts/sdd_tokens_validator.py` valida la jerarquía normalizada 
 - **`.agents/worktree_states/<wt_id>.json` (`scripts/sdd_git_state.py`):** Estado activo aislado por worktree (`work_item_id`, `branch`, `gate`, `spec_dir`, `worktree_path`, `backend_port`, `frontend_port`, `updated_at`), evitando colisiones sobre el singleton global `.agents/active_work_item.json`.
 - **`.agents/worktree_states/ports_registry.json` (`scripts/sdd_git_worktree.py`):** Mapa `{ "<wt_slug>": { "backend_port": int, "frontend_port": int } }` protegido por `.ports.lock` y verificado con bind TCP real en `127.0.0.1`, `0.0.0.0` y `::1` dentro de los rangos `8000..8899` (backend) y `3000..3899` (frontend).
 - **`.agents/.sdd-sync-state.json` (`scripts/sdd_sync.py`):** Instantánea base `{ "schema_version": 1, "direction": "pull" | "push", "files": { "<rel_posix_path>": "<sha256>" } }` usada para detectar divergencias locales frente al último estado sincronizado antes de sobrescribir.
+- **`gate_seals` y `enforce_gate_seals` en `.agents/active_work_item.json` (`scripts/sdd_gate_seal.py`, `FWK-010`):** Mapa `{ "1": "sha256:<64hex>", "2": "sha256:<64hex>", "3": "sha256:<64hex>" }` y flag booleano `enforce_gate_seals: true`, complementados opcionalmente por comentarios inline `<!-- sdd:gate-seal gate=<1|2|3> sha256=<64hex> -->` en `01-*`, `02-*` y `03-tasks.md`.
+- **`DagTask.target_paths` (`scripts/sdd_dag.py`, `FWK-010`):** Tupla inmutable `tuple[str, ...]` con las rutas o globs normalizados extraídos de `- *Archivos exactos*:`, `- *Target paths*:`, `- *Files*:` o `- *Write-set*:` en `03-tasks.md` para detección de colisiones de escritura por ola paralela (`DagWriteSetCollisionError`).
 
 ---
 

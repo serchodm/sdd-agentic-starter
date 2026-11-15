@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import ast
 import pathlib
+import re
 import sys
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -140,6 +141,99 @@ def check_python_ast_imports(
     return errors, warnings
 
 
+_COMMENT_OR_STR_RE = re.compile(r'("(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|`(?:\\.|[^`\\])*`)|(/\*[\s\S]*?\*/|//[^\n]*)')
+_TS_IMPORT_RE = re.compile(
+    r"\b(?:import|export)\s+(?:type\s+)?(?:[\w*{}\s,$]+\s+from\s+)?[\"']([^\"']+)[\"']"
+    r"|\b(?:require|import)\s*\(\s*[\"']([^\"']+)[\"']\s*\)"
+)
+_CS_USING_RE = re.compile(r"^[ \t]*(?:global\s+)?using\s+(?:static\s+)?(?:[A-Za-z_]\w*\s*=\s*)?([A-Za-z_][\w.]*)\s*;", re.M)
+_GO_SINGLE_RE = re.compile(r'\bimport\s+(?:[A-Za-z_.]\w*\s+)?["`]([^"`]+)["`]')
+_GO_BLOCK_RE = re.compile(r"\bimport\s*\(([\s\S]*?)\)")
+_GO_SPEC_RE = re.compile(r'["`]([^"`]+)["`]')
+_RS_USE_RE = re.compile(r"^[ \t]*(?:pub(?:\s*\([^)]*\))?\s+)?(?:use\s+([^;]+)|extern\s+crate\s+([A-Za-z_]\w*))\s*;", re.M)
+_JVM_IMPORT_RE = re.compile(r"^[ \t]*import\s+(?:static\s+)?([A-Za-z_][\w.*]*)(?:\s+as\s+[A-Za-z_]\w*)?\s*;?", re.M)
+
+
+def _strip_c_style_comments(source: str) -> str:
+    return _COMMENT_OR_STR_RE.sub(lambda m: m.group(1) if m.group(1) else "\n" * m.group(2).count("\n"), source)
+
+
+def _canon_import_path(raw: str, *, strip_at: bool = False) -> str:
+    s = re.sub(r"^(?:(?:\.\.?/)+|/)+", "", raw.strip())
+    s = re.sub(r"^(?:crate|super|self)::", "", s)
+    if strip_at:
+        s = s.lstrip("@")
+    return re.sub(r"(?:::|[/\\])+", ".", s).strip(".")
+
+
+def _matches_polyglot_forbidden(raw_target: str, forbidden_roots: set[str]) -> bool:
+    t_canon = _canon_import_path(raw_target, strip_at=False)
+    t_no_at = _canon_import_path(raw_target, strip_at=True)
+    tokens = {tok for part in re.split(r"[./:\\,{}\s*]+", raw_target.strip()) if part for tok in (part, part.lstrip("@"))}
+    for rule in forbidden_roots:
+        r = rule.strip()
+        if not r:
+            continue
+        if any(sep in r for sep in (".", "/", "\\", ":")):
+            for tc, rc in ((t_canon, _canon_import_path(r, strip_at=False)), (t_no_at, _canon_import_path(r, strip_at=True))):
+                if rc and (tc == rc or tc.startswith(rc + ".") or f".{rc}." in f".{tc}."):
+                    return True
+            r_parts = [p for p in _canon_import_path(r, strip_at=True).split(".") if p]
+            if r_parts and all(p in tokens for p in r_parts):
+                return True
+        elif r in tokens or r.lstrip("@") in tokens:
+            return True
+    return False
+
+
+def check_polyglot_imports(
+    code_file: pathlib.Path,
+    forbidden_roots: set[str],
+    layer_name: str,
+    display_path: str | None = None,
+) -> tuple[list[str], list[str]]:
+    """Verify forbidden imports across Python (AST) and TS/JS/C#/Go/Rust/Java/Kotlin."""
+    ext = code_file.suffix.lower()
+    if ext == ".py":
+        return check_python_ast_imports(code_file, forbidden_roots, layer_name, display_path=display_path)
+    label = display_path or code_file.name
+    if ext not in _CODE_EXTENSIONS:
+        return [], []
+    try:
+        raw_source = code_file.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        return [f"[{layer_name}] Read error in {label}: {exc}"], []
+
+    stripped = _strip_c_style_comments(raw_source.replace("\r\n", "\n").replace("\r", "\n"))
+    extracted: list[tuple[int, str]] = []
+    if ext in {".ts", ".tsx", ".js", ".jsx"}:
+        for m in _TS_IMPORT_RE.finditer(stripped):
+            target = m.group(1) or m.group(2) or ""
+            extracted.append((stripped.count("\n", 0, m.start()) + 1, target))
+    elif ext == ".cs":
+        for m in _CS_USING_RE.finditer(stripped):
+            extracted.append((stripped.count("\n", 0, m.start()) + 1, m.group(1)))
+    elif ext == ".go":
+        for m in _GO_SINGLE_RE.finditer(stripped):
+            extracted.append((stripped.count("\n", 0, m.start()) + 1, m.group(1)))
+        for bm in _GO_BLOCK_RE.finditer(stripped):
+            base_off = bm.start(1)
+            for sm in _GO_SPEC_RE.finditer(bm.group(1)):
+                extracted.append((stripped.count("\n", 0, base_off + sm.start()) + 1, sm.group(1)))
+    elif ext == ".rs":
+        for m in _RS_USE_RE.finditer(stripped):
+            extracted.append((stripped.count("\n", 0, m.start()) + 1, (m.group(1) or m.group(2) or "").strip()))
+    elif ext in {".java", ".kt"}:
+        for m in _JVM_IMPORT_RE.finditer(stripped):
+            extracted.append((stripped.count("\n", 0, m.start()) + 1, m.group(1)))
+
+    errors: list[str] = []
+    for lineno, target in extracted:
+        if target and _matches_polyglot_forbidden(target, forbidden_roots):
+            errors.append(f"[{layer_name} Boundary Violation] {label}:{lineno} imports forbidden module '{target}'")
+    return errors, []
+
+
 def check_file_sizes(root_dir: pathlib.Path, label: str) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -164,7 +258,9 @@ def check_file_sizes(root_dir: pathlib.Path, label: str) -> tuple[list[str], lis
     return errors, warnings
 
 
-def _iter_repo_python_files(repo_root: pathlib.Path) -> tuple[list[tuple[pathlib.Path, str]], list[str]]:
+def _iter_repo_code_files(
+    repo_root: pathlib.Path, extensions: frozenset[str] = _CODE_EXTENSIONS
+) -> tuple[list[tuple[pathlib.Path, str]], list[str]]:
     root_resolved = repo_root.resolve()
     collected: list[tuple[pathlib.Path, str]] = []
     errors: list[str] = []
@@ -189,11 +285,15 @@ def _iter_repo_python_files(repo_root: pathlib.Path) -> tuple[list[tuple[pathlib
                 if res not in seen_dirs:
                     seen_dirs.add(res)
                     _walk(entry)
-            elif entry.is_file() and entry.suffix == ".py":
+            elif entry.is_file() and entry.suffix.lower() in extensions:
                 collected.append((entry, entry.relative_to(root_resolved).as_posix()))
 
     _walk(root_resolved)
     return collected, errors
+
+
+def _iter_repo_python_files(repo_root: pathlib.Path) -> tuple[list[tuple[pathlib.Path, str]], list[str]]:
+    return _iter_repo_code_files(repo_root, frozenset({".py"}))
 
 
 def _run_ownership_audit(repo_root: pathlib.Path) -> tuple[list[str], list[str]]:
@@ -240,16 +340,16 @@ def _run_ownership_audit(repo_root: pathlib.Path) -> tuple[list[str], list[str]]
         errors.append(f"[Ownership Coverage Error] {exc}")
 
     if any(zone.forbid_imports for zone in ownership_cfg.zones):
-        py_files, walk_errors = _iter_repo_python_files(repo_root)
+        code_files, walk_errors = _iter_repo_code_files(repo_root)
         errors.extend(walk_errors)
         for zone in ownership_cfg.zones:
             if not zone.forbid_imports:
                 continue
             forbidden = set(zone.forbid_imports)
             label = f"Zone:{zone.zone_id} (@{zone.owner})"
-            for py_file, rel_posix in py_files:
+            for code_file, rel_posix in code_files:
                 if zone_matches_path(zone, rel_posix):
-                    e, w = check_python_ast_imports(py_file, forbidden, label, display_path=rel_posix)
+                    e, w = check_polyglot_imports(code_file, forbidden, label, display_path=rel_posix)
                     errors.extend(e)
                     warnings.extend(w)
     return errors, warnings
@@ -262,18 +362,20 @@ def run_boundary_audit(repo_root: pathlib.Path) -> tuple[list[str], list[str]]:
     domain_dirs = [repo_root / "src" / "backend" / "domain", repo_root / "src" / "domain", repo_root / "backend" / "src" / "domain"]
     for domain_dir in domain_dirs:
         if domain_dir.exists():
-            for py_file in sorted(domain_dir.rglob("*.py"), key=lambda p: p.as_posix()):
-                e, w = check_python_ast_imports(py_file, DEFAULT_FORBIDDEN_DOMAIN_IMPORTS, "Domain")
-                errors.extend(e)
-                warnings.extend(w)
+            for code_file in sorted(domain_dir.rglob("*"), key=lambda p: p.as_posix()):
+                if code_file.is_file() and code_file.suffix.lower() in _CODE_EXTENSIONS:
+                    e, w = check_polyglot_imports(code_file, DEFAULT_FORBIDDEN_DOMAIN_IMPORTS, "Domain")
+                    errors.extend(e)
+                    warnings.extend(w)
 
     app_dirs = [repo_root / "src" / "backend" / "application", repo_root / "src" / "application", repo_root / "backend" / "src" / "application"]
     for app_dir in app_dirs:
         if app_dir.exists():
-            for py_file in sorted(app_dir.rglob("*.py"), key=lambda p: p.as_posix()):
-                e, w = check_python_ast_imports(py_file, DEFAULT_FORBIDDEN_APPLICATION_IMPORTS, "Application")
-                errors.extend(e)
-                warnings.extend(w)
+            for code_file in sorted(app_dir.rglob("*"), key=lambda p: p.as_posix()):
+                if code_file.is_file() and code_file.suffix.lower() in _CODE_EXTENSIONS:
+                    e, w = check_polyglot_imports(code_file, DEFAULT_FORBIDDEN_APPLICATION_IMPORTS, "Application")
+                    errors.extend(e)
+                    warnings.extend(w)
 
     own_err, own_warn = _run_ownership_audit(repo_root)
     errors.extend(own_err)

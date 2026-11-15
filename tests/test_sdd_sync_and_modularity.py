@@ -296,7 +296,7 @@ class TestCiHooksPyprojectAndModularity(unittest.TestCase):
             "scripts/sdd_git.py status",
             "scripts/sdd_instincts.py list",
             "scripts/sdd_tokens_validator.py --allow-missing",
-            "unittest discover tests -v",
+            "unittest.defaultTestLoader.discover",
         ):
             self.assertIn(expected, ci_text, f"Missing expected CI check: {expected}")
 
