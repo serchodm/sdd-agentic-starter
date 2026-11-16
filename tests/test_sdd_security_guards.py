@@ -216,6 +216,12 @@ class TestPreToolUseGuardsSecurity(unittest.TestCase):
                     self.assertEqual(_run_guard(CODE_GUARD_SCRIPT, repo, _ag_payload(target)).get("decision"), "deny")
             self.assertEqual(code_guard.is_protected_code_path(r"\\?\C:\repo\src\evil.py", r"C:\repo"), "src/evil.py")
             self.assertEqual(_run_guard(CODE_GUARD_SCRIPT, repo, _ag_payload("docs/notes.md")).get("decision"), "allow")
+            with mock.patch.object(imm_guard.os, "name", "posix"):
+                for win_p in (r"\\?\C:\outside\evil.py", r"C:\outside\evil.py"):
+                    with self.assertRaisesRegex(ValueError, "POSIX"):
+                        imm_guard.resolve_repo_relative_path(win_p, repo)
+                    with self.assertRaisesRegex(ValueError, "POSIX"):
+                        imm_guard.resolve_target_context(win_p, {"artifactDirectoryPath": str(repo.parent / "art")}, repo)
 
     def test_fwk_isolation_vs_app_code_and_stack_anti_self_approval(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

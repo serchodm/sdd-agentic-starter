@@ -4,6 +4,7 @@
 Pruebas unitarias de Gobernanza Git, CLI Universal, Instintos y Hooks SDD.
 """
 
+import datetime
 import io
 import json
 import os
@@ -102,9 +103,10 @@ class TestSDDGovernance(unittest.TestCase):
 
     def test_sdd_instincts_temporal_decay(self):
         """Verifica el decaimiento temporal de confianza según vida media (half-life)."""
+        now = datetime.datetime.now(datetime.timezone.utc)
         fresh_instinct = {
             "confidence": 0.90,
-            "last_reinforced": "2026-11-09T00:00:00+00:00",
+            "last_reinforced": (now - datetime.timedelta(days=1)).isoformat(),
         }
         # Un instinto reciente no debe decaer significativamente
         fresh_conf = calculate_decayed_confidence(fresh_instinct, half_life_days=90.0)
@@ -113,7 +115,7 @@ class TestSDDGovernance(unittest.TestCase):
         # Un instinto de hace 180 días con half-life 90 debe decaer a aprox 0.90 * 0.25 = 0.225 -> clamped a 0.30
         stale_instinct = {
             "confidence": 0.90,
-            "last_reinforced": "2025-11-09T00:00:00+00:00",
+            "last_reinforced": (now - datetime.timedelta(days=365)).isoformat(),
         }
         stale_conf = calculate_decayed_confidence(stale_instinct, half_life_days=90.0)
         self.assertEqual(stale_conf, 0.30, "Instinto muy antiguo debe decaer al suelo mínimo de 0.30")

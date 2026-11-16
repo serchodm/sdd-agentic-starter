@@ -162,15 +162,23 @@ def _walk_and_verify_no_links(
             raise ValueError(f"Symlink or NTFS junction is forbidden in path: {curr}")
 
 
-def resolve_repo_relative_path(target_path: str, repo_root: pathlib.Path) -> str:
-    """Canonicalize target_path relative to repo_root and enforce strict containment."""
+def _normalize_target_path(target_path: str) -> str:
+    """Normalize target path slashes/Win32 prefixes and reject Windows drive paths on POSIX."""
     if not isinstance(target_path, str) or not target_path.strip():
         raise ValueError("Target path must be a non-empty string.")
+    cleaned = strip_win32_extended_prefix(target_path.strip()).replace("\\", "/")
+    if os.name != "nt" and re.match(r"^[A-Za-z]:", cleaned):
+        raise ValueError(f"Windows drive paths are disallowed on POSIX: {target_path!r}")
+    return cleaned
+
+
+def resolve_repo_relative_path(target_path: str, repo_root: pathlib.Path) -> str:
+    """Canonicalize target_path relative to repo_root and enforce strict containment."""
+    cleaned = _normalize_target_path(target_path)
 
     repo_clean = pathlib.Path(strip_win32_extended_prefix(str(repo_root)))
     repo_resolved = pathlib.Path(strip_win32_extended_prefix(str(repo_clean.resolve(strict=False))))
 
-    cleaned = strip_win32_extended_prefix(target_path.strip()).replace("\\", "/")
     cand = pathlib.Path(cleaned)
 
     joined = cand if cand.is_absolute() else (repo_resolved / cand)
@@ -208,10 +216,11 @@ def resolve_target_context(
     except ValueError:
         raw_art = payload.get("artifactDirectoryPath")
         if isinstance(raw_art, str) and raw_art.strip():
+            cleaned_art = _normalize_target_path(target_path)
             art_clean = pathlib.Path(strip_win32_extended_prefix(raw_art.strip()))
             art_resolved = pathlib.Path(strip_win32_extended_prefix(str(art_clean.resolve(strict=False))))
             base_resolved = pathlib.Path(strip_win32_extended_prefix(str(base_repo_root.resolve(strict=False))))
-            cand_art = pathlib.Path(strip_win32_extended_prefix(target_path.strip()).replace("\\", "/"))
+            cand_art = pathlib.Path(cleaned_art)
             if (
                 cand_art.is_absolute()
                 and ".." not in cand_art.parts
