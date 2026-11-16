@@ -1,0 +1,22 @@
+image: ghcr.io/astral-sh/uv:python3.12-bookworm
+
+clone:
+  depth: full
+
+definitions:
+  steps:
+    - step: &sdd-ci-verify
+        name: SDD CI-Agnostic Verification
+        script:
+          - uv python install 3.12
+          - uv run python scripts/sdd_cli.py ci-verify --mode auto --run-stack-if-approved --format text
+
+pipelines:
+  branches:
+    develop:
+      - step: *sdd-ci-verify
+    main:
+      - step: *sdd-ci-verify
+  pull-requests:
+    '**':
+      - step: *sdd-ci-verify

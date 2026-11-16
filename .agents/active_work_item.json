@@ -1,17 +1,13 @@
 {
-  "active_work_item_id": "FWK-013-ci-agnostic-verify",
-  "spec_dir": ".sdd/framework/work-items/FWK-013-ci-agnostic-verify",
+  "active_work_item_id": null,
+  "spec_dir": null,
   "branch": "feat/fwk-013-ci-agnostic-verify",
   "worktree": null,
-  "status": "IN_PROGRESS",
-  "gate_1_approved": true,
-  "gate_2_approved": true,
-  "gate_3_approved": true,
-  "approved_by_human": true,
+  "status": "IDLE",
+  "gate_1_approved": false,
+  "gate_2_approved": false,
+  "gate_3_approved": false,
+  "approved_by_human": false,
   "enforce_gate_seals": true,
-  "gate_seals": {
-    "1": "sha256:5610a87d3440cc7316975b97151e33eadd3ef29e1cd421a6254d0484f208b564",
-    "2": "sha256:933c0edcf50e99a4a4dc7306da7e9b0cffb930d10c2d4fcadfbd941fffbb2a73",
-    "3": "sha256:b8c0eff0cae43b88bd45fae9827bf0d46fc4d813115bf6078a6e128c79132285"
-  }
+  "gate_seals": {}
 }

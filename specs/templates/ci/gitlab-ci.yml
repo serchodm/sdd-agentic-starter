@@ -1,0 +1,18 @@
+stages:
+  - verify
+
+variables:
+  GIT_DEPTH: "0"
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main")'
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main"'
+
+sdd-ci-verify:
+  stage: verify
+  image: ghcr.io/astral-sh/uv:python3.12-bookworm
+  before_script:
+    - uv python install 3.12
+  script:
+    - uv run python scripts/sdd_cli.py ci-verify --mode auto --run-stack-if-approved --format text

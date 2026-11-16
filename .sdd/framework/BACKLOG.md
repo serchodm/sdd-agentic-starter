@@ -28,7 +28,7 @@
 | `FWK-010` | RFC-004 | Sello SHA-256 de Gates (`sdd approve-gate`), Fronteras Políglotas, Write-Set DAG y Step CI | P1 | FWK-009 | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-011` | RFC-005 | Portabilidad POSIX de Guards Win32 y Determinismo Temporal en Tests CI | P0 | — | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-012` | RFC-006 | Alineación de Coherencia v1.1.1 (CLI, `HOTFIX`/`SPIKE`, `spec-miner` y `release-finish`) | P1 | — | [x] | [x] | [x] | [x] | [x] | Done |
-| `FWK-013` | RFC-007 | Motor CI-Agnóstico (`sdd ci-verify`), Desacoplo de `ci.yml` y Plantillas Multi-CI | P0 | — | [x] | [x] | [x] | [ ] | [ ] | In Progress |
+| `FWK-013` | RFC-007 | Motor CI-Agnóstico (`sdd ci-verify`), Desacoplo de `ci.yml` y Plantillas Multi-CI | P0 | — | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-014` | RFC-007 | `Gate 6` (`REL-vX.Y.Z`), Motor de Release Readiness (`sdd_release.py`) y `CHANGELOG.md` Determinista | P1 | FWK-013 | [ ] | [ ] | [ ] | [ ] | [ ] | Backlog |
 
 *Estados: `Candidate` → `Backlog` → `In Progress` → `In Review` → `Done`. Los items de un RFC solo pasan a `In Progress` tras su aceptación.*

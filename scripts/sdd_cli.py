@@ -173,6 +173,7 @@ DISPATCH_MAP = {
     "tokens": ROOT_DIR / ".agents" / "scripts" / "sdd_token_usage.py",
     "approve-gate": ROOT_DIR / "scripts" / "sdd_gate_seal.py",
     "verify-gates": ROOT_DIR / "scripts" / "sdd_gate_seal.py",
+    "ci-verify": ROOT_DIR / "scripts" / "sdd_ci.py",
 }
 
 
@@ -196,11 +197,13 @@ Comandos Disponibles:
     tokens           Telemetría de consumo de tokens y contexto multi-IDE
     approve-gate     Sella criptográficamente (SHA-256) los Gates 1..3 aprobados
     verify-gates     Verifica la integridad SHA-256 de los artefactos de Gates 1..3
+    ci-verify        Motor de verificación CI-agnóstico (auto|framework|project)
     work-item        Consulta o activa el work item actual (.agents/active_work_item.json)
     setup-hooks      Activa los hooks nativos de Git en .githooks/
 
 Ejemplos:
     ./sdd healthcheck
+    ./sdd ci-verify --mode auto --run-stack-if-approved
     ./sdd work-item show
     ./sdd work-item set FEAT-001
     ./sdd approve-gate --embed-inline

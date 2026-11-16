@@ -1,15 +1,15 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-16 18:14
-- **Active Work Item:** `FWK-013-ci-agnostic-verify` (`In Progress`)
+- **Timestamp:** 2026-11-16 22:06
+- **Active Work Item:** `IDLE (No Active Work Item)`
 - **Active Branch:** `feat/fwk-013-ci-agnostic-verify`
-- **Spec Folder Path:** `.sdd/framework/work-items/FWK-013-ci-agnostic-verify`
-- **Current Gate:** `Gate 3 Approved -> Ready for Gate 4 (Sesión B)`
+- **Spec Folder Path:** `N/A`
+- **Current Gate:** `IDLE`
 - **Active Worktrees:** None
-- **Recommended Model Tier:** Fast / Balanced Execution (Sesión B: Gate 4 DAG Wave 1 -> Wave 2 -> Gate 5)
-- **Last Completed Milestone:** `RFC-007` aceptado y Gates 1, 2 y 3 de `FWK-013-ci-agnostic-verify` aprobados y sellados con SHA-256 (`sdd approve-gate`).
-- **Next Execution Target:** Ejecutar Wave 1 (`T13.1`, `T13.2`, `T13.3`) y Wave 2 (`T13.4`) en Gate 4 usando `pipeline-run` / subagentes desde sesión limpia (`/continue`).
+- **Recommended Model Tier:** New Clean Session Required (`RN-SDD-SESSION-LIFECYCLE`)
+- **Last Completed Milestone:** Gate 5 (0DD Living Docs & Traceability Closure) completado para `FWK-013-ci-agnostic-verify` (`RFC-007`, `138/138` tests en verde, `sdd ci-verify --mode framework` PASS).
+- **Next Execution Target:** Integrar `feat/fwk-013-ci-agnostic-verify` en `develop` (PR / merge) y abrir sesión limpia para `FWK-014` (`RFC-007` `Gate 6` & `sdd_release.py`) o Gate S0 de proyecto.
 - **Mandatory Context Files (MAX 4 FILES):**
   1. `AGENTS.md`
-  2. `.sdd/framework/work-items/FWK-013-ci-agnostic-verify/02-tech-spec.md`
-  3. `.sdd/framework/work-items/FWK-013-ci-agnostic-verify/03-tasks.md`
-  4. `docs/knowledge/SYSTEM_TOPOLOGY.md`
+  2. `.sdd/framework/BACKLOG.md`
+  3. `docs/knowledge/SYSTEM_TOPOLOGY.md`
+  4. `.agents/ACTIVE_STATE.md`
