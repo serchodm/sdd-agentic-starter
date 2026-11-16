@@ -1,7 +1,7 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
 - **Timestamp:** 2026-11-16 01:02
-- **Active Work Item:** `FWK-011-ci-posix-time-determinism` (`DONE`)
-- **Active Branch:** `feat/fwk-011-ci-posix-time-determinism`
+- **Active Work Item:** `FWK-011-ci-posix-time-determinism` (`Done` / `IDLE`)
+- **Active Branch:** `develop`
 - **Spec Folder Path:** `.sdd/framework/work-items/FWK-011-ci-posix-time-determinism`
 - **Current Gate:** `Gate 5 (Done)`
 - **Active Worktrees:** None
