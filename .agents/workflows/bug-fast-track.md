@@ -57,7 +57,7 @@ Usa `/bug-fast-track` (`specs/bugs/BUG-XXX-<slug>/`) **únicamente** cuando se c
    > En bugs acotados `S2..S4`, el usuario puede revisar `01`, `02` y `03` en un bloque consolidado, autorizando marcar explícitamente cada checkbox Gate 1/2/3 una vez leído el diagnóstico.
 
 ### Paso 3 — Implementación Test-First y Guardias (`Gate 4`)
-1. Actualizar el estado en `specs/BACKLOG.md` a `In Progress` y activar el work item si corresponde (`uv run python .agents/scripts/sdd_cli.py work-item set BUG-XXX` o actualizar `.agents/ACTIVE_STATE.md`).
+1. Actualizar el estado en `specs/BACKLOG.md` a `In Progress` y activar el work item si corresponde (`uv run python scripts/sdd_cli.py work-item set BUG-XXX` o actualizar `.agents/ACTIVE_STATE.md`).
 2. Ejecutar `T1` y confirmar el fallo esperado (**Red**).
 3. Implementar `T2` (sin `catch` silenciosos ni fallbacks ocultos) y confirmar que `T1` pasa (**Green**).
 4. Ejecutar `T3` y las verificaciones obligatorias antes de pasar a `In Review`:

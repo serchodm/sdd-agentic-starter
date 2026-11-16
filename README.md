@@ -175,8 +175,8 @@ uv run python .agents/scripts/sdd_healthcheck.py
 # 2. Validate active DAG dependencies & architecture boundaries
 uv run python .agents/scripts/verify_architecture_boundaries.py
 
-# 3. Inspect CLI subcommands (materialize, verify, work-item, worktree)
-uv run python .agents/scripts/sdd_cli.py --help
+# 3. Inspect CLI subcommands (generate --materialize, generate --verify, work-item, git worktree-create, approve-gate, verify-gates)
+uv run python scripts/sdd_cli.py --help
 
 # 4. Run the framework self-test suite
 uv run python -m unittest discover -s tests -v
@@ -348,8 +348,8 @@ uv run python .agents/scripts/sdd_healthcheck.py
 # 2. Validación de límites arquitectónicos y modularidad
 uv run python .agents/scripts/verify_architecture_boundaries.py
 
-# 3. Subcomandos CLI (materialize, verify, work-item, worktree)
-uv run python .agents/scripts/sdd_cli.py --help
+# 3. Subcomandos CLI (generate --materialize, generate --verify, work-item, git worktree-create, approve-gate, verify-gates)
+uv run python scripts/sdd_cli.py --help
 
 # 4. Ejecutar la suite de tests del framework
 uv run python -m unittest discover -s tests -v

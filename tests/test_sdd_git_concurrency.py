@@ -268,11 +268,92 @@ class TestSDDGitConcurrencyAndHardening(unittest.TestCase):
                 self.assertEqual(sdd_git.cmd_release_start(args_rs, gov), 0)
                 _git(repo, "add", ".agents")
                 _git(repo, "commit", "-m", "chore: sync state before release-finish")
-                args_rf = sdd_git.build_parser().parse_args(["release-finish", "--version", "1.2.0"])
+                args_rf = sdd_git.build_parser().parse_args(["release-finish", "--version", "1.2.0", "--local-merge"])
                 self.assertEqual(sdd_git.cmd_release_finish(args_rf, gov), 0)
                 md_rel = (repo / ".agents" / "ACTIVE_STATE.md").read_text(encoding="utf-8")
                 self.assertIn("`IDLE (No Active Work Item)`", md_rel)
                 self.assertIn("`develop`", md_rel)
+
+    def test_release_and_hotfix_finish_pr_first_default_and_push_guard(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = _init_temp_repo(pathlib.Path(tmp), initial_branch="main", with_develop=True)
+            gov = copy.deepcopy(sdd_git.DEFAULT_GOVERNANCE)
+            main_sha_before = _git(repo, "rev-parse", "main")
+
+            _git(repo, "checkout", "-b", "release/v1.3.0", "develop")
+            (repo / "CHANGELOG.md").write_text("## v1.3.0\n", encoding="utf-8")
+            _git(repo, "add", "CHANGELOG.md")
+            _git(repo, "commit", "-m", "chore: release notes")
+
+            _git(repo, "checkout", "-b", "hotfix/BUG-404", "main")
+            (repo / "hotfix.txt").write_text("patched\n", encoding="utf-8")
+            _git(repo, "add", "hotfix.txt")
+            _git(repo, "commit", "-m", "fix: hotfix 404")
+            _git(repo, "checkout", "develop")
+
+            with mock.patch.object(sdd_git, "ROOT_DIR", repo):
+                # 1. Dirty working tree fails closed on release-finish without calling create_pr
+                (repo / "dirty.tmp").write_text("uncommitted\n", encoding="utf-8")
+                with mock.patch.object(sdd_git.GitProviderAdapter, "create_pr") as mock_dirty_pr:
+                    args_dirty = sdd_git.build_parser().parse_args(["release-finish", "--version", "1.3.0"])
+                    self.assertEqual(sdd_git.cmd_release_finish(args_dirty, gov), 1)
+                    mock_dirty_pr.assert_not_called()
+                (repo / "dirty.tmp").unlink()
+
+                # 2. Default release-finish opens/prepares PR without checking out or merging main
+                with mock.patch.object(
+                    sdd_git.GitProviderAdapter, "create_pr", return_value="https://github.com/acme/repo/pull/42"
+                ) as mock_pr:
+                    args_rel = sdd_git.build_parser().parse_args(["release-finish", "--version", "1.3.0"])
+                    self.assertFalse(args_rel.local_merge)
+                    self.assertEqual(sdd_git.cmd_release_finish(args_rel, gov), 0)
+                    mock_pr.assert_called_once_with(
+                        "github",
+                        "release/v1.3.0",
+                        "main",
+                        "chore(release): release v1.3.0 into main",
+                        "Release v1.3.0 (release/v1.3.0 -> main)",
+                    )
+                self.assertEqual(_git(repo, "rev-parse", "main"), main_sha_before)
+                self.assertEqual(_git(repo, "branch", "--show-current"), "develop")
+                self.assertTrue(sdd_git.GitRunner.branch_exists("release/v1.3.0", cwd=repo))
+                md_rel = (repo / ".agents" / "ACTIVE_STATE.md").read_text(encoding="utf-8")
+                self.assertIn("`PR_OPENED:https://github.com/acme/repo/pull/42`", md_rel)
+                state_rel = json.loads((repo / ".agents" / "active_work_item.json").read_text(encoding="utf-8"))
+                self.assertEqual(state_rel["git"]["status"], "PR_OPENED:https://github.com/acme/repo/pull/42")
+
+                # 3. Default hotfix-finish falls back to PR_READY when create_pr returns None
+                with mock.patch.object(sdd_git.GitProviderAdapter, "create_pr", return_value=None) as mock_hf_pr:
+                    args_hf = sdd_git.build_parser().parse_args(["hotfix-finish", "--bug", "BUG-404", "--version", "1.3.1"])
+                    self.assertFalse(args_hf.local_merge)
+                    self.assertEqual(sdd_git.cmd_hotfix_finish(args_hf, gov), 0)
+                    mock_hf_pr.assert_called_once_with(
+                        "github",
+                        "hotfix/BUG-404",
+                        "main",
+                        "fix(hotfix): apply BUG-404 (v1.3.1)",
+                        "Hotfix v1.3.1 (BUG-404: hotfix/BUG-404 -> main)",
+                    )
+                self.assertEqual(_git(repo, "rev-parse", "main"), main_sha_before)
+                self.assertEqual(_git(repo, "branch", "--show-current"), "develop")
+                self.assertTrue(sdd_git.GitRunner.branch_exists("hotfix/BUG-404", cwd=repo))
+                md_hf = (repo / ".agents" / "ACTIVE_STATE.md").read_text(encoding="utf-8")
+                self.assertIn("`PR_READY:hotfix/BUG-404->main`", md_hf)
+                state_hf = json.loads((repo / ".agents" / "active_work_item.json").read_text(encoding="utf-8"))
+                self.assertEqual(state_hf["git"]["status"], "PR_READY:hotfix/BUG-404->main")
+
+                # 4. --local-merge --push refuses direct push to protected main (RN-SDD-BRANCH-SYNC)
+                for cli_args, fn in (
+                    (["release-finish", "--version", "1.3.0", "--local-merge", "--push"], sdd_git.cmd_release_finish),
+                    (["hotfix-finish", "--bug", "BUG-404", "--version", "1.3.1", "--local-merge", "--push"], sdd_git.cmd_hotfix_finish),
+                ):
+                    with mock.patch("builtins.print") as mock_print:
+                        rc = fn(sdd_git.build_parser().parse_args(cli_args), gov)
+                    self.assertEqual(rc, 1)
+                    printed = " ".join(" ".join(str(a) for a in call.args) for call in mock_print.call_args_list)
+                    self.assertIn("RN-SDD-BRANCH-SYNC", printed)
+                    self.assertEqual(_git(repo, "rev-parse", "main"), main_sha_before)
+                    self.assertEqual(_git(repo, "branch", "--show-current"), "develop")
 
     def test_aud_021_containment_preserved_on_worktree_remove(self):
         with tempfile.TemporaryDirectory() as tmp:
