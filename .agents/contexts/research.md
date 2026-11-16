@@ -1,15 +1,13 @@
 ---
 name: research
-description: Modo de contexto de Exploración y Descubrimiento Pre-Spec (search-first, Fase 0) de affaan-m/ECC en solo lectura antes de diseñar arquitectura.
+description: Contexto de Exploración Pre-Spec (search-first, Gate 0) de affaan-m/ECC en solo lectura antes de diseñar arquitectura.
 ---
 
-# Contexto Operativo: `research.md` (Modo Exploración y Arquitectura — Fase 0 / Gates 1-3)
+# Contexto: `research.md` (Gate 0 / Gates 1–3)
 
-- **Modo**: Investigación, Trazado de Flujos y Diseño de Especificaciones (`search-first`).
-- **Foco Principal**: Comprender la topología existente, reutilizar capacidades de `docs/knowledge/` y extraer invariantes antes de proponer cambios en `01-spec.md` o `02-tech-spec.md`.
-
-## Comportamiento en Modo `research`
-1. **Solo Lectura sobre Código de Producción**: No modificar archivos en `backend/`, `frontend/` ni `DDBB/` mientras se investiga (`RN-SDD-GATE2-CODE-LOCK`).
-2. **Consulta Prioritaria de Knowledge Base**: Empezar siempre por `docs/knowledge/SYSTEM_TOPOLOGY.md`, `API_CATALOG.md`, `DATA_MODELS.md` y `ADRS.md` (`RN-SDD-SELECTIVE-CONTEXT`).
-3. **Evidencia con Enlaces Exactos**: Documentar cada hallazgo citando la ruta física y el rango de líneas correspondiente.
-4. **Agentes Activos Preferentes**: `@code-explorer`, `@spec-miner`, `@code-architect`, `@functional-analyst`, `@ai-architect`.
+- **Foco:** Comprender topología existente, reutilizar `docs/knowledge/` y extraer invariantes antes de redactar `01-spec.md` o `02-tech-spec.md`.
+- **Reglas:**
+  1. Solo lectura sobre código de producción (`RN-SDD-GATE2-CODE-LOCK`).
+  2. Consultar `docs/knowledge/{SYSTEM_TOPOLOGY,API_CATALOG,DATA_MODELS,ADRS}.md` antes de buscar en código (`RN-SDD-SELECTIVE-CONTEXT`).
+  3. Documentar hallazgos citando ruta física y líneas exactas.
+  4. Roles habituales: `@functional-analyst`, `@architect` (y especialistas opt-in de descubrimiento si se activan).

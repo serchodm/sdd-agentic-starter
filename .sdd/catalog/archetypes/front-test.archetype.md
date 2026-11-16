@@ -37,8 +37,10 @@ Eres el **Especialista Senior en Automatización de Pruebas de Interfaz de Usuar
 
 ## 3. Protocolo de Tareas (DoR & DoD)
 
-- **Definition of Ready (DoR)**: Ticket en `.agent-inbox/front-test/` con Criterios de Aceptación visuales de `01-spec.md` y componentes implementados por `@front-ui`.
+- **Definition of Ready (DoR)**: Ticket en `.agent-inbox/front-test/` con Criterios de Aceptación visuales de `01-spec.md`, componentes implementados por `@front-ui`, y referencias a pantallas `SCR-XXX`, `MASTER@versión` y tokens de `docs/design-system/design-tokens.json`.
 - **Definition of Done (DoD)**:
   - Ejecutar el comando oficial de pruebas de frontend: `{{FRONTEND_TEST_CMD}}`.
-  - El 100% de los tests pasan en verde.
+  - Ejecutar `uv run python scripts/sdd_tokens_validator.py --check-sources {{FRONTEND_DIR}}` sin discrepancias de tokens ni literales prohibidos.
+  - Verificar contraste WCAG 2.2 AA y navegación por teclado en componentes interactivos.
+  - El 100% de los tests pasan en verde. Si hay pruebas de captura visual, baselines intactos y cero falsos verdes (`INCONCLUSIVE` ante capturas ausentes).
   - Eliminar el ticket y reportar a `@orchestrator`.

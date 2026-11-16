@@ -1,6 +1,6 @@
-# Especificación del Stack Tecnológico (Gate 00: Stack Definition)
+# Especificación del Stack Tecnológico (Gate S0: Stack Lock)
 
-> **ESTADO DE LA PUERTA:** `[ ] Gate 00 Approved (Human Sign-off)`
+> **ESTADO DE LA PUERTA:** `[ ] Gate S0 Approved (Human Sign-off)`
 > *(El código de producción permanece bloqueado hasta que esta casilla esté marcada con [x] tras el acuerdo formal con el usuario).*
 
 ---
@@ -43,13 +43,26 @@
 - **Gestión de Secretos**: `[ej: Vercel Environment Variables / .env con .env.example tipado / Azure Key Vault / AWS Secrets Manager]`
 
 ### 2.5. Comandos Deterministas de Verificación DoD (Zero Discovery Overhead)
-*(Definir obligatoriamente en Gate 00 para que ningún subagente queme tokens descubriendo comandos o explorando configuraciones)*:
+*(Definir obligatoriamente en Gate S0 para que ningún subagente queme tokens descubriendo comandos o explorando configuraciones)*:
 - **Lint & Typecheck:** `[ej: cd backend && ruff check . && mypy . | cd frontend && npx tsc --noEmit]`
 - **Prueba Unitaria Acotada (In-memory, mocks, 0 DB externa):** `[ej: pytest <path/to/test.py> -q | npx vitest run <path/to/test.ts>]`
 - **Prueba de Integración (Con servicios auxiliares/BD levantada):** `[ej: pytest tests/integration/<path/to/test.py> -q]`
 - **Suite Completa de Tests:** `[ej: pytest tests/unit/ | npm test]`
 - **Build de Producción:** `[ej: npm run build | cargo build --release | dotnet publish]`
 - **Verificación de Entorno / Infraestructura:** `[ej: docker compose config | terraform validate]`
+
+<!-- Esquema máquina opcional para Gate S0 (`yaml sdd:verification-commands`).
+  Cuando se complete esta sección en Gate S0, declarar un bloque cercado con etiqueta `yaml sdd:verification-commands`:
+  # verification_commands:
+  #   lint: "uv run ruff check . && uv run mypy ."
+  #   unit_test: "uv run pytest tests/unit -q"
+  #   integration_test: "uv run pytest tests/integration -q"
+  #   full_suite: "uv run pytest tests/ -q"
+  #   build: "npm run build"
+  #   infra: "docker compose config"
+  #   builders:
+  #     back-domain: "uv run pytest tests/unit/domain -q"
+-->
 
 ---
 
@@ -82,8 +95,35 @@
 
 > **Política ante Rutas Huérfanas (`unowned_policy`):** `fail-closed` (Cualquier fichero de código que no esté asignado a una zona del Ownership Map bloquea la aprobación de Gate 3).
 
+<!-- Esquema máquina opcional para mapeo dinámico de builders (`yaml sdd:ownership-map`).
+  Al configurar zonas explícitas tras aprobar Gate S0, declarar un bloque cercado con etiqueta `yaml sdd:ownership-map`:
+  # unowned_policy: fail-closed   # valores válidos: error | fail-closed | warn
+  # zones:
+  #   - id: backend-domain
+  #     owner: back-domain        # o `builder: back-domain`
+  #     archetype: layer-domain
+  #     paths: ["src/backend/domain/**", "src/domain/**"]
+  #     dod: unit_test            # clave de §2.5 o comando concreto
+  #     forbid_imports: ["fastapi", "sqlalchemy"]
+  #   - id: frontend-ui
+  #     owner: front-ui
+  #     archetype: front-ui
+  #     paths: ["src/frontend/src/components/**"]
+  #     dod: build
+  #     forbid_imports: ["src/backend"]
+-->
+
 ### 3.3. Stack Packs Activos (Catálogo `.sdd/catalog/packs/`)
 *(Packs de lenguaje, framework y capacidad activados desde el catálogo inerte bajo licencia MIT de ECC)*:
+
+```yaml sdd:stack-config
+stack_approved: false           # Canónico Gate S0 (alias retrocompatible: gate00_approved)
+preset: compact
+packs: []
+uiux:
+  enabled: false
+```
+
 - `[ej: lang-python, framework-fastapi, capability-database, capability-devops]`
 - *(Se materializan en la sesión mediante `python scripts/sdd_agent_generator.py --materialize`)*.
 
@@ -153,6 +193,6 @@ src/
 
 ---
 
-## ✍️ 7. Firmas de Aprobación de Gate 00
+## ✍️ 7. Firmas de Aprobación de Gate S0
 - [ ] `@orchestrator`: Especificación del stack, Ownership Map y comandos DoD validados técnica y operativamente.
-- [ ] **Usuario Humano**: `[ ] Gate 00 Approved (Human Sign-off)`
+- [ ] **Usuario Humano**: `[ ] Gate S0 Approved (Human Sign-off)`

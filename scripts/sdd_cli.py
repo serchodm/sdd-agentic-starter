@@ -61,6 +61,8 @@ DISPATCH_MAP = {
     "repo-map": ROOT_DIR / ".agents" / "scripts" / "sdd_repo_map.py",
     "trim": ROOT_DIR / ".agents" / "scripts" / "sdd_trim_exec.py",
     "tokens": ROOT_DIR / ".agents" / "scripts" / "sdd_token_usage.py",
+    "approve-gate": ROOT_DIR / "scripts" / "sdd_gate_seal.py",
+    "verify-gates": ROOT_DIR / "scripts" / "sdd_gate_seal.py",
 }
 
 
@@ -82,10 +84,14 @@ Comandos Disponibles:
     repo-map         Generador de mapa esquelético AST en más de 20 lenguajes
     trim             Recortador determinista de salidas de terminal y tests
     tokens           Telemetría de consumo de tokens y contexto multi-IDE
+    approve-gate     Sella criptográficamente (SHA-256) los Gates 1..3 aprobados
+    verify-gates     Verifica la integridad SHA-256 de los artefactos de Gates 1..3
     setup-hooks      Activa los hooks nativos de Git en .githooks/
 
 Ejemplos:
     ./sdd healthcheck
+    ./sdd approve-gate --embed-inline
+    ./sdd verify-gates
     ./sdd git status
     ./sdd git worktree-create --spec FEAT-001
     ./sdd instincts list
@@ -104,6 +110,10 @@ def main() -> int:
 
     if command == "setup-hooks":
         return cmd_setup_hooks(sub_args)
+    if command == "approve-gate":
+        return run_script(DISPATCH_MAP["approve-gate"], ["--approve"] + sub_args)
+    if command == "verify-gates":
+        return run_script(DISPATCH_MAP["verify-gates"], ["--verify"] + sub_args)
 
     target_script = DISPATCH_MAP.get(command)
     if target_script:

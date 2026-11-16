@@ -2,7 +2,7 @@
 
 - **ID del Change Request**: [Ej. CR-004-avatar-engine-dual-representation]
 - **Feature Base Afectada (Cardinalidad 1:1 — `RN-SDD-1-TO-1-CR`)**: [`FEAT-XXX`](../features/FEAT-XXX-slug/01-spec.md)
-- **Estado**: [Propuesto | Aprobado Gate 1-3 | En Implementación | Completado]
+- **Estado**: [Draft | In Review | Approved | Done]
 - **Responsables**: `@ai-architect` & `@orchestrator`
 - **Fecha**: YYYY-MM-DD
 
@@ -15,7 +15,23 @@
 
 ---
 
-## 2. Matriz Comparativa del Delta (`Antes en FEAT-XXX` vs. `Después en CR-XXX`)
+## 2. Alcance Delta (Delta Scope)
+
+### 🔄 Modificaciones Directas
+- [Elemento que se modifica o rediseña respecto a la especificación base]
+
+### ➕ Nuevos Elementos Incorporados
+- [Nuevas capacidades, contratos o comportamientos que se agregan]
+
+### 🚫 Elementos Obsoletos / Retirados (Zero Zombie Code)
+- [Elementos, archivos o tipos que se deprecian o eliminan de la implementación anterior]
+
+### 🔒 Invariantes que se Mantienen Intactas
+- [Capacidades base que no deben verse alteradas ni sufrir regresiones]
+
+---
+
+## 3. Matriz Comparativa del Delta (`Antes en FEAT-XXX` vs. `Después en CR-XXX`)
 
 | Dimensión / Contrato | Estado Original en `FEAT-XXX` (Baseline Inmutable) | Nuevo Estado en `CR-XXX` (Delta Propuesto) |
 | :--- | :--- | :--- |
@@ -25,11 +41,11 @@
 
 ---
 
-## 3. Historias de Usuario Delta y Criterios BDD (`Given-When-Then`)
+## 4. Historias de Usuario Delta y Criterios BDD (`Given-When-Then`)
 
 ### Historia Delta 1: [Título]
-> **Como** [actor],
-> **Quiero** [nueva capacidad o comportamiento modificado],
+> **Como** [actor],  
+> **Quiero** [nueva capacidad o comportamiento modificado],  
 > **Para** [beneficio medible].
 
 #### Escenario 1: [Nombre del Escenario]
@@ -39,7 +55,7 @@
 
 ---
 
-## 4. Aprobación Formal del Stakeholder (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
-- [ ] **Gate 1 (Funcional) Aprobado por el Usuario**
-- [ ] **Gate 2 (Técnico) Aprobado por el Usuario**
-- [ ] **Gate 3 (Tareas / DoR) Aprobado por el Usuario**
+## 5. Aprobación Formal del Stakeholder (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
+- [ ] **Gate 1 Approved (Human Sign-off):** El alcance delta funcional y criterios BDD han sido validados.
+- [ ] **Gate 2 Approved (Human Sign-off):** La arquitectura técnica delta y contratos han sido validados.
+- [ ] **Gate 3 Approved (Human Sign-off):** El plan de tareas DAG y DoR han sido validados.

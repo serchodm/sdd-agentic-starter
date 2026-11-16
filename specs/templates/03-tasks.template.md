@@ -1,12 +1,13 @@
 # Tareas de Implementación: [Título de la Feature, Change Request o Bug]
 
 - **ID del Expediente**: [Ej. FEAT-006-declarative-agents | CR-012-hands-free-wake-word | BUG-010-voice-channel-auto-mute]
+- **Estado**: [Draft | In Review | Approved | Done]
 - **Feature Base**: [Ej. FEAT-010 / FEAT-008B]
 - **Orquestador Principal**: `@orchestrator`
 - **Agentes Especialistas Asignados**: [`@db-specialist`, `@back-domain`, `@back-infra`, `@back-api`, `@front-logic`, `@front-ui`, `@back-test`, `@front-test`, `@documentator`, `@qa-auditor`]
 - **Especificaciones de Referencia**:
-  - Funcional (Qué): [`01-spec.md`](01-spec.md) (Gate 1 Passed)
-  - Técnica (Cómo): [`02-tech-spec.md`](02-tech-spec.md) (Gate 2 Passed)
+  - Funcional (Qué): [`01-spec.md`](01-spec.md) (Gate 1 Approved)
+  - Técnica (Cómo): [`02-tech-spec.md`](02-tech-spec.md) (Gate 2 Approved)
 
 ---
 
@@ -114,21 +115,27 @@ graph TD
 - [ ] **Tarea D.2** [`@front-test`]: Ejecución de tests frontend y typecheck estricto
   - *Comando de verificación DoD*: `cd frontend && npx tsc --noEmit && npm test -- --run` (100% verde)
 
-- [ ] **Tarea D.3** [`@qa-auditor`]: Auditoría estricta de límites arquitectónicos (`rea` + `ecc`)
+- [ ] **Tarea D.3** [`@front-test` / `@qa-tester`]: Certificar Quality Gate Visual y Coherencia de Tokens (Condicional a pantallas `SCR-###`)
+  - *Ámbito permitido*: `frontend/tests/`, `specs/features/<feat>/`
+  - *Archivos exactos*: `frontend/tests/visual/test_[pantalla].test.ts`
+  - *Contrato de referencia*: `02-tech-spec.md` Sección 6.1 y 7
+  - *Comando de verificación DoD*: `uv run python scripts/sdd_tokens_validator.py --check-sources frontend/ && npm run test:visual`
+
+- [ ] **Tarea D.4** [`@qa-auditor`]: Auditoría estricta de límites arquitectónicos (`rea` + `ecc`)
   - *Comando de verificación DoD*: `python .agents/scripts/verify_architecture_boundaries.py && python .agents/scripts/sdd_healthcheck.py`
 
-- [ ] **Tarea D.4** [`@documentator`]: Consolidación documental y actualización de Conocimiento Vivo
+- [ ] **Tarea D.5** [`@documentator`]: Consolidación documental y actualización de Conocimiento Vivo
   - *Ámbito permitido*: `docs/es/`, `docs/en/`, `docs/knowledge/`
   - *Archivos a actualizar*:
     - `docs/es/...` y `docs/en/...` (Documentación viva de usuario y arquitectura)
     - `docs/knowledge/API_CATALOG.md` (Nuevos endpoints registrados)
     - `docs/knowledge/DATA_MODELS.md` (Nuevas tablas/columnas/índices)
     - `docs/knowledge/ADRS.md` (Decisión técnica registrada)
-    - `docs/{es,en}/06-traceability/TRACEABILITY-MATRIX.md` (Matriz de trazabilidad)
+    - `docs/traceability/TRACEABILITY-MATRIX.md` (Matriz de trazabilidad)
   - *Comando de verificación DoD*: Validación de enlaces y 0DD (*Zero Document Debt*)
 
 ---
 
 ## 🚦 Aprobación Formal Gate 3 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 > ⚠️ **Exclusivo para el Stakeholder Humano**:
-- [ ] **Gate 3 Aprobado por el Usuario**: El grafo de dependencias, bloques paralelos y comandos de verificación DoD están autorizados para iniciar ejecución desatendida mediante subagentes.
+- [ ] **Gate 3 Approved (Human Sign-off):** El grafo de dependencias, bloques paralelos y comandos de verificación DoD están autorizados para iniciar Gate 4.

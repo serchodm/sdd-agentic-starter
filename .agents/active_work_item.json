@@ -1,21 +1,17 @@
 {
-  "active_work_item_id": null,
-  "type": null,
-  "spec_dir": null,
-  "git": {
-    "base_branch": "develop",
-    "branch_name": null,
-    "worktree_path": null,
-    "pr_number": null,
-    "pr_url": null,
-    "status": "IDLE"
-  },
-  "gate_00_approved": false,
-  "gate_0_approved": false,
-  "gate_1_approved": false,
-  "gate_2_approved": false,
-  "gate_3_approved": false,
-  "approved_by_human": false,
-  "assigned_agent": null,
-  "phase": "STACK_BOOTSTRAP"
+  "active_work_item_id": "FWK-011-ci-posix-time-determinism",
+  "spec_dir": ".sdd/framework/work-items/FWK-011-ci-posix-time-determinism",
+  "branch": "develop",
+  "worktree": null,
+  "status": "DONE",
+  "gate_1_approved": true,
+  "gate_2_approved": true,
+  "gate_3_approved": true,
+  "approved_by_human": true,
+  "enforce_gate_seals": true,
+  "gate_seals": {
+    "1": "sha256:af307454832123cb20bdcf2d1f5fe5f588d55cea9b2698d593d66b4f9add036f",
+    "2": "sha256:60f5dd1b982b8e9896dda5a62cee30f9dbb12afb2487f6ddb1484b3c5d0205b3",
+    "3": "sha256:ab5ef919c934cef16aedf7f7e0d7414122f959040597633cf9c7be7ee3b27dcd"
+  }
 }

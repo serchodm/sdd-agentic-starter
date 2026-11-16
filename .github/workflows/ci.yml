@@ -28,9 +28,98 @@ jobs:
       - name: Set up Python 3.12
         run: uv python install 3.12
 
-      - name: Verify Framework Integrity (sdd_healthcheck.py)
+      - name: Verify Hooks Configuration (.agents/hooks.json)
+        run: |
+          uv run python - <<'PY'
+          import json, pathlib, shlex
+
+          root = pathlib.Path(".").resolve()
+          hooks_path = root / ".agents" / "hooks.json"
+          if not hooks_path.is_file():
+              raise SystemExit(f"[FAIL] Missing hooks file: {hooks_path}")
+          raw = hooks_path.read_bytes()
+          if raw.startswith(b"\xef\xbb\xbf"):
+              raise SystemExit("[FAIL] .agents/hooks.json must not contain a UTF-8 BOM (\\xef\\xbb\\xbf).")
+          try:
+              data = json.loads(raw.decode("utf-8"))
+          except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+              raise SystemExit(f"[FAIL] Invalid UTF-8 JSON in .agents/hooks.json: {exc}")
+
+          hooks_section = data.get("hooks") if isinstance(data, dict) else None
+          if not isinstance(hooks_section, dict) or not hooks_section:
+              raise SystemExit("[FAIL] .agents/hooks.json must define a non-empty 'hooks' object.")
+
+          checked = 0
+          for event_name, entries in hooks_section.items():
+              if not isinstance(entries, list):
+                  raise SystemExit(f"[FAIL] Hook event '{event_name}' must be a list.")
+              for entry in entries:
+                  hook_list = entry.get("hooks", []) if isinstance(entry, dict) else []
+                  for hook in hook_list:
+                      cmd = hook.get("command") if isinstance(hook, dict) else None
+                      if not isinstance(cmd, str) or not cmd.strip():
+                          raise SystemExit(f"[FAIL] Empty or invalid hook command under '{event_name}'.")
+                      tokens = [t.strip("\"'").replace("\\", "/") for t in shlex.split(cmd, posix=False)]
+                      script_tokens = [t for t in tokens if t.endswith((".py", ".sh", ".ps1", ".cmd"))]
+                      if not script_tokens:
+                          raise SystemExit(f"[FAIL] No script target found in hook command: {cmd!r}")
+                      for rel in script_tokens:
+                          target = (root / rel).resolve()
+                          if not target.is_relative_to(root) or not target.is_file():
+                              raise SystemExit(f"[FAIL] Hook script path missing or escapes repo: {rel}")
+                      checked += 1
+          if checked == 0:
+              raise SystemExit("[FAIL] No hook commands verified in .agents/hooks.json.")
+          print(f"[OK] Verified .agents/hooks.json (no BOM, valid JSON, {checked} command(s) verified).")
+          PY
+
+      - name: Verify Framework Integrity & Done Immutability (sdd_healthcheck.py)
         run: |
           uv run python .agents/scripts/sdd_healthcheck.py
+
+      - name: Validate 0DD Compliance & Done Feature Traceability
+        run: |
+          uv run python - <<'PY'
+          import pathlib, re, sys
+
+          root = pathlib.Path(".").resolve()
+          sys.path.insert(0, str(root / ".agents" / "scripts"))
+          from sdd_healthcheck import parse_done_features_from_text
+
+          required_files = [
+              "docs/knowledge/ADRS.md",
+              "docs/knowledge/API_CATALOG.md",
+              "docs/knowledge/DATA_MODELS.md",
+              "docs/knowledge/SYSTEM_TOPOLOGY.md",
+              "docs/traceability/TRACEABILITY-MATRIX.md",
+          ]
+          missing = [
+              p for p in required_files
+              if not (root / p).is_file() or not (root / p).read_text(encoding="utf-8").strip()
+          ]
+          if missing:
+              raise SystemExit(f"[FAIL] Missing or empty 0DD artifacts: {', '.join(missing)}")
+
+          for lang in ("es", "en"):
+              lang_dir = root / "docs" / lang
+              md_files = (
+                  [p for p in lang_dir.rglob("*.md") if p.read_text(encoding="utf-8", errors="ignore").strip()]
+                  if lang_dir.is_dir() else []
+              )
+              if not md_files:
+                  raise SystemExit(f"[FAIL] Missing bilingual 0DD Markdown documentation under docs/{lang}/.")
+
+          backlog_path = root / "specs" / "BACKLOG.md"
+          backlog_text = backlog_path.read_text(encoding="utf-8") if backlog_path.is_file() else ""
+          done_features = sorted(parse_done_features_from_text(backlog_text))
+          matrix_text = (root / "docs" / "traceability" / "TRACEABILITY-MATRIX.md").read_text(encoding="utf-8")
+          untraced = [feat for feat in done_features if not re.search(rf"\b{re.escape(feat)}\b", matrix_text)]
+          if untraced:
+              raise SystemExit(
+                  f"[FAIL] 0DD Violation: Done feature(s) missing from TRACEABILITY-MATRIX.md: {', '.join(untraced)}"
+              )
+          print(f"[OK] 0DD compliance verified (bilingual docs + knowledge + {len(done_features)} Done feature(s) traced).")
+          PY
 
       - name: Verify Architecture Boundaries (verify_architecture_boundaries.py)
         run: |
@@ -40,6 +129,26 @@ jobs:
         run: |
           uv run python scripts/sdd_agent_generator.py --list
 
+      - name: Verify Generated Squad Lock Integrity (sdd_agent_generator.py --verify)
+        run: |
+          uv run python scripts/sdd_agent_generator.py --verify
+
+      - name: Verify Task DAG Specifications (sdd_dag.py --verify)
+        run: |
+          uv run python - <<'PY'
+          import pathlib, subprocess, sys
+
+          root = pathlib.Path(".").resolve()
+          task_files = sorted(root.glob(".sdd/framework/work-items/*/03-tasks.md")) + sorted(root.glob("specs/*/*/03-tasks.md"))
+          if not task_files:
+              raise SystemExit("[FAIL] No 03-tasks.md files found to verify.")
+          for tf in task_files:
+              res = subprocess.run([sys.executable, "scripts/sdd_dag.py", "--verify", str(tf)], cwd=str(root), capture_output=True, text=True)
+              if res.returncode != 0:
+                  raise SystemExit(f"[FAIL] DAG verification failed for {tf.relative_to(root)}:\n{res.stderr or res.stdout}")
+          print(f"[OK] Verified {len(task_files)} DAG specification(s) with zero cycles and zero parallel write-set collisions.")
+          PY
+
       - name: Verify Git & Worktrees Orchestrator (sdd_git.py status)
         run: |
           uv run python scripts/sdd_git.py status
@@ -48,11 +157,21 @@ jobs:
         run: |
           uv run python scripts/sdd_instincts.py list
 
-      - name: Run Deterministic Unit Tests
+      - name: Validate Design Tokens Consistency (Offline)
         run: |
-          if [ -d "tests" ]; then
-            echo "Running automated test suites..."
-            uv run python -m unittest discover tests -v
-          else
-            echo "No tests directory present yet (Template clean baseline)."
-          fi
+          uv run python scripts/sdd_tokens_validator.py --allow-missing
+
+      - name: Run Deterministic Unit Tests (Min Threshold >= 120)
+        run: |
+          uv run python - <<'PY'
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover("tests")
+          runner = unittest.TextTestRunner(verbosity=2)
+          result = runner.run(suite)
+          if not result.wasSuccessful():
+              raise SystemExit(f"[FAIL] Unit test suite failed (failures={len(result.failures)}, errors={len(result.errors)}).")
+          if result.testsRun < 120:
+              raise SystemExit(f"[FAIL] Test count regression: ran {result.testsRun} tests, expected >= 120.")
+          print(f"[OK] {result.testsRun} deterministic tests passed (>= 120 required).")
+          PY

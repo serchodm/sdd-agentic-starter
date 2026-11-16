@@ -1,52 +1,72 @@
 {
-  "timestamp": "2026-11-09T01:25:59.176662",
+  "schema_version": 2,
+  "timestamp": "2026-11-14T20:59:47.450754+00:00",
+  "content_digest": "0e95c361235f01c8d82362f191500ab091c8371358afd30a5096e033e356301d",
+  "stack_approved": false,
+  "gate00_approved": false,
   "preset": "compact",
   "tech_stack": "Multi-Stack",
   "core_agents": [
-    "orchestrator",
-    "functional-analyst",
     "architect",
-    "qa-tester",
+    "devops",
     "documentator",
-    "devops"
+    "functional-analyst",
+    "orchestrator",
+    "qa-tester"
   ],
   "builders": [
     "back-engineer",
     "front-engineer"
   ],
   "specialists": [
-    "build-error-resolver",
-    "code-architect",
-    "code-explorer",
-    "code-simplifier",
-    "comment-analyzer",
-    "conversation-analyzer",
-    "docs-lookup",
-    "e2e-runner",
-    "gan-evaluator",
-    "gan-generator",
-    "gan-planner",
-    "opensource-sanitizer",
-    "performance-optimizer",
-    "pr-test-analyzer",
-    "refactor-cleaner",
-    "security-reviewer",
-    "silent-failure-hunter",
-    "spec-miner",
-    "tdd-guide",
-    "type-design-analyzer"
+    "security-reviewer"
   ],
-  "active_packs": [
-    "lang-typescript",
-    "framework-react",
-    "capability-database",
-    "capability-web-frontend",
-    "lang-java",
-    "lang-csharp",
-    "framework-fastapi",
-    "lang-go",
-    "lang-python",
-    "capability-devops",
-    "framework-vue"
-  ]
+  "active_packs": [],
+  "files": {
+    ".agents/agents/architect.md": {
+      "sha256": "a7a0aeb4179654619e1f359af7ff4b02d464a7010a7913bdfee2053d5919c968",
+      "owner": "core",
+      "kind": "agent"
+    },
+    ".agents/agents/back-engineer.md": {
+      "sha256": "73b44eca16d44426ff46f281841e82e5bdd1de5955ea9bcb4c178ef792c9be4f",
+      "owner": "builder:back-engineer",
+      "kind": "agent"
+    },
+    ".agents/agents/devops.md": {
+      "sha256": "3db703731ced9f8b96053f1af67f36f675c554508ffbcfa4bedfdff9472b6a02",
+      "owner": "core",
+      "kind": "agent"
+    },
+    ".agents/agents/documentator.md": {
+      "sha256": "f6bafe1cdf126233613862630758ceb24a2ed117093d149b55c0bc04ef91b0b5",
+      "owner": "core",
+      "kind": "agent"
+    },
+    ".agents/agents/front-engineer.md": {
+      "sha256": "5c1a45b0011cde0e5bf9993b52ec9fbb6d5366056741457616e86cba3836a328",
+      "owner": "builder:front-engineer",
+      "kind": "agent"
+    },
+    ".agents/agents/functional-analyst.md": {
+      "sha256": "5fa45c0edefaec6777e7319eaed7446236edb0f15233706961fa5cbc0ec2a944",
+      "owner": "core",
+      "kind": "agent"
+    },
+    ".agents/agents/orchestrator.md": {
+      "sha256": "d2f1248a05d606aa0d8961919109e9cbe59b2369b7662d8682a1a67ef9f4e5e9",
+      "owner": "core",
+      "kind": "agent"
+    },
+    ".agents/agents/qa-tester.md": {
+      "sha256": "8c1fc764b6f9e75a44035823845bc237ae4a60153ff74d8f37bd75b6d7d78639",
+      "owner": "core",
+      "kind": "agent"
+    },
+    ".agents/agents/security-reviewer.md": {
+      "sha256": "fa9c3f513761177afdc8f1d926e2d80ae5e06d1c634feea16d637ed8ce296fd6",
+      "owner": "specialists",
+      "kind": "agent"
+    }
+  }
 }

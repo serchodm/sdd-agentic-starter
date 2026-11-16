@@ -1,19 +1,15 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-09 09:10
-- **Active Work Item:** IDLE (Starter Template Ready)
+- **Timestamp:** 2026-11-16 01:02
+- **Active Work Item:** `FWK-011-ci-posix-time-determinism` (`Done` / `IDLE`)
 - **Active Branch:** `develop`
-- **Spec Folder Path:** None
-- **Current Gate:** Gate 00 (Stack Bootstrap / Ready)
-- **Recommended Model Tier:** Reasoning (Argon/Opus) for Gates 00-3 | Execution (Flash/Sonnet) for Gates 4-5
-- **Last Completed Milestone:** Release v1.0.0 successfully completed, merged to `main` via PR #1, and back-synchronized to `develop`. Starter baseline 10/10 Vanguardia achieved.
-- **Next Execution Target:** Run Gate 00 in specs/STACK.md or pick a Feature in specs/BACKLOG.md
+- **Spec Folder Path:** `.sdd/framework/work-items/FWK-011-ci-posix-time-determinism`
+- **Current Gate:** `Gate 5 (Done)`
+- **Active Worktrees:** None
+- **Recommended Model Tier:** Fast / Balanced Execution
+- **Last Completed Milestone:** `RFC-005` (`FWK-011-ci-posix-time-determinism`) cerrado en Gate 5 / 0DD con `123/123` pruebas deterministas en verde y portabilidad POSIX verificada.
+- **Next Execution Target:** Sincronizar cambios en `develop` / `release/v1.1.0` y abrir sesión limpia para el siguiente work item o Gate S0 del proyecto.
 - **Mandatory Context Files (MAX 4 FILES):**
   1. `AGENTS.md`
   2. `specs/STACK.md`
-  3. `specs/BACKLOG.md`
-- **Critical Technical Decisions / Snapshot:**
-  - Official Release v1.0.0 merged into `main` with green CI.
-  - Branch protection active on `main` (zero direct commits) and `develop` (protected integration).
-  - Git worktrees isolated in `.worktrees/` with dynamic ports and test databases.
-  - Cross-platform Universal CLI (`./sdd`, `.\sdd.ps1`, `sdd.cmd`) and native hooks (`.githooks/`).
-  - Atomic instincts engine active in `.agents/instincts.json` via continuous-learning-v2 + MemGPT semantic clustering.
+  3. `.sdd/framework/BACKLOG.md`
+  4. `.agents/ACTIVE_STATE.md`

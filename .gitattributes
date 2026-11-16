@@ -1,0 +1,3 @@
+# Enforce deterministic LF line endings for SHA-256 lock-verified assets across Windows and POSIX
+.sdd/catalog/packs/capability-ui-design/** text eol=lf
+.agents/** text eol=lf

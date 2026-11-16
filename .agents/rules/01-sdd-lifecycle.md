@@ -1,19 +1,17 @@
 # Regla 01: Ciclo de Vida SDD y Gestión del Cambio
 
-## 1. Las 6 Puertas de Calidad (Gate 00 a Gate 5)
-Todo incremento en el sistema debe atravesar secuencialmente estas puertas:
-
-| Puerta | Nombre | Entregable Clave | Aprobador |
+## 1. Puertas de Calidad Canónicas (Gate S0, Gate 0–5)
+| Puerta | Ámbito | Sign-off / Criterio | Aprobador |
 | :--- | :--- | :--- | :--- |
-| **Gate 00** | **Stack Bootstrap** | `specs/STACK.md` firmado | Usuario Humano |
-| **Gate 0** | **Backlog Intake** | Registro en `specs/BACKLOG.md` con ID único | Tech Lead / Humano |
-| **Gate 1** | **Functional Spec** | `01-spec.md` con Requisitos EARS y Given-When-Then | Usuario Humano |
-| **Gate 2** | **Technical Spec** | `02-tech-spec.md` con Arquitectura y Contratos tipados | Usuario Humano |
-| **Gate 3** | **Task Graph (DAG)** | `03-tasks.md` con bloques paralelos y DoD determinista | Usuario Humano |
-| **Gate 4** | **Verification & QA** | Tests en verde y auditorías de calidad pasadas | @qa-tester / CI |
-| **Gate 5** | **Living Documentation** | Living docs 0DD actualizadas en `docs/` | @documentator |
+| **Gate S0** | Proyecto | `[x] Gate S0 Approved` / `stack_approved: true` (legacy: `Gate 00`) | Humano |
+| **Gate 0** | Work Item | ID único en `specs/BACKLOG.md` + carpeta spec | Tech Lead / Humano |
+| **Gate 1** | Work Item | `[x] Gate 1 Approved (Human Sign-off)` (EARS + Given-When-Then) | Humano |
+| **Gate 2** | Work Item | `[x] Gate 2 Approved (Human Sign-off)` (Arquitectura y contratos) | Humano |
+| ***Sub-Gate 2V*** | Work Item | `[x] Gate 2 Visual Sign-off (Human)` (pantallas `SCR-###` o `N/A`) | Humano |
+| **Gate 3** | Work Item | `[x] Gate 3 Approved (Human Sign-off)` (DAG `Block` + DoD) | Humano |
+| **Gate 4** | Work Item | Tests + auditorías QA + CI verde | @qa-tester / CI |
+| **Gate 5** | Work Item | `docs/es/`, `docs/en/`, `docs/knowledge/`, `TRACEABILITY-MATRIX.md`, `git push` | @documentator |
 
-## 2. Inmutabilidad de Features Finalizadas (`RN-SDD-IMMUTABLE-DONE`)
-- Los ficheros en `specs/features/FEAT-XXX-*/` de ítems completados son **SOLO LECTURA**.
-- Para evolucionar una funcionalidad existente, se crea un Change Request: `specs/changes/CR-XXX-<nombre>/`.
-- Se aplica estrictamente la cardinalidad 1:1: **1 CR por cada Feature afectada**.
+## 2. Inmutabilidad (`RN-SDD-IMMUTABLE-DONE`) y `RN-SDD-1-TO-1-CR`
+- Carpetas `specs/features/FEAT-XXX-*/` en estado `Done` son **SOLO LECTURA**.
+- Todo cambio posterior requiere **1 Change Request por Feature afectada**: `specs/changes/CR-XXX-<nombre>/`.

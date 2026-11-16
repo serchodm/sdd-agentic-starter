@@ -1,0 +1,33 @@
+<p align="right">
+  <a href="../en/README.md">🇬🇧 English (EN-GB)</a> | <strong>🇪🇸 Español (ES-ES)</strong>
+</p>
+
+# Documentación Funcional Viva (`docs/es/`)
+
+Bienvenido a la documentación funcional viva del repositorio **`sdd-agentic-starter`**, mantenida bajo el estándar **Zero Document Debt (0DD)** en equivalencia **1:1** entre español (ES-ES) e inglés británico (EN-GB).
+
+---
+
+## Baseline Activa
+
+- **Work Items de Framework Completados / Verificados:**
+  - `FWK-001` — *Materialización y Activación Fiables de Packs* (`RFC-001` v2, estado `Verified` / `Done`).
+  - `FWK-002` — *Pack `capability-ui-design` (UI UX Pro Max)* (`RFC-001` v2, estado `Verified` / `Done`).
+  - `FWK-003` — *Quality Gates Visuales Condicionales y Anti-Deriva de Tokens* (`RFC-001` v2, estado `Verified` / `Done`).
+  - `FWK-004` — *Unificación de Terminología de Gates, Estados y Ejecución DAG* (`RFC-002`, estado `Verified` / `Done`).
+  - `FWK-005`..`FWK-009` — *Endurecimiento Integral Post-Auditoría: Seguridad Fail-Closed P0, Compilador `sdd:ownership-map` & Motor DAG, Slimming `< 25k` Tokens + `/bug-fast-track` + `domains/`, Concurrencia Multi-Worktree y Sync Transaccional / Modularidad `<= 500L`* (`RFC-003`, estado `Verified` / `Done`).
+  - `FWK-010` — *Endurecimiento Nivel L5 (10/10): Sello Criptográfico SHA-256 de Gates (`sdd_gate_seal.py` / `approve-gate` / `verify-gates`), Fronteras Arquitectónicas Políglotas, Detección de Colisiones `Write-Set` en Olas Paralelas DAG y Auditoría CI (`>= 120` tests)* (`RFC-004`, estado `Verified` / `Done`, `123/123` tests offline en `11` suites).
+- **Aplicación de Proyecto:** Pendiente de definición tecnológica y firma humana en **Gate S0** (`specs/STACK.md`, con soporte legacy para `Gate 00`). Hasta entonces, esta documentación cubre la funcionalidad operativa del motor de materialización, activación de packs, vendorización UI/UX offline, sincronización del catálogo y gobernanza agéntica unificada del starter.
+
+---
+
+## Mapa de Lectura
+
+| Bloque / Recurso | Contenido | Enlace |
+| :--- | :--- | :--- |
+| **Índice Maestro (`00-governance`)** | Punto de entrada normativo, estado de artefactos y alcance documental vigente. | [DOCUMENTATION-INDEX.md](./00-governance/DOCUMENTATION-INDEX.md) |
+| **Módulo `MOD-001` (`02-functional`)** | Guía funcional y operativa de materialización de packs (`sdd:stack-config`, Gate S0 / Gate 00, carga perezosa, limpieza *fail-closed* e importación de catálogo). | [pack-materialization.md](./02-functional/modules/MOD-001/pack-materialization.md) |
+| **Módulo `MOD-002` (`02-functional`)** | Guía funcional del pack `capability-ui-design` (vendorización offline `ui-ux-pro-max@2.15.0` con `VENDOR.lock.json`, poda `uiux` en `sdd-bootstrap`, flujo Gate 2 con `@ui-ux-designer` + `@a11y-architect`, ciclo semver de `docs/design-system/`, validador `sdd_tokens_validator.py` y quality gates visuales bi-nivel en Gate 4). | [capability-ui-design.md](./02-functional/modules/MOD-002/capability-ui-design.md) |
+| **Módulo `MOD-003` (`02-functional`)** | Unificación de terminología de Gates (`Gate S0`, `Gate 0..5`), estados (`Candidate`..`Done`), bloques DAG (`Block`), fases de sesión, soporte dual-accept fail-closed y endurecimiento L5 (`FWK-005`..`FWK-010`). | [gate-terminology-unification.md](./02-functional/modules/MOD-003/gate-terminology-unification.md) |
+| **Base de Conocimiento (`docs/knowledge/`)** | Decisiones de arquitectura (`ADR-001`..`ADR-009`), topología, modelos de datos y catálogo CLI/APIs. | [ADRS.md](../knowledge/ADRS.md) · [SYSTEM_TOPOLOGY.md](../knowledge/SYSTEM_TOPOLOGY.md) · [DATA_MODELS.md](../knowledge/DATA_MODELS.md) · [API_CATALOG.md](../knowledge/API_CATALOG.md) |
+| **Matriz de Trazabilidad (0DD)** | Trazabilidad bidireccional de `FWK-001` a `FWK-010` desde requisitos EARS, reglas de negocio y NFRs hasta código, pruebas offline (`123` tests) y documentación. | [TRACEABILITY-MATRIX.md](../traceability/TRACEABILITY-MATRIX.md) |
