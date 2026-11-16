@@ -86,34 +86,30 @@ specs/
 ├── SYSTEM_VISION.md                    # Visión global del sistema, arquitectura e invariantes
 ├── SDD_FRAMEWORK.md                    # Este estándar de gobernanza (fuente de verdad metodológica)
 ├── BACKLOG.md                          # Registro priorizado de Épicas, Features y Deuda Técnica
-├── principles/                         # Principios de identidad, personalidad y gobernanza
-│   └── Project_IDENTITY_AND_GOVERNANCE.md # Identidad, archivos declarativos y memoria
-├── architecture/                       # Diseños arquitectónicos de alto nivel
-│   ├── AGENT_MODEL_RUNTIME_ARCHITECTURE.md
-│   └── Project_OS_CONCEPTUAL_ARCHITECTURE.md # Arquitectura conceptual de Project Desktop & OS
-├── roadmap/                            # Planificación estratégica por etapas (0 a 8)
-│   └── IMPLEMENTATION_ROADMAP.md
 ├── templates/                          # Plantillas oficiales del proyecto
 │   ├── 00-stack.template.md            # Plantilla para Gate S0 (Stack Lock)
 │   ├── 01-functional-spec.template.md  # Plantilla para Gate 1
 │   ├── 02-technical-spec.template.md   # Plantilla para Gate 2
 │   ├── 03-tasks.template.md            # Plantilla para Gate 3
-│   └── 04-change-request-spec.template.md # Plantilla para Change Requests (CR)
+│   ├── 04-change-request-spec.template.md # Plantilla para Change Requests (CR)
+│   ├── 05-bug-fast-track.template.md   # Plantilla Fast-Track para Bugs (BUG)
+│   ├── 06-spike-report.template.md     # Plantilla para Spikes y PoCs (SPIKE)
+│   └── 07-hotfix-fast-track.template.md # Plantilla Fast-Track para Hotfixes S1 (HOTFIX)
 ├── features/                           # Especificaciones vivas de funcionalidades
 │   └── <ID>-<kebab-case-name>/         # Ej: FEAT-001-core-scaffolding/
 │       ├── 01-spec.md                  # Gate 1: Requerimientos funcionales y US
 │       ├── 02-tech-spec.md             # Gate 2: Arquitectura, contratos y diseño
 │       └── 03-tasks.md                 # Gate 3: Desglose de tareas y seguimiento activo
-├── bugs/                               # Especificaciones de corrección de incidencias
-│   └── <ID>-<kebab-case-name>/         # Ej: BUG-004-session-timeout-leak/
-│       ├── 01-bug-report.md            # Síntomas, entorno y pasos de reproducción
-│       ├── 02-fix-spec.md              # Causa raíz, diseño técnico y riesgos
-│       └── 03-tasks.md                 # Test de reproducción y tareas de resolución
 ├── changes/                            # Peticiones y especificaciones de cambio (Change Requests)
 │   └── CR-<NUM>-<kebab-case-name>/     # Ej: CR-001-hud-arc-reactor-redesign/
 │       ├── 01-spec.md                  # Gate 1: Requerimientos funcionales del cambio y US
 │       ├── 02-tech-spec.md             # Gate 2: Arquitectura delta, contratos y rendimiento
 │       └── 03-tasks.md                 # Gate 3: Desglose atómico y validación
+├── bugs/                               # Especificaciones de incidencias (BUG) y hotfixes S1 (HOTFIX)
+│   └── <ID>-<kebab-case-name>/         # Ej: BUG-004-session-timeout-leak/ o HOTFIX-001-auth-bypass/
+│       ├── 01-bug-report.md            # Síntomas, entorno y pasos de reproducción
+│       ├── 02-fix-spec.md              # Causa raíz, diseño técnico y riesgos
+│       └── 03-tasks.md                 # Test de reproducción y tareas de resolución
 └── spikes/                             # Investigaciones técnicas acotadas (opcional)
     └── <ID>-<kebab-case-name>/         # Ej: SPIKE-002-webrtc-latency/
         └── SPIKE_REPORT.md             # Hipótesis, hallazgos, métricas y conclusión

@@ -1,7 +1,7 @@
 {
-  "active_work_item_id": "FWK-011-ci-posix-time-determinism",
-  "spec_dir": ".sdd/framework/work-items/FWK-011-ci-posix-time-determinism",
-  "branch": "develop",
+  "active_work_item_id": "FWK-012-coherence-alignment",
+  "spec_dir": ".sdd/framework/work-items/FWK-012-coherence-alignment",
+  "branch": "feat/fwk-012-coherence-alignment",
   "worktree": null,
   "status": "DONE",
   "gate_1_approved": true,
@@ -10,8 +10,8 @@
   "approved_by_human": true,
   "enforce_gate_seals": true,
   "gate_seals": {
-    "1": "sha256:af307454832123cb20bdcf2d1f5fe5f588d55cea9b2698d593d66b4f9add036f",
-    "2": "sha256:60f5dd1b982b8e9896dda5a62cee30f9dbb12afb2487f6ddb1484b3c5d0205b3",
-    "3": "sha256:ab5ef919c934cef16aedf7f7e0d7414122f959040597633cf9c7be7ee3b27dcd"
+    "1": "sha256:1da8fa7f5f05c2ebf7d533dcc2db85a7893dcac36f0b65d50f454701c22d62e5",
+    "2": "sha256:e5a52937a6818913708d928c4d372c8a85e18d46fe9dd964e9d7dfdaac41966d",
+    "3": "sha256:aa9dede25ef5a02c0b13a654eabc81be3bb9fe475b43631970257edf08d0f6bc"
   }
 }

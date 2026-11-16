@@ -44,7 +44,7 @@ from sdd_stack_gate_guard import (  # noqa: E402
 MAX_SOURCE_LINES = 800
 CODE_EXTENSIONS = {".py", ".ts", ".tsx", ".js", ".jsx", ".glsl", ".sql"}
 _ALLOWED_SPEC_BUCKETS: tuple[str, ...] = ("specs/features", "specs/changes", "specs/bugs", ".sdd/framework/work-items")
-_WORK_ITEM_ID_RE = re.compile(r"^((?:FEAT|CR|BUG|FWK)-\d{3,4})(?:-[A-Za-z0-9._-]+)?$", re.IGNORECASE)
+_WORK_ITEM_ID_RE = re.compile(r"^((?:FEAT|CR|BUG|HOTFIX|FWK)-\d{3,4})(?:-[A-Za-z0-9._-]+)?$", re.IGNORECASE)
 _APP_PREFIX_RE = re.compile(r"^(src|backend|frontend|DDBB)(/|$)", re.IGNORECASE)
 _PROTECTED_PREFIX_RE = re.compile(r"^(src|backend|frontend|DDBB|tests|scripts)(/|$)", re.IGNORECASE)
 _PROTECTED_COMPOSE_RE = re.compile(r"(?:^|/)docker-compose[^/]*\.ya?ml$", re.IGNORECASE)

@@ -37,7 +37,7 @@ SPEC_CATEGORIES = (
     ("changes", "CR", ("01-spec.md", "02-tech-spec.md", "03-tasks.md")),
     ("bugs", "BUG", ("01-bug-report.md", "02-fix-spec.md", "03-tasks.md")),
 )
-PREFIX_TO_CATEGORY = {prefix: category for category, prefix, _ in SPEC_CATEGORIES}
+PREFIX_TO_CATEGORY = {prefix: category for category, prefix, _ in SPEC_CATEGORIES} | {"HOTFIX": "bugs"}
 
 BENIGN_COMMENT_RE = re.compile(r"^(?:GENERATED\s+by\s+sdd_agent_generator\b|Sourced\s+from\s+upstream\b)", re.I)
 INJECTION_COMMENT_RE = re.compile(
@@ -142,7 +142,7 @@ def _parse_backlog_entries(backlog_text: str) -> tuple[dict[str, str], dict[str,
         next_is_sep = i + 1 < len(lines) and _is_separator_row(_split_markdown_row(lines[i + 1]))
         looks_header = (
             not in_table
-            and not re.search(r"\b(?:FEAT|CR|BUG|FWK|RFC)-\d+\b", _clean_cell(cells[0]), re.I)
+            and not re.search(r"\b(?:FEAT|CR|BUG|HOTFIX|FWK|RFC)-\d+\b", _clean_cell(cells[0]), re.I)
             and any(_normalize_status(c) in {"estado", "estado final", "status", "final status"} for c in cells)
         )
         if next_is_sep or looks_header:
@@ -160,11 +160,7 @@ def _parse_backlog_entries(backlog_text: str) -> tuple[dict[str, str], dict[str,
         if not id_match:
             continue
         item_id = id_match.group(1).upper()
-        statuses[item_id] = (
-            (_normalize_status(cells[status_idx]) if status_idx < len(cells) else "")
-            if status_idx is not None
-            else _infer_headerless_status(cells)
-        )
+        statuses[item_id] = (_normalize_status(cells[status_idx]) if status_idx < len(cells) else "") if status_idx is not None else _infer_headerless_status(cells)
         if item_id.startswith("CR-"):
             aff_cell = cells[affected_idx] if affected_idx is not None and affected_idx < len(cells) else (cells[1] if len(cells) >= 2 else "")
             linked = {m.upper() for m in re.findall(r"\bFEAT-\d{3,4}\b", _clean_cell(aff_cell), re.I)}
@@ -243,8 +239,19 @@ def check_task_dags(specs_root: pathlib.Path) -> list[str]:
     return errors
 
 
+def _check_required_md(item_dir: pathlib.Path, rel_item: str, filename: str, label: str) -> list[str]:
+    req_path = item_dir / filename
+    if not req_path.exists():
+        return [f"[{label} Incomplete] '{rel_item}' is missing '{filename}'."]
+    try:
+        content = req_path.read_text(encoding="utf-8")
+    except Exception as exc:
+        return [f"[{label} Error] Failed to read '{rel_item}/{filename}': {exc}"]
+    return [] if content.strip() else [f"[{label} Incomplete] '{rel_item}' has empty '{filename}'."]
+
+
 def check_spec_triads(specs_root: pathlib.Path, backlog_path: pathlib.Path) -> list[str]:
-    """Validate spec triads, DAG acyclicity, backlog orphan items, and prompt-injection safety."""
+    """Validate spec triads, SPIKE reports, DAG acyclicity, backlog orphans, and prompt-injection safety."""
     errors: list[str] = []
     backlog_text = backlog_path.read_text(encoding="utf-8", errors="ignore") if backlog_path.exists() else ""
     statuses, _ = _parse_backlog_entries(backlog_text)
@@ -264,19 +271,17 @@ def check_spec_triads(specs_root: pathlib.Path, backlog_path: pathlib.Path) -> l
             files_to_check = (required_files[0],) if statuses.get(item_id, "") in GATE1_INITIAL_STATES else required_files
             rel_item = _safe_rel(item_dir, specs_root.parent)
             for req in files_to_check:
-                req_path = item_dir / req
-                if not req_path.exists():
-                    errors.append(f"[SDD Triad Incomplete] '{rel_item}' is missing '{req}'.")
-                    continue
-                try:
-                    content = req_path.read_text(encoding="utf-8")
-                except Exception as exc:
-                    errors.append(f"[SDD Triad Error] Failed to read '{rel_item}/{req}': {exc}")
-                    continue
-                if not content.strip():
-                    errors.append(f"[SDD Triad Incomplete] '{rel_item}' has empty '{req}'.")
+                errors.extend(_check_required_md(item_dir, rel_item, req, "SDD Triad"))
             for md_file in sorted(item_dir.glob("*.md")):
                 errors.extend(check_prompt_injection_risks(md_file, _safe_rel(md_file, specs_root.parent)))
+    spikes_dir = specs_root / "spikes"
+    if spikes_dir.is_dir():
+        for spike_dir in sorted(spikes_dir.iterdir()):
+            if spike_dir.is_dir() and spike_dir.name.upper().startswith("SPIKE-"):
+                rel_spike = _safe_rel(spike_dir, specs_root.parent)
+                errors.extend(_check_required_md(spike_dir, rel_spike, "SPIKE_REPORT.md", "SDD Spike"))
+                for md_file in sorted(spike_dir.glob("*.md")):
+                    errors.extend(check_prompt_injection_risks(md_file, _safe_rel(md_file, specs_root.parent)))
     for item_id, status in sorted(statuses.items()):
         prefix = item_id.split("-", 1)[0]
         if prefix in PREFIX_TO_CATEGORY and status in (ACTIVE_WORK_STATES | DONE_STATES) and item_id not in found_dirs_by_id:
@@ -330,9 +335,7 @@ def _check_committed_done_mutations(repo_root: pathlib.Path, feat_id: str, rel_d
     return []
 
 
-def check_done_features_git_clean(
-    repo_root: pathlib.Path, done_features: set[str], backlog_text: str | None = None
-) -> list[str]:
+def check_done_features_git_clean(repo_root: pathlib.Path, done_features: set[str], backlog_text: str | None = None) -> list[str]:
     errors: list[str] = []
     features_dir = repo_root / "specs" / "features"
     if not features_dir.exists():
@@ -469,16 +472,15 @@ def main() -> int:
         check_inbox_and_stack_safety(repo_root),
     ):
         errors.extend(check)
+    if str(_SCRIPT_DIR) not in sys.path:
+        sys.path.insert(0, str(_SCRIPT_DIR))
     try:
-        if str(_SCRIPT_DIR) not in sys.path:
-            sys.path.insert(0, str(_SCRIPT_DIR))
         from verify_architecture_boundaries import run_boundary_audit
-    except ImportError as exc:
-        errors.append(f"[Architecture Audit Error] Missing 'verify_architecture_boundaries': {exc}")
-    else:
         arch_errors, arch_warnings = run_boundary_audit(repo_root)
         errors.extend(arch_errors)
         warnings.extend(arch_warnings)
+    except ImportError as exc:
+        errors.append(f"[Architecture Audit Error] Missing 'verify_architecture_boundaries': {exc}")
     warnings.extend(check_git_sync_status(repo_root))
     for w in warnings:
         print(f"  [WARN]  {w}")
