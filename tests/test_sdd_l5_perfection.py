@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import contextlib
+import inspect
 import io
 import json
 import pathlib
@@ -17,6 +18,7 @@ for _p in (str(ROOT_DIR), str(ROOT_DIR / "scripts"), str(ROOT_DIR / ".agents" / 
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
+import sdd_ci  # noqa: E402
 import sdd_code_gate_guard  # noqa: E402
 import sdd_dag  # noqa: E402
 import sdd_gate_seal  # noqa: E402
@@ -316,9 +318,12 @@ class TestCiDagAndThresholdEnforcement(unittest.TestCase):
 
     def test_ci_workflow_verifies_all_dags_and_enforces_min_120_tests(self) -> None:
         ci_text = (ROOT_DIR / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
-        self.assertIn("Verify Task DAG Specifications (sdd_dag.py --verify)", ci_text)
-        self.assertIn("scripts/sdd_dag.py", ci_text)
-        self.assertIn("result.testsRun < 120", ci_text)
+        self.assertIn("scripts/sdd_cli.py ci-verify", ci_text)
+        self.assertIn("--mode auto", ci_text)
+        self.assertEqual(inspect.signature(sdd_ci.check_framework_unittest).parameters["min_tests"].default, 120)
+        self.assertEqual(sdd_ci.build_parser().parse_args([]).min_tests, 120)
+        dag_res = sdd_ci.check_dags(ROOT_DIR, mode="framework")
+        self.assertEqual(dag_res.status, "PASS", dag_res.detail)
 
         task_files = sorted(ROOT_DIR.glob(".sdd/framework/work-items/*/03-tasks.md")) + sorted(
             ROOT_DIR.glob("specs/*/*/03-tasks.md")

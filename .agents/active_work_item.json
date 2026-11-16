@@ -1,17 +1,13 @@
 {
-  "active_work_item_id": "FWK-012-coherence-alignment",
-  "spec_dir": ".sdd/framework/work-items/FWK-012-coherence-alignment",
-  "branch": "feat/fwk-012-coherence-alignment",
+  "active_work_item_id": null,
+  "spec_dir": null,
+  "branch": "feat/fwk-013-ci-agnostic-verify",
   "worktree": null,
-  "status": "DONE",
-  "gate_1_approved": true,
-  "gate_2_approved": true,
-  "gate_3_approved": true,
-  "approved_by_human": true,
+  "status": "IDLE",
+  "gate_1_approved": false,
+  "gate_2_approved": false,
+  "gate_3_approved": false,
+  "approved_by_human": false,
   "enforce_gate_seals": true,
-  "gate_seals": {
-    "1": "sha256:1da8fa7f5f05c2ebf7d533dcc2db85a7893dcac36f0b65d50f454701c22d62e5",
-    "2": "sha256:e5a52937a6818913708d928c4d372c8a85e18d46fe9dd964e9d7dfdaac41966d",
-    "3": "sha256:aa9dede25ef5a02c0b13a654eabc81be3bb9fe475b43631970257edf08d0f6bc"
-  }
+  "gate_seals": {}
 }
