@@ -1,17 +1,17 @@
 {
-  "active_work_item_id": "FWK-012-coherence-alignment",
-  "spec_dir": ".sdd/framework/work-items/FWK-012-coherence-alignment",
-  "branch": "feat/fwk-012-coherence-alignment",
+  "active_work_item_id": "FWK-013-ci-agnostic-verify",
+  "spec_dir": ".sdd/framework/work-items/FWK-013-ci-agnostic-verify",
+  "branch": "feat/fwk-013-ci-agnostic-verify",
   "worktree": null,
-  "status": "DONE",
+  "status": "IN_PROGRESS",
   "gate_1_approved": true,
   "gate_2_approved": true,
   "gate_3_approved": true,
   "approved_by_human": true,
   "enforce_gate_seals": true,
   "gate_seals": {
-    "1": "sha256:1da8fa7f5f05c2ebf7d533dcc2db85a7893dcac36f0b65d50f454701c22d62e5",
-    "2": "sha256:e5a52937a6818913708d928c4d372c8a85e18d46fe9dd964e9d7dfdaac41966d",
-    "3": "sha256:aa9dede25ef5a02c0b13a654eabc81be3bb9fe475b43631970257edf08d0f6bc"
+    "1": "sha256:5610a87d3440cc7316975b97151e33eadd3ef29e1cd421a6254d0484f208b564",
+    "2": "sha256:933c0edcf50e99a4a4dc7306da7e9b0cffb930d10c2d4fcadfbd941fffbb2a73",
+    "3": "sha256:b8c0eff0cae43b88bd45fae9827bf0d46fc4d813115bf6078a6e128c79132285"
   }
 }
