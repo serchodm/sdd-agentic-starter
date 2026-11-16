@@ -5,6 +5,7 @@ Fetches upstream components from affaan-m/ecc (MIT License), adapts frontmatter
 for SDD agentic governance, and registers them cleanly inside `.sdd/catalog/`.
 """
 
+import argparse
 from collections.abc import Callable
 import http.client
 import json
@@ -22,6 +23,7 @@ SPECIALISTS_DIR = CATALOG_DIR / "specialists"
 SPECIALISTS_OPTIN_DIR = CATALOG_DIR / "specialists-optin"
 PACKS_DIR = CATALOG_DIR / "packs"
 DEFAULT_SPECIALISTS: tuple[str, ...] = ("security-reviewer",)
+SDD_CUSTOMIZED_SPECIALISTS: frozenset[str] = frozenset({"spec-miner"})
 
 TextFetcher = Callable[[str], str | None]
 
@@ -357,6 +359,7 @@ def import_specialists(
     fetcher: TextFetcher = fetch_text,
     specialists_dir: pathlib.Path = SPECIALISTS_DIR,
     optin_dir: pathlib.Path | None = None,
+    overwrite_sdd_custom: bool = False,
 ) -> list[str]:
     """Import universal ECC specialists into default and opt-in catalog directories."""
     warnings: list[str] = []
@@ -369,6 +372,12 @@ def import_specialists(
     resolved_optin.mkdir(parents=True, exist_ok=True)
     print(f"\n[+] Importando Especialistas Universales ECC a {specialists_dir} (opt-in: {resolved_optin})...")
     for name in UNIVERSAL_SPECIALISTS:
+        dest_dir = specialists_dir if name in DEFAULT_SPECIALISTS else resolved_optin
+        target = _safe_target(dest_dir, f"{name}.md")
+        if name in SDD_CUSTOMIZED_SPECIALISTS and target.exists() and not overwrite_sdd_custom:
+            print(f"  -> [SKIP-SDD] Preservando especialista adaptado a SDD: {dest_dir.name}/{name}.md")
+            continue
+
         rel_path = f"agents/{name}.md"
         content = _fetch_or_warn(fetcher, f"specialist '{name}'", rel_path, warnings)
         if content is None:
@@ -376,8 +385,6 @@ def import_specialists(
 
         read_only = name not in {"build-error-resolver", "code-simplifier", "refactor-cleaner"}
         adapted = adapt_agent_frontmatter(name, content, read_only=read_only)
-        dest_dir = specialists_dir if name in DEFAULT_SPECIALISTS else resolved_optin
-        target = _safe_target(dest_dir, f"{name}.md")
         target.write_text(adapted, encoding="utf-8")
         print(f"  -> [OK] Guardado especialista: {dest_dir.name}/{name}.md")
     return warnings
@@ -448,10 +455,17 @@ def import_packs(
     return warnings
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     """Run the CLI catalog import for universal specialists and STACK_PACKS."""
+    parser = argparse.ArgumentParser(description="SDD Catalog Importer & Packager")
+    parser.add_argument(
+        "--overwrite-sdd-custom",
+        action="store_true",
+        help="Sobreescribir especialistas adaptados a SDD (p. ej. spec-miner.md).",
+    )
+    args = parser.parse_args(argv)
     CATALOG_DIR.mkdir(parents=True, exist_ok=True)
-    warnings = import_specialists()
+    warnings = import_specialists(overwrite_sdd_custom=args.overwrite_sdd_custom)
     warnings.extend(import_packs())
     if warnings:
         print(

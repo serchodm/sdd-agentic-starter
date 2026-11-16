@@ -298,6 +298,9 @@ def cmd_release_start(args: argparse.Namespace, governance: Dict[str, Any]) -> i
 def _finish_branch_flow(governance: Dict[str, Any], *, branch: str, tag: str, wt_slug: str, merge_msg: str, back_msg: str, tag_msg: str, push: bool, require_clean: bool = False) -> int:
     main_branch = governance["branches"].get("production", "main")
     dev_branch = governance["branches"].get("integration", "develop")
+    if push and main_branch in {"main", "master"}:
+        print(f"[ERROR] RN-SDD-BRANCH-SYNC: prohibido hacer push directo a la rama protegida '{main_branch}'. Usa el modo PR por defecto (sin --local-merge) o --local-merge sin --push.")
+        return 1
     if not GitRunner.branch_exists(branch):
         print(f"[ERROR] La rama '{branch}' no existe.")
         return 1
@@ -320,16 +323,41 @@ def _finish_branch_flow(governance: Dict[str, Any], *, branch: str, tag: str, wt
     return 0
 
 
+def _pr_finish_flow(governance: Dict[str, Any], *, item_id: str, branch: str, title: str, body: str, require_clean: bool = False) -> int:
+    """Prepare or open a PR toward the production branch without touching local main."""
+    if not GitRunner.branch_exists(branch):
+        print(f"[ERROR] La rama '{branch}' no existe.")
+        return 1
+    if require_clean and not GitRunner.is_clean():
+        print("[ERROR] El árbol de trabajo tiene cambios sin commit.")
+        return 1
+    main_branch = governance["branches"].get("production", "main")
+    provider = governance.get("provider", "github")
+    print(f"[+] Preparando Pull Request: '{branch}' -> '{main_branch}' ({provider})...")
+    pr_url = GitProviderAdapter.create_pr(provider, branch, main_branch, title, body)
+    status = f"PR_OPENED:{pr_url}" if pr_url else f"PR_READY:{branch}->{main_branch}"
+    sync_active_state_git(item_id, branch, None, status, base_branch=main_branch)
+    return 0
+
+
 def cmd_release_finish(args: argparse.Namespace, governance: Dict[str, Any]) -> int:
     version = args.version.lstrip("v").strip()
     tag = f"v{version}"
     branch = f"{governance['branches'].get('prefix_release', 'release/')}v{version}"
-    rc = _finish_branch_flow(
-        governance, branch=branch, tag=tag, wt_slug=f"release-v{version}",
-        merge_msg=f"chore(release): merge {tag} into {governance['branches'].get('production', 'main')}",
-        back_msg=f"chore(release): back-merge {tag} into {{target}}",
-        tag_msg=f"Release {tag}", push=args.push, require_clean=True,
-    )
+    main_branch = governance["branches"].get("production", "main")
+    if getattr(args, "local_merge", False):
+        rc = _finish_branch_flow(
+            governance, branch=branch, tag=tag, wt_slug=f"release-v{version}",
+            merge_msg=f"chore(release): merge {tag} into {main_branch}",
+            back_msg=f"chore(release): back-merge {tag} into {{target}}",
+            tag_msg=f"Release {tag}", push=getattr(args, "push", False), require_clean=True,
+        )
+    else:
+        rc = _pr_finish_flow(
+            governance, item_id=f"REL-{version}", branch=branch,
+            title=f"chore(release): release {tag} into {main_branch}",
+            body=f"Release {tag} ({branch} -> {main_branch})", require_clean=True,
+        )
     if rc == 0:
         print(f"\n[SUCCESS] Release {tag} completada exitosamente.")
     return rc
@@ -355,12 +383,20 @@ def cmd_hotfix_finish(args: argparse.Namespace, governance: Dict[str, Any]) -> i
     bug_id = bug_id if bug_id.startswith("BUG-") else f"BUG-{bug_id}"
     tag = f"v{args.version.lstrip('v').strip()}"
     branch = f"{governance['branches'].get('prefix_hotfix', 'hotfix/')}{bug_id}"
-    rc = _finish_branch_flow(
-        governance, branch=branch, tag=tag, wt_slug=f"hotfix-{bug_id}",
-        merge_msg=f"fix(hotfix): apply {bug_id} ({tag})",
-        back_msg=f"fix(hotfix): back-merge {bug_id} ({tag}) into {{target}}",
-        tag_msg=f"Hotfix {tag} ({bug_id})", push=args.push,
-    )
+    main_branch = governance["branches"].get("production", "main")
+    if getattr(args, "local_merge", False):
+        rc = _finish_branch_flow(
+            governance, branch=branch, tag=tag, wt_slug=f"hotfix-{bug_id}",
+            merge_msg=f"fix(hotfix): apply {bug_id} ({tag})",
+            back_msg=f"fix(hotfix): back-merge {bug_id} ({tag}) into {{target}}",
+            tag_msg=f"Hotfix {tag} ({bug_id})", push=getattr(args, "push", False),
+        )
+    else:
+        rc = _pr_finish_flow(
+            governance, item_id=bug_id, branch=branch,
+            title=f"fix(hotfix): apply {bug_id} ({tag})",
+            body=f"Hotfix {tag} ({bug_id}: {branch} -> {main_branch})",
+        )
     if rc == 0:
         print(f"\n[SUCCESS] Hotfix {bug_id} completado con éxito con versión {tag}.")
     return rc
@@ -378,9 +414,9 @@ def build_parser() -> argparse.ArgumentParser:
         ("worktree-prune", [], "Limpia referencias huérfanas de worktrees", ()),
         ("pr-create", [], "Crea una PR agnóstica hacia rama base", (("--spec", {}), ("--branch", {}), ("--base", {}), ("--title", {}), ("--body", {}))),
         ("release-start", [], "Crea una rama de release", (("--version", {"required": True}), ("--worktree", {"action": "store_true"}))),
-        ("release-finish", [], "Finaliza la release fusionando en producción y desarrollo", (("--version", {"required": True}), ("--push", {"action": "store_true"}))),
+        ("release-finish", [], "Finaliza la release mediante PR hacia producción (o merge local con --local-merge)", (("--version", {"required": True}), ("--push", {"action": "store_true"}), ("--local-merge", {"action": "store_true"}))),
         ("hotfix-start", [], "Inicia un hotfix de emergencia", (("--bug", {"required": True}),)),
-        ("hotfix-finish", [], "Finaliza un hotfix", (("--bug", {"required": True}), ("--version", {"required": True}), ("--push", {"action": "store_true"}))),
+        ("hotfix-finish", [], "Finaliza un hotfix mediante PR hacia producción (o merge local con --local-merge)", (("--bug", {"required": True}), ("--version", {"required": True}), ("--push", {"action": "store_true"}), ("--local-merge", {"action": "store_true"}))),
     ]
     for name, aliases, help_txt, flags in specs:
         p = sub.add_parser(name, aliases=aliases, help=help_txt)

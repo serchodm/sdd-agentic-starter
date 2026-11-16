@@ -23,7 +23,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from sdd_stack_gate_guard import is_link_or_junction  # noqa: E402
 
 _DONE_STATUSES = frozenset({"done", "completado", "completed", "completed / done", "done / completed"})
-_WORK_ITEM_ID_RE = re.compile(r"^((?:FEAT|CR|BUG|FWK)-\d{3,4})$", re.IGNORECASE)
+_WORK_ITEM_ID_RE = re.compile(r"^((?:FEAT|CR|BUG|HOTFIX|FWK)-\d{3,4})$", re.IGNORECASE)
 _TARGET_PATH_KEYS: tuple[str, ...] = (
     "Path",
     "path",
@@ -295,7 +295,7 @@ def get_done_work_items(backlog_path: pathlib.Path, *, fail_if_missing: bool = F
             done_items.add(id_match.group(1).upper())
 
     section_pattern = re.compile(
-        r"####\s+`?((?:FEAT|CR|BUG|FWK)-\d{3,4})`?[^\n]*\n(?:-[^\n]*\n){0,3}?-\s+\*\*Estado:\*\*\s+`?(?:Completed|Completado|Done)",
+        r"####\s+`?((?:FEAT|CR|BUG|HOTFIX|FWK)-\d{3,4})`?[^\n]*\n(?:-[^\n]*\n){0,3}?-\s+\*\*Estado:\*\*\s+`?(?:Completed|Completado|Done)",
         re.IGNORECASE,
     )
     for match in section_pattern.finditer(content):

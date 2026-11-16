@@ -116,7 +116,7 @@ def _resolve_spec_dir(repo_root: pathlib.Path, state: dict) -> tuple[pathlib.Pat
         return spec_dir, rel_spec
 
     raw_id = str(state.get("active_work_item_id") or "").strip()
-    canonical_match = re.match(r"^((?:FEAT|CR|BUG|FWK)-\d{3,4})", raw_id, re.IGNORECASE)
+    canonical_match = re.match(r"^((?:FEAT|CR|BUG|HOTFIX|FWK)-\d{3,4})", raw_id, re.IGNORECASE)
     if not canonical_match:
         return None, "SDD Gate Cryptographic Seal Violation: Cannot resolve spec_dir without active_work_item_id."
     canonical_id = canonical_match.group(1).upper()
