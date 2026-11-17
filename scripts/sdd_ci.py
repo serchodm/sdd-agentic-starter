@@ -253,6 +253,8 @@ def check_gate_seals(repo_root: Path) -> CheckResult:
     active_id = str(state.get("active_work_item_id") or "").strip()
     if not active_id or active_id.upper() == "IDLE":
         return _res("gate_seals", "PASS", "Active work item is IDLE; gate seals clean.", t0)
+    if active_id.upper().startswith("REL-"):
+        return _res("gate_seals", "PASS", f"Release work item '{active_id}' uses Gate 6; Gate 1..3 seals exempt.", t0)
     seal_script, _ = _resolve_script(repo_root, "scripts", "sdd_gate_seal.py")
     return _run_script_check("gate_seals", seal_script, ("--verify", "--repo-root", str(repo_root)), repo_root, f"Verified gate seals for {active_id}.", t0)
 

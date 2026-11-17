@@ -1,7 +1,7 @@
 {
   "active_work_item_id": null,
   "spec_dir": null,
-  "branch": "feat/fwk-013-ci-agnostic-verify",
+  "branch": "feat/fwk-014-gate6-release-readiness",
   "worktree": null,
   "status": "IDLE",
   "gate_1_approved": false,
