@@ -1,6 +1,6 @@
 {
-  "active_work_item_id": "REL-1.2.0",
-  "branch": "feat/fwk-014-gate6-release-readiness",
+  "active_work_item_id": "IDLE",
+  "branch": "develop",
   "worktree": null,
   "status": "IDLE",
   "gate_1_approved": false,
@@ -10,10 +10,10 @@
   "enforce_gate_seals": true,
   "gate_seals": {},
   "git": {
-    "branch_name": "release/v1.2.0",
+    "branch_name": "develop",
     "worktree_path": null,
-    "status": "RELEASE_STAGING",
-    "updated_at": "2026-11-17T11:27:53+00:00",
+    "status": "IDLE",
+    "updated_at": "2026-11-17T11:40:45+00:00",
     "base_branch": "develop"
   }
 }
