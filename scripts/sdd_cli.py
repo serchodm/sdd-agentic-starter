@@ -175,6 +175,7 @@ DISPATCH_MAP = {
     "verify-gates": ROOT_DIR / "scripts" / "sdd_gate_seal.py",
     "ci-verify": ROOT_DIR / "scripts" / "sdd_ci.py",
     "release": ROOT_DIR / "scripts" / "sdd_release.py",
+    "adopt": ROOT_DIR / "scripts" / "sdd_brownfield.py",
 }
 
 
@@ -200,11 +201,14 @@ Comandos Disponibles:
     verify-gates     Verifica la integridad SHA-256 de los artefactos de Gates 1..3
     ci-verify        Motor de verificación CI-agnóstico (auto|framework|project)
     release          Motor Gate 6 Release Readiness y CHANGELOG.md (prepare|changelog|verify)
+    adopt            Motor de adopción brownfield no destructivo (--dry-run|--apply)
     work-item        Consulta o activa el work item actual (.agents/active_work_item.json)
     setup-hooks      Activa los hooks nativos de Git en .githooks/
 
 Ejemplos:
     ./sdd healthcheck
+    ./sdd adopt --dry-run
+    ./sdd adopt --apply
     ./sdd ci-verify --mode auto --run-stack-if-approved
     ./sdd release prepare --version v1.2.0
     ./sdd release changelog --version v1.2.0
