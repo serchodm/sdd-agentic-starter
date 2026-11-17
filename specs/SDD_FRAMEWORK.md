@@ -94,7 +94,9 @@ specs/
 │   ├── 04-change-request-spec.template.md # Plantilla para Change Requests (CR)
 │   ├── 05-bug-fast-track.template.md   # Plantilla Fast-Track para Bugs (BUG)
 │   ├── 06-spike-report.template.md     # Plantilla para Spikes y PoCs (SPIKE)
-│   └── 07-hotfix-fast-track.template.md # Plantilla Fast-Track para Hotfixes S1 (HOTFIX)
+│   ├── 07-hotfix-fast-track.template.md # Plantilla Fast-Track para Hotfixes S1 (HOTFIX)
+│   ├── 08-release-readiness.template.md # Plantilla para Gate 6 (Release Readiness)
+│   └── ci/                             # Plantillas agnósticas de CI (GitLab, Bitbucket, shell)
 ├── features/                           # Especificaciones vivas de funcionalidades
 │   └── <ID>-<kebab-case-name>/         # Ej: FEAT-001-core-scaffolding/
 │       ├── 01-spec.md                  # Gate 1: Requerimientos funcionales y US
@@ -110,9 +112,11 @@ specs/
 │       ├── 01-bug-report.md            # Síntomas, entorno y pasos de reproducción
 │       ├── 02-fix-spec.md              # Causa raíz, diseño técnico y riesgos
 │       └── 03-tasks.md                 # Test de reproducción y tareas de resolución
-└── spikes/                             # Investigaciones técnicas acotadas (opcional)
-    └── <ID>-<kebab-case-name>/         # Ej: SPIKE-002-webrtc-latency/
-        └── SPIKE_REPORT.md             # Hipótesis, hallazgos, métricas y conclusión
+├── spikes/                             # Investigaciones técnicas acotadas (opcional)
+│   └── <ID>-<kebab-case-name>/         # Ej: SPIKE-002-webrtc-latency/
+│       └── SPIKE_REPORT.md             # Hipótesis, hallazgos, métricas y conclusión
+└── releases/                           # Expedientes de Release Readiness (Gate 6)
+    └── REL-vX.Y.Z.md                   # Alcance, checklist CI, riesgos, rollback y sign-off
 ```
 
 ---
@@ -199,6 +203,15 @@ flowchart TD
 - Actualización del estado del Work Item a `Done` en `specs/BACKLOG.md`.
 - Sincronización y push en la rama de trabajo (`RN-SDD-BRANCH-SYNC`).
 - **Criterio de salida:** Cumplimiento total y demostrable de la Definition of Done (DoD), documentación 0DD al 100% y push de la rama.
+
+### Gate 6: Release Readiness y Rollback (`REL-vX.Y.Z`)
+- **Ámbito:** Release (simétrico a `Gate S0` a nivel de Proyecto; audita la publicación de una versión SemVer `vX.Y.Z` antes de integrarla en `main`).
+- **Artefactos:** `specs/releases/REL-vX.Y.Z.md` (generado desde `specs/templates/08-release-readiness.template.md` mediante `./sdd release prepare`) y sección `## [vX.Y.Z]` actualizada en `CHANGELOG.md`.
+- **Criterios de salida (*Fail-Closed*):**
+  1. Versión SemVer válida, tag `vX.Y.Z` inexistente al iniciar (`release-start`) y cero work items abiertos (`In Progress`, `In Review`, `Blocked` en backlog o `.agents/active_work_item.json` distinto de `IDLE`/`REL-vX.Y.Z`).
+  2. `./sdd ci-verify` en verde (`PASS`), `CHANGELOG.md` actualizado para `vX.Y.Z`, y plan de despliegue/rollback completo sin secciones vacías ni marcadores sin rellenar.
+  3. Firma humana explícita en `specs/releases/REL-vX.Y.Z.md` (`[x] Gate 6 Approved (Human Sign-off)` fuera de comentarios HTML y bloques vallados), verificada mediante `./sdd release verify --version X.Y.Z --stage finish` antes de abrir la PR hacia `main` (`RN-SDD-BRANCH-SYNC`).
+- **Prohibición de autoaprobación (`RN-SDD-HUMAN-GATE-OWNERSHIP`):** Ningún agente de IA ni comando CLI puede marcar `[x] Gate 6 Approved (Human Sign-off)` en nombre del usuario humano.
 
 ---
 

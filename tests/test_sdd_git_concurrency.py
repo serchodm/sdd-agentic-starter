@@ -232,7 +232,9 @@ class TestSDDGitConcurrencyAndHardening(unittest.TestCase):
             gov = copy.deepcopy(sdd_git.DEFAULT_GOVERNANCE)
             _git(repo, "checkout", "develop")
 
-            with mock.patch.object(sdd_git, "ROOT_DIR", repo):
+            with mock.patch.object(sdd_git, "ROOT_DIR", repo), mock.patch.object(
+                sdd_git, "_run_release_preflight", return_value=True
+            ):
                 # 1. create-branch --checkout updates ACTIVE_STATE.md & active_work_item.json
                 args_cb = sdd_git.build_parser().parse_args(["create-branch", "--spec", "FEAT-010", "--checkout"])
                 self.assertEqual(sdd_git.cmd_create_branch(args_cb, gov), 0)
@@ -291,7 +293,9 @@ class TestSDDGitConcurrencyAndHardening(unittest.TestCase):
             _git(repo, "commit", "-m", "fix: hotfix 404")
             _git(repo, "checkout", "develop")
 
-            with mock.patch.object(sdd_git, "ROOT_DIR", repo):
+            with mock.patch.object(sdd_git, "ROOT_DIR", repo), mock.patch.object(
+                sdd_git, "_run_release_preflight", return_value=True
+            ):
                 # 1. Dirty working tree fails closed on release-finish without calling create_pr
                 (repo / "dirty.tmp").write_text("uncommitted\n", encoding="utf-8")
                 with mock.patch.object(sdd_git.GitProviderAdapter, "create_pr") as mock_dirty_pr:
@@ -343,6 +347,8 @@ class TestSDDGitConcurrencyAndHardening(unittest.TestCase):
                 self.assertEqual(state_hf["git"]["status"], "PR_READY:hotfix/BUG-404->main")
 
                 # 4. --local-merge --push refuses direct push to protected main (RN-SDD-BRANCH-SYNC)
+                _git(repo, "add", ".agents")
+                _git(repo, "commit", "-m", "chore: sync state before local-merge guard")
                 for cli_args, fn in (
                     (["release-finish", "--version", "1.3.0", "--local-merge", "--push"], sdd_git.cmd_release_finish),
                     (["hotfix-finish", "--bug", "BUG-404", "--version", "1.3.1", "--local-merge", "--push"], sdd_git.cmd_hotfix_finish),

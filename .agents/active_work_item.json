@@ -1,17 +1,13 @@
 {
-  "active_work_item_id": "FWK-014-gate6-release-readiness",
-  "spec_dir": ".sdd/framework/work-items/FWK-014-gate6-release-readiness",
+  "active_work_item_id": null,
+  "spec_dir": null,
   "branch": "feat/fwk-014-gate6-release-readiness",
   "worktree": null,
-  "status": "IN_PROGRESS",
-  "gate_1_approved": true,
-  "gate_2_approved": true,
-  "gate_3_approved": true,
-  "approved_by_human": true,
+  "status": "IDLE",
+  "gate_1_approved": false,
+  "gate_2_approved": false,
+  "gate_3_approved": false,
+  "approved_by_human": false,
   "enforce_gate_seals": true,
-  "gate_seals": {
-    "1": "sha256:6246607ffbe868985775984e384c3aa0c5111a8de9fc9061d310465f2807c212",
-    "2": "sha256:ff3c4df7ec075257f8c2d19f3c0a0934a7fafae48b093713d68f11658d6b56b4",
-    "3": "sha256:b8d1ab1b251c9506ef08bfb2b2164c10dbe1587a7bce45c5333621444334761f"
-  }
+  "gate_seals": {}
 }

@@ -272,6 +272,34 @@ def cmd_pr_create(args: argparse.Namespace, governance: Dict[str, Any]) -> int:
     return 0
 
 
+def _run_release_preflight(version: str, stage: str, branch: str | None = None) -> bool:
+    """Run fail-closed Gate 6 release preflight (`start` or `finish`) and report failures."""
+    try:
+        try:
+            from scripts.sdd_release import run_release_preflight
+        except ImportError:
+            from sdd_release import run_release_preflight
+        report = run_release_preflight(resolve_repo_root(), version, stage=stage, release_branch=branch)
+    except Exception as exc:
+        print(f"[ERROR] Release preflight ({stage}) falló: {exc}")
+        return False
+    if report.overall_status != "PASS":
+        print(f"[ERROR] Release preflight ({stage}) bloqueado ({report.release_id}):")
+        for chk in (c for c in report.checks if c.status == "FAIL"):
+            print(f"  - [{chk.status}] {chk.name}: {chk.detail}")
+    return report.overall_status == "PASS"
+
+
+def _ensure_branch_ready(branch: str, *, require_clean: bool = False) -> bool:
+    if not GitRunner.branch_exists(branch):
+        print(f"[ERROR] La rama '{branch}' no existe.")
+        return False
+    if require_clean and not GitRunner.is_clean():
+        print("[ERROR] El árbol de trabajo tiene cambios sin commit.")
+        return False
+    return True
+
+
 def cmd_release_start(args: argparse.Namespace, governance: Dict[str, Any]) -> int:
     version = args.version.lstrip("v").strip()
     if not re.match(r"^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$", version):
@@ -282,6 +310,8 @@ def cmd_release_start(args: argparse.Namespace, governance: Dict[str, Any]) -> i
     if GitRunner.branch_exists(branch):
         print(f"[INFO] La rama de release '{branch}' ya existe.")
         return 0
+    if not _run_release_preflight(version, "start"):
+        return 1
     print(f"[+] Iniciando Release v{version} desde '{base}'...")
     GitRunner.run(["branch", branch, base])
     if args.worktree:
@@ -301,11 +331,7 @@ def _finish_branch_flow(governance: Dict[str, Any], *, branch: str, tag: str, wt
     if push and main_branch in {"main", "master"}:
         print(f"[ERROR] RN-SDD-BRANCH-SYNC: prohibido hacer push directo a la rama protegida '{main_branch}'. Usa el modo PR por defecto (sin --local-merge) o --local-merge sin --push.")
         return 1
-    if not GitRunner.branch_exists(branch):
-        print(f"[ERROR] La rama '{branch}' no existe.")
-        return 1
-    if require_clean and not GitRunner.is_clean():
-        print("[ERROR] El árbol de trabajo tiene cambios sin commit.")
+    if not _ensure_branch_ready(branch, require_clean=require_clean):
         return 1
     GitRunner.run(["checkout", main_branch])
     GitRunner.run(["merge", "--no-ff", branch, "-m", merge_msg])
@@ -325,11 +351,7 @@ def _finish_branch_flow(governance: Dict[str, Any], *, branch: str, tag: str, wt
 
 def _pr_finish_flow(governance: Dict[str, Any], *, item_id: str, branch: str, title: str, body: str, require_clean: bool = False) -> int:
     """Prepare or open a PR toward the production branch without touching local main."""
-    if not GitRunner.branch_exists(branch):
-        print(f"[ERROR] La rama '{branch}' no existe.")
-        return 1
-    if require_clean and not GitRunner.is_clean():
-        print("[ERROR] El árbol de trabajo tiene cambios sin commit.")
+    if not _ensure_branch_ready(branch, require_clean=require_clean):
         return 1
     main_branch = governance["branches"].get("production", "main")
     provider = governance.get("provider", "github")
@@ -345,6 +367,10 @@ def cmd_release_finish(args: argparse.Namespace, governance: Dict[str, Any]) -> 
     tag = f"v{version}"
     branch = f"{governance['branches'].get('prefix_release', 'release/')}v{version}"
     main_branch = governance["branches"].get("production", "main")
+    if not _ensure_branch_ready(branch, require_clean=True):
+        return 1
+    if not _run_release_preflight(version, "finish", branch=branch):
+        return 1
     if getattr(args, "local_merge", False):
         rc = _finish_branch_flow(
             governance, branch=branch, tag=tag, wt_slug=f"release-v{version}",
