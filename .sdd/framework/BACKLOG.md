@@ -10,6 +10,7 @@
 | [`RFC-004`](./rfcs/RFC-004-l5-perfection-hardening.md) | Endurecimiento Nivel L5 (10/10) — Sello Criptográfico de Gates, Fronteras AST Políglotas, Write-Set DAG y Auditoría CI | v1 | Implementado / Done | 2026-11-15 |
 | [`RFC-005`](./rfcs/RFC-005-ci-posix-time-determinism.md) | Portabilidad POSIX de Guards Win32 y Determinismo Temporal en Tests CI | v1 | Implementado / Done | 2026-11-16 |
 | [`RFC-006`](./rfcs/RFC-006-coherence-and-catalog-alignment.md) | Alineación de Coherencia v1.1.1 (CLI, `HOTFIX`/`SPIKE`, `spec-miner` SDD y `release-finish`) | v1 | Implementado / Done | 2026-11-16 |
+| [`RFC-007`](./rfcs/RFC-007-release-ops-ci-agnostic.md) | Motor CI-Agnóstico, `Gate 6` de Release Readiness y Changelog Determinista (`v1.2.0`) | v1 | Implementado / Done | 2026-11-16 |
 
 ## Work Items
 
@@ -27,5 +28,7 @@
 | `FWK-010` | RFC-004 | Sello SHA-256 de Gates (`sdd approve-gate`), Fronteras Políglotas, Write-Set DAG y Step CI | P1 | FWK-009 | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-011` | RFC-005 | Portabilidad POSIX de Guards Win32 y Determinismo Temporal en Tests CI | P0 | — | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-012` | RFC-006 | Alineación de Coherencia v1.1.1 (CLI, `HOTFIX`/`SPIKE`, `spec-miner` y `release-finish`) | P1 | — | [x] | [x] | [x] | [x] | [x] | Done |
+| `FWK-013` | RFC-007 | Motor CI-Agnóstico (`sdd ci-verify`), Desacoplo de `ci.yml` y Plantillas Multi-CI | P0 | — | [x] | [x] | [x] | [x] | [x] | Done |
+| `FWK-014` | RFC-007 | `Gate 6` (`REL-vX.Y.Z`), Motor de Release Readiness (`sdd_release.py`) y `CHANGELOG.md` Determinista | P1 | FWK-013 | [x] | [x] | [x] | [x] | [x] | Done |
 
 *Estados: `Candidate` → `Backlog` → `In Progress` → `In Review` → `Done`. Los items de un RFC solo pasan a `In Progress` tras su aceptación.*

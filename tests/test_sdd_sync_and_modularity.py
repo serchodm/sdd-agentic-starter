@@ -9,7 +9,6 @@ import io
 import json
 import os
 import pathlib
-import re
 import shutil
 import subprocess
 import sys
@@ -21,7 +20,7 @@ from unittest import mock
 ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from scripts import sdd_sync  # noqa: E402
+from scripts import sdd_ci, sdd_sync  # noqa: E402
 
 
 def _write(path: pathlib.Path, content: str) -> pathlib.Path:
@@ -58,20 +57,6 @@ def _seed_sync_pair(base: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path]:
         _write(root / ".agents" / "workflows" / "build-fix.md", "# Build Fix v1\n")
         _write(root / "scripts" / "helper.py", "VERSION = 1\n")
     return proj, tpl
-
-
-def _extract_ci_heredoc(ci_text: str, step_name: str) -> str:
-    pattern = re.compile(
-        rf"- name: {re.escape(step_name)}\s+run: \|\s+uv run python - <<'PY'\n(.*?)\n\s+PY",
-        re.S,
-    )
-    match = pattern.search(ci_text)
-    if not match:
-        raise AssertionError(f"Could not extract heredoc Python script for CI step: {step_name}")
-    lines = match.group(1).splitlines()
-    non_empty = [len(line) - len(line.lstrip(" ")) for line in lines if line.strip()]
-    indent = min(non_empty) if non_empty else 0
-    return "\n".join(line[indent:] if len(line) >= indent else "" for line in lines) + "\n"
 
 
 class TestSddSyncHardening(unittest.TestCase):
@@ -265,44 +250,51 @@ class TestCiHooksPyprojectAndModularity(unittest.TestCase):
         self.assertIn("PreToolUse", data["hooks"])
 
         ci_text = (ROOT_DIR / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
-        hooks_script = _extract_ci_heredoc(ci_text, "Verify Hooks Configuration (.agents/hooks.json)")
-        ok = subprocess.run([sys.executable, "-c", hooks_script], cwd=ROOT_DIR, capture_output=True, text=True)
-        self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)
+        self.assertIn("scripts/sdd_cli.py ci-verify", ci_text)
+        ok = sdd_ci.check_hooks_json(ROOT_DIR)
+        self.assertEqual(ok.status, "PASS", ok.detail)
 
         with tempfile.TemporaryDirectory() as tmp:
             ws = pathlib.Path(tmp)
             (ws / ".agents" / "scripts").mkdir(parents=True)
             (ws / ".agents" / "hooks.json").write_bytes(b"\xef\xbb\xbf" + raw)
-            bad_bom = subprocess.run([sys.executable, "-c", hooks_script], cwd=ws, capture_output=True, text=True)
-            self.assertNotEqual(bad_bom.returncode, 0)
+            bad_bom = sdd_ci.check_hooks_json(ws)
+            self.assertEqual(bad_bom.status, "FAIL")
+            self.assertIn("BOM", bad_bom.detail)
 
             (ws / ".agents" / "hooks.json").write_text(
                 json.dumps({"hooks": {"PreToolUse": [{"hooks": [{"type": "command", "command": "uv run python scripts/missing.py"}]}]}}),
                 encoding="utf-8",
             )
-            bad_path = subprocess.run([sys.executable, "-c", hooks_script], cwd=ws, capture_output=True, text=True)
-            self.assertNotEqual(bad_path.returncode, 0)
+            bad_path = sdd_ci.check_hooks_json(ws)
+            self.assertEqual(bad_path.status, "FAIL")
+            self.assertIn("missing.py", bad_path.detail)
 
     def test_ci_workflow_coverage_and_0dd_step_behavior(self) -> None:
         ci_text = (ROOT_DIR / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         self.assertNotIn("\t", ci_text)
+        self.assertIn("uv run python scripts/sdd_cli.py ci-verify", ci_text)
+        self.assertIn("--mode auto", ci_text)
+        self.assertIn("--run-stack-if-approved", ci_text)
+
+        sdd_ci_text = (ROOT_DIR / "scripts" / "sdd_ci.py").read_text(encoding="utf-8")
         for expected in (
             "sdd_healthcheck.py",
             "verify_architecture_boundaries.py",
-            "scripts/sdd_agent_generator.py --list",
-            "scripts/sdd_agent_generator.py --verify",
+            "sdd_agent_generator.py",
             ".agents/hooks.json",
             "TRACEABILITY-MATRIX.md",
-            "scripts/sdd_git.py status",
-            "scripts/sdd_instincts.py list",
-            "scripts/sdd_tokens_validator.py --allow-missing",
-            "unittest.defaultTestLoader.discover",
+            "sdd_git.py",
+            "sdd_instincts.py",
+            "sdd_tokens_validator.py",
+            "sdd_dag.py",
+            "sdd_gate_seal.py",
+            '"unittest"',
         ):
-            self.assertIn(expected, ci_text, f"Missing expected CI check: {expected}")
+            self.assertIn(expected, sdd_ci_text, f"Missing expected CI check in sdd_ci.py: {expected}")
 
-        odd_script = _extract_ci_heredoc(ci_text, "Validate 0DD Compliance & Done Feature Traceability")
-        ok = subprocess.run([sys.executable, "-c", odd_script], cwd=ROOT_DIR, capture_output=True, text=True)
-        self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)
+        ok = sdd_ci.check_odd_compliance(ROOT_DIR)
+        self.assertEqual(ok.status, "PASS", ok.detail)
 
         with tempfile.TemporaryDirectory() as tmp:
             ws = pathlib.Path(tmp)
@@ -310,18 +302,19 @@ class TestCiHooksPyprojectAndModularity(unittest.TestCase):
             shutil.copytree(ROOT_DIR / "docs", ws / "docs")
             (ws / "specs").mkdir()
             _write(ws / "specs" / "BACKLOG.md", "| `FEAT-042` | Feature | Widget | [x] | Done |\n")
-            untraced = subprocess.run([sys.executable, "-c", odd_script], cwd=ws, capture_output=True, text=True)
-            self.assertNotEqual(untraced.returncode, 0)
-            self.assertIn("FEAT-042", untraced.stderr + untraced.stdout)
+            untraced = sdd_ci.check_odd_compliance(ws)
+            self.assertEqual(untraced.status, "FAIL")
+            self.assertIn("FEAT-042", untraced.detail)
 
             matrix = ws / "docs" / "traceability" / "TRACEABILITY-MATRIX.md"
             matrix.write_text(matrix.read_text(encoding="utf-8") + "\n## FEAT-042\n", encoding="utf-8")
-            traced = subprocess.run([sys.executable, "-c", odd_script], cwd=ws, capture_output=True, text=True)
-            self.assertEqual(traced.returncode, 0, traced.stdout + traced.stderr)
+            traced = sdd_ci.check_odd_compliance(ws)
+            self.assertEqual(traced.status, "PASS", traced.detail)
 
             (ws / "docs" / "knowledge" / "API_CATALOG.md").unlink()
-            missing_doc = subprocess.run([sys.executable, "-c", odd_script], cwd=ws, capture_output=True, text=True)
-            self.assertNotEqual(missing_doc.returncode, 0)
+            missing_doc = sdd_ci.check_odd_compliance(ws)
+            self.assertEqual(missing_doc.status, "FAIL")
+            self.assertIn("API_CATALOG.md", missing_doc.detail)
 
     def test_pyproject_toml_valid_pep621_and_offline_clean(self) -> None:
         pyproject_path = ROOT_DIR / "pyproject.toml"
