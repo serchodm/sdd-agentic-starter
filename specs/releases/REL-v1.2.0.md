@@ -7,7 +7,7 @@
 - **Tag previo:** `v1.1.1`
 - **Fecha objetivo:** `2026-11-17`
 - **Rama de release:** `release/v1.2.0` (PR hacia `main` y backport a `develop` según `RN-SDD-BRANCH-SYNC`)
-- **Estado del Documento:** `In Review`
+- **Estado del Documento:** `Approved`
 
 ---
 
@@ -59,4 +59,4 @@
 
 ## 5. Aprobación Formal Gate 6 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 > ⚠️ **Exclusivo para el Stakeholder Humano** (Los agentes de IA y comandos CLI tienen prohibido marcar esta casilla por su cuenta):
-- [ ] **Gate 6 Approved (Human Sign-off):** Alcance de la release, checklist CI/CD, análisis de riesgos, migraciones y plan de despliegue/rollback revisados y aprobados para integrar en main.
+- [x] **Gate 6 Approved (Human Sign-off):** Alcance de la release, checklist CI/CD, análisis de riesgos, migraciones y plan de despliegue/rollback revisados y aprobados para integrar en main (Authorized by PO in chat on 2026-11-17T12:33:48+01:00).
