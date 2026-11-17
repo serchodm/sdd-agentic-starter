@@ -11,6 +11,7 @@
 | [`RFC-005`](./rfcs/RFC-005-ci-posix-time-determinism.md) | Portabilidad POSIX de Guards Win32 y Determinismo Temporal en Tests CI | v1 | Implementado / Done | 2026-11-16 |
 | [`RFC-006`](./rfcs/RFC-006-coherence-and-catalog-alignment.md) | Alineación de Coherencia v1.1.1 (CLI, `HOTFIX`/`SPIKE`, `spec-miner` SDD y `release-finish`) | v1 | Implementado / Done | 2026-11-16 |
 | [`RFC-007`](./rfcs/RFC-007-release-ops-ci-agnostic.md) | Motor CI-Agnóstico, `Gate 6` de Release Readiness y Changelog Determinista (`v1.2.0`) | v1 | Implementado / Done | 2026-11-16 |
+| [`RFC-008`](./rfcs/RFC-008-brownfield-adoption-and-spec-drift.md) | Adopción Brownfield Incremental (*Strangler Fig*), `sdd adopt` y Detección de *Spec Drift* (`v1.3.0`) | v1 | Aceptado | 2026-11-17 |
 
 ## Work Items
 
@@ -30,5 +31,7 @@
 | `FWK-012` | RFC-006 | Alineación de Coherencia v1.1.1 (CLI, `HOTFIX`/`SPIKE`, `spec-miner` y `release-finish`) | P1 | — | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-013` | RFC-007 | Motor CI-Agnóstico (`sdd ci-verify`), Desacoplo de `ci.yml` y Plantillas Multi-CI | P0 | — | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-014` | RFC-007 | `Gate 6` (`REL-vX.Y.Z`), Motor de Release Readiness (`sdd_release.py`) y `CHANGELOG.md` Determinista | P1 | FWK-013 | [x] | [x] | [x] | [x] | [x] | Done |
+| `FWK-015` | RFC-008 | Motor de Adopción Brownfield (`sdd adopt`), Descubrimiento Determinista y Workflow `@spec-miner` | P0 | — | [x] | [x] | [x] | [ ] | [ ] | In Progress |
+| `FWK-016` | RFC-008 | Detector de *Spec Drift* (`sdd drift`), Zonas *Strangler Fig* y Baseline Retroactiva Ligera | P1 | FWK-015 | [ ] | [ ] | [ ] | [ ] | [ ] | Backlog |
 
 *Estados: `Candidate` → `Backlog` → `In Progress` → `In Review` → `Done`. Los items de un RFC solo pasan a `In Progress` tras su aceptación.*

@@ -1,15 +1,15 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-17 11:40 UTC
-- **Active Work Item:** `IDLE (No Active Work Item)`
-- **Active Branch:** `develop`
-- **Spec Folder Path:** `N/A`
-- **Current Gate:** `IDLE`
+- **Timestamp:** 2026-11-17 16:26 UTC
+- **Active Work Item:** `FWK-015-brownfield-adopt-miner`
+- **Active Branch:** `feat/fwk-015-brownfield-adopt-miner`
+- **Spec Folder Path:** `.sdd/framework/work-items/FWK-015-brownfield-adopt-miner`
+- **Current Gate:** `Gate 4 (Execution & QA — Gates 1..3 Approved & Sealed)`
 - **Active Worktrees:** None
-- **Recommended Model Tier:** New Clean Session Required (`RN-SDD-SESSION-LIFECYCLE`)
-- **Last Completed Milestone:** Release `v1.2.0` (`REL-v1.2.0`, `RFC-007`: `FWK-013` + `FWK-014`) integrada en `main` (PR #15), tag `v1.2.0` publicado y sincronizado con `develop`.
-- **Next Execution Target:** Seleccionar próximo Work Item / RFC en `.sdd/framework/BACKLOG.md` (o `specs/BACKLOG.md` en proyectos derivados) en una nueva sesión limpia.
+- **Recommended Model Tier:** Fast / Execution Tier (`Sesión B: Gate 4 & Gate 5`)
+- **Last Completed Milestone:** Gates 1–3 de `FWK-015` aprobados por PO (`2026-11-17T17:25:03+01:00`) y sellados SHA-256 (`RFC-008` aceptado).
+- **Next Execution Target:** Ejecutar Bloque A (`[PARALLEL: BLOCK_A]`: `T15.1`, `T15.2`, `T15.3`), Bloque B (`T15.4` QA) y Bloque C (`T15.5` Gate 5 0DD) de `.sdd/framework/work-items/FWK-015-brownfield-adopt-miner/03-tasks.md`.
 - **Mandatory Context Files (MAX 4 FILES):**
-  1. `AGENTS.md`
-  2. `.sdd/framework/BACKLOG.md`
+  1. `.sdd/framework/work-items/FWK-015-brownfield-adopt-miner/02-tech-spec.md`
+  2. `.sdd/framework/work-items/FWK-015-brownfield-adopt-miner/03-tasks.md`
   3. `docs/knowledge/SYSTEM_TOPOLOGY.md`
   4. `.agents/ACTIVE_STATE.md`
