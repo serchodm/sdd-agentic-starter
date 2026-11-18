@@ -1,15 +1,15 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-17 16:50 UTC
-- **Active Work Item:** `FWK-015-brownfield-adopt-miner`
-- **Active Branch:** `feat/fwk-015-brownfield-adopt-miner`
-- **Spec Folder Path:** `.sdd/framework/work-items/FWK-015-brownfield-adopt-miner`
-- **Current Gate:** `Gate 5 Complete (0DD & QA Verified — Ready for PR to develop)`
+- **Timestamp:** 2026-11-18 15:20 UTC
+- **Active Work Item:** `IDLE (No Active Work Item)`
+- **Active Branch:** `develop`
+- **Spec Folder Path:** `N/A`
+- **Current Gate:** `IDLE`
 - **Active Worktrees:** None
 - **Recommended Model Tier:** High Reasoning Tier (`Sesión A` para próximo Work Item)
-- **Last Completed Milestone:** Gate 5 (`T15.5` `@documentator`) completado (`docs/es/`, `docs/en/`, `API_CATALOG.md`, `SYSTEM_TOPOLOGY.md`, `ADRS.md` `ADR-013`, `TRACEABILITY-MATRIX.md`, `.sdd/framework/BACKLOG.md` `Done`; `150/150` tests OK; `ci-verify --mode framework` PASS).
-- **Next Execution Target:** Abrir hilo nuevo para próximo Work Item tras revisar/mergear PR de `feat/fwk-015-brownfield-adopt-miner` hacia `develop`.
+- **Last Completed Milestone:** `FWK-015-brownfield-adopt-miner` (`RFC-008`) integrado en `develop` (PR #16); cambios locales de gobernanza (`sdd_instincts.py` en Gate 4/5) consolidados.
+- **Next Execution Target:** Iniciar `FWK-016` (Detector de *Spec Drift* `sdd drift`, zonas *Strangler Fig* y baseline retroactiva ligera, `RFC-008`) en un hilo nuevo (`Sesión A` — Gates 0..3) para completar `v1.3.0`.
 - **Mandatory Context Files (MAX 4 FILES):**
-  1. `.sdd/framework/work-items/FWK-015-brownfield-adopt-miner/02-tech-spec.md`
-  2. `.sdd/framework/work-items/FWK-015-brownfield-adopt-miner/03-tasks.md`
-  3. `docs/knowledge/SYSTEM_TOPOLOGY.md`
+  1. `AGENTS.md`
+  2. `.sdd/framework/BACKLOG.md`
+  3. `.sdd/framework/rfcs/RFC-008-brownfield-adoption-and-spec-drift.md`
   4. `.agents/ACTIVE_STATE.md`
