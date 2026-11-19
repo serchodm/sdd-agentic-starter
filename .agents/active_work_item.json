@@ -1,20 +1,17 @@
 {
-  "active_work_item_id": "IDLE",
-  "spec_dir": null,
-  "branch": "develop",
+  "active_work_item_id": "FWK-016-spec-drift-strangler-fig",
+  "spec_dir": ".sdd/framework/work-items/FWK-016-spec-drift-strangler-fig",
+  "branch": "feat/fwk-016-spec-drift-strangler-fig",
   "worktree": null,
-  "status": "IDLE",
-  "gate_1_approved": false,
-  "gate_2_approved": false,
-  "gate_3_approved": false,
-  "approved_by_human": false,
+  "status": "In Progress",
+  "gate_1_approved": true,
+  "gate_2_approved": true,
+  "gate_3_approved": true,
+  "approved_by_human": true,
   "enforce_gate_seals": true,
-  "gate_seals": {},
-  "git": {
-    "branch_name": "develop",
-    "worktree_path": null,
-    "status": "IDLE",
-    "updated_at": "2026-11-18T15:20:00+00:00",
-    "base_branch": "develop"
+  "gate_seals": {
+    "1": "sha256:870dadbc09b2febe6113eaa3a6bf30a8c0baeab5c298dc69af783e65b6a70cde",
+    "2": "sha256:9fbf062c478654470153fda83a2b02e57cb5718fcbeefb3da649edfd1eb9acd5",
+    "3": "sha256:693dcf4795a476875494ba19252cd22a948acacace74cc1fa8df5c2f522c965c"
   }
 }

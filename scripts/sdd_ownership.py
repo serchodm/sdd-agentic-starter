@@ -22,8 +22,9 @@ _OWNERSHIP_INFO_RE = re.compile(r"^yaml[ \t]+sdd:ownership-map$", re.IGNORECASE)
 _OWNER_SLUG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 _TOP_KEYS: frozenset[str] = frozenset({"zones", "unowned_policy", "preset"})
 _ZONE_KEYS: frozenset[str] = frozenset(
-    {"id", "zone_id", "name", "owner", "builder", "paths", "zone_paths", "archetype", "dod", "forbid_imports"}
+    {"id", "zone_id", "name", "owner", "builder", "paths", "zone_paths", "archetype", "dod", "forbid_imports", "governance"}
 )
+VALID_ZONE_GOVERNANCE: frozenset[str] = frozenset({"governed", "legacy-readonly"})
 _POLICY_ALIASES: dict[str, Literal["error", "warn"]] = {"error": "error", "fail-closed": "error", "warn": "warn"}
 _IGNORED_FILES: frozenset[str] = frozenset({".gitkeep", ".keep", ".DS_Store", "Thumbs.db"})
 _IGNORED_DIRS: frozenset[str] = frozenset(
@@ -47,10 +48,13 @@ class OwnershipZone:
     archetype: str | None = None
     dod: str | None = None
     forbid_imports: tuple[str, ...] = ()
+    governance: Literal["governed", "legacy-readonly"] = "governed"
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "paths", tuple(self.paths))
         object.__setattr__(self, "forbid_imports", tuple(self.forbid_imports))
+        if self.governance not in VALID_ZONE_GOVERNANCE:
+            raise OwnershipError(f"Invalid zone governance {self.governance!r}; expected 'governed' or 'legacy-readonly'.")
 
     @property
     def id(self) -> str: return self.zone_id
@@ -266,6 +270,18 @@ def zone_matches_path(zone: OwnershipZone, rel_posix_path: str) -> bool:
     """Return True iff any glob in `zone.paths` matches `rel_posix_path`."""
     return any(glob_matches_path(pattern, rel_posix_path) for pattern in zone.paths)
 
+def resolve_path_zone(config: OwnershipMapConfig, rel_posix_path: str) -> OwnershipZone | None:
+    """Return the declared OwnershipZone matching `rel_posix_path`, or None."""
+    return next((z for z in config.zones if zone_matches_path(z, rel_posix_path)), None)
+
+def derive_candidate_roots(config: OwnershipMapConfig, base_roots: Sequence[str] = DEFAULT_CANDIDATE_ROOTS) -> tuple[str, ...]:
+    """Merge `base_roots` with static top-level directory prefixes extracted from `config.zones`."""
+    extra = (
+        segs[0] for z in config.zones for p in z.paths for segs in _normalize_glob(p)
+        if len(segs) > 1 and segs[0] not in (".", "..") and not any(ch in segs[0] for ch in "*?[")
+    )
+    return tuple(dict.fromkeys((*base_roots, *extra)))
+
 def _parse_dod(raw_dod: object, label: str) -> str | None:
     if raw_dod is None:
         return None
@@ -312,8 +328,13 @@ def _parse_zone_entry(zone_id: str, raw: object, label: str) -> OwnershipZone:
     archetype = _require_str(raw["archetype"], f"{label}.archetype") if raw.get("archetype") is not None else None
     if archetype is not None and ("/" in archetype or "\\" in archetype or ".." in archetype):
         raise OwnershipError(f"Invalid archetype name in {label}: {archetype!r}.")
+    raw_gov = raw.get("governance")
+    norm_gov = raw_gov.strip().lower() if isinstance(raw_gov, str) else None
+    if raw_gov is not None and norm_gov not in VALID_ZONE_GOVERNANCE:
+        raise OwnershipError(f"Invalid 'governance' {raw_gov!r} in {label}; expected 'governed' or 'legacy-readonly'.")
+    governance: Literal["governed", "legacy-readonly"] = "legacy-readonly" if norm_gov == "legacy-readonly" else "governed"
     return OwnershipZone(
-        zone_id=zone_id, owner=owner, paths=paths, archetype=archetype,
+        zone_id=zone_id, owner=owner, paths=paths, archetype=archetype, governance=governance,
         dod=_parse_dod(raw.get("dod"), f"{label}.dod"),
         forbid_imports=_parse_forbid_imports(raw.get("forbid_imports"), f"{label}.forbid_imports"),
     )
@@ -411,12 +432,12 @@ def _scan_candidate_root(root_dir: Path, repo_root: Path, globs: Sequence[str]) 
     _walk(root_dir, True)
     return unowned
 
-def validate_repo_coverage(config: OwnershipMapConfig, repo_root: Path, candidate_roots: Sequence[str] = DEFAULT_CANDIDATE_ROOTS) -> list[str]:
+def validate_repo_coverage(config: OwnershipMapConfig, repo_root: Path, candidate_roots: Sequence[str] | None = None) -> list[str]:
     """Check source files/subdirs under `candidate_roots`; raise OwnershipError when policy is 'error'."""
     root_resolved = repo_root.resolve()
     all_globs = [g for zone in config.zones for g in zone.paths]
     unowned, seen_roots = [], set()
-    for root_name in candidate_roots:
+    for root_name in (derive_candidate_roots(config) if candidate_roots is None else candidate_roots):
         candidate = root_resolved / root_name
         if not candidate.exists() and not candidate.is_symlink():
             continue
@@ -471,7 +492,7 @@ def compile_ownership_builders(config: OwnershipMapConfig, verification_commands
     return builders
 
 __all__ = [
-    "DEFAULT_CANDIDATE_ROOTS", "OwnershipError", "OwnershipMapConfig", "OwnershipZone",
-    "compile_ownership_builders", "detect_zone_overlaps", "glob_matches_path",
-    "parse_ownership_map", "validate_repo_coverage", "zone_matches_path",
+    "DEFAULT_CANDIDATE_ROOTS", "OwnershipError", "OwnershipMapConfig", "OwnershipZone", "VALID_ZONE_GOVERNANCE",
+    "compile_ownership_builders", "derive_candidate_roots", "detect_zone_overlaps", "glob_matches_path",
+    "parse_ownership_map", "resolve_path_zone", "validate_repo_coverage", "zone_matches_path",
 ]

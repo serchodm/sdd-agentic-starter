@@ -24,6 +24,8 @@ import sys
 
 _SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 _REPO_ROOT = _SCRIPT_DIR.parents[1]
+sys.path[:0] = [p for p in (str(_REPO_ROOT), str(_REPO_ROOT / "scripts"), str(_SCRIPT_DIR)) if p not in sys.path]
+from sdd_gate_seal import is_brownfield_mined_baseline, is_link_or_junction, validate_brownfield_baseline_docs
 
 GATE1_INITIAL_STATES = frozenset({"draft", "proposed", "propuesto", "gate 1"})
 ACTIVE_WORK_STATES = frozenset({"in progress", "in review", "en progreso", "en revision", "en revisión"})
@@ -204,9 +206,6 @@ def check_prompt_injection_risks(md_path: pathlib.Path, display_path: str) -> li
 
 
 def _load_sdd_dag():
-    for path_str in (str(_REPO_ROOT / "scripts"), str(_REPO_ROOT)):
-        if path_str not in sys.path:
-            sys.path.insert(0, path_str)
     try:
         from scripts.sdd_dag import DagError, build_and_validate_dag, parse_tasks_markdown
     except ImportError:
@@ -241,6 +240,8 @@ def check_task_dags(specs_root: pathlib.Path) -> list[str]:
 
 def _check_required_md(item_dir: pathlib.Path, rel_item: str, filename: str, label: str) -> list[str]:
     req_path = item_dir / filename
+    if is_link_or_junction(req_path):
+        return [f"[{label} Error] '{rel_item}/{filename}' cannot be a symlink/junction."]
     if not req_path.exists():
         return [f"[{label} Incomplete] '{rel_item}' is missing '{filename}'."]
     try:
@@ -268,10 +269,12 @@ def check_spec_triads(specs_root: pathlib.Path, backlog_path: pathlib.Path) -> l
             m = re.match(r"^([A-Za-z]+-\d{3,4})", item_dir.name)
             item_id = m.group(1).upper() if m else item_dir.name.upper()
             found_dirs_by_id.setdefault(item_id, []).append(item_dir)
-            files_to_check = (required_files[0],) if statuses.get(item_id, "") in GATE1_INITIAL_STATES else required_files
-            rel_item = _safe_rel(item_dir, specs_root.parent)
-            for req in files_to_check:
-                errors.extend(_check_required_md(item_dir, rel_item, req, "SDD Triad"))
+            status, rel_item, tasks_path = statuses.get(item_id, ""), _safe_rel(item_dir, specs_root.parent), item_dir / "03-tasks.md"
+            if category == "features" and status not in GATE1_INITIAL_STATES and is_brownfield_mined_baseline(item_dir) and not is_link_or_junction(tasks_path) and not tasks_path.exists():
+                errors.extend(validate_brownfield_baseline_docs(item_dir, rel_item))
+            else:
+                for req in ((required_files[0],) if status in GATE1_INITIAL_STATES else required_files):
+                    errors.extend(_check_required_md(item_dir, rel_item, req, "SDD Triad"))
             for md_file in sorted(item_dir.glob("*.md")):
                 errors.extend(check_prompt_injection_risks(md_file, _safe_rel(md_file, specs_root.parent)))
     spikes_dir = specs_root / "spikes"
@@ -472,8 +475,6 @@ def main() -> int:
         check_inbox_and_stack_safety(repo_root),
     ):
         errors.extend(check)
-    if str(_SCRIPT_DIR) not in sys.path:
-        sys.path.insert(0, str(_SCRIPT_DIR))
     try:
         from verify_architecture_boundaries import run_boundary_audit
         arch_errors, arch_warnings = run_boundary_audit(repo_root)
