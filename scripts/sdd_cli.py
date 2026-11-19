@@ -176,6 +176,7 @@ DISPATCH_MAP = {
     "ci-verify": ROOT_DIR / "scripts" / "sdd_ci.py",
     "release": ROOT_DIR / "scripts" / "sdd_release.py",
     "adopt": ROOT_DIR / "scripts" / "sdd_brownfield.py",
+    "drift": ROOT_DIR / "scripts" / "sdd_drift.py",
 }
 
 
@@ -202,6 +203,7 @@ Comandos Disponibles:
     ci-verify        Motor de verificación CI-agnóstico (auto|framework|project)
     release          Motor Gate 6 Release Readiness y CHANGELOG.md (prepare|changelog|verify)
     adopt            Motor de adopción brownfield no destructivo (--dry-run|--apply)
+    drift            Auditoría de Spec Drift y migración Strangler Fig
     work-item        Consulta o activa el work item actual (.agents/active_work_item.json)
     setup-hooks      Activa los hooks nativos de Git en .githooks/
 

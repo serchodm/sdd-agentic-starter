@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import argparse, json, os, re, shlex, subprocess, sys, time
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -20,12 +20,16 @@ from sdd_healthcheck import (  # noqa: E402
 )
 
 try:
+    from scripts.sdd_drift import run_drift_check
     from scripts.sdd_generator_tx import VerificationCommands, parse_verification_commands
     from scripts.sdd_git_state import is_link_or_junction
+    from scripts.sdd_ownership import OwnershipError, parse_ownership_map
     from scripts.sdd_pack_registry import StackConfigError, parse_stack_config
 except ImportError:
+    from sdd_drift import run_drift_check
     from sdd_generator_tx import VerificationCommands, parse_verification_commands
     from sdd_git_state import is_link_or_junction
+    from sdd_ownership import OwnershipError, parse_ownership_map
     from sdd_pack_registry import StackConfigError, parse_stack_config
 
 VALID_CHECK_STATUSES: frozenset[str] = frozenset({"PASS", "FAIL", "SKIPPED_OPT_IN", "SKIPPED_NO_APPLICABLE"})
@@ -286,6 +290,22 @@ def check_design_tokens(repo_root: Path) -> CheckResult:
     return _run_script_check("tokens", tok_script, ("--allow-missing",), repo_root, "Design tokens consistency verified.", t0)
 
 
+def check_spec_drift(repo_root: Path, mode: str = "project") -> CheckResult:
+    """Run offline Spec Drift verification in `project` mode when features or governed zones exist."""
+    t0 = time.monotonic()
+    if mode == "framework": return _res("spec_drift", "SKIPPED_NO_APPLICABLE", "Spec drift check skipped in framework mode.", t0)
+    try:
+        stack_path = repo_root / "specs" / "STACK.md"
+        if is_link_or_junction(repo_root / "specs") or is_link_or_junction(stack_path): raise OwnershipError("Refusing symlink or junction on specs/STACK.md.")
+        cfg = parse_ownership_map(stack_path) if stack_path.exists() else None
+        if not (cfg and any(z.governance == "governed" for z in cfg.zones)) and not any((repo_root / "specs" / "features").glob("FEAT-*")):
+            return _res("spec_drift", "SKIPPED_NO_APPLICABLE", "No FEAT-* specs or governed ownership zones found.", t0)
+        r = run_drift_check(repo_root)
+    except (OwnershipError, ValueError, OSError) as exc: return _res("spec_drift", "FAIL", f"Spec drift check failed closed: {exc}", t0)
+    data = {"findings": [asdict(f) for f in r.findings], "warnings": list(r.warnings), "governed_files": r.governed_files, "legacy_readonly_files": r.legacy_readonly_files, "covered_files": r.covered_files, "citations_checked": r.citations_checked}
+    return _res("spec_drift", r.status, f"Spec drift verified ({r.citations_checked} citation(s), {r.governed_files} governed file(s))." if r.status == "PASS" else f"Spec drift detected {len(r.findings)} finding(s).", t0, data)
+
+
 def check_framework_unittest(repo_root: Path, min_tests: int = 120, *, tests_dir: str = "tests", skip_tests: bool = False) -> CheckResult:
     """Execute deterministic `unittest discover` suite and enforce `tests_run >= min_tests`."""
     t0 = time.monotonic()
@@ -407,7 +427,7 @@ def run_ci_verify(
         check_hooks_json(root), check_healthcheck(root), check_odd_compliance(root),
         check_architecture_boundaries(root), check_catalog_and_squad_lock(root, mode=resolved_mode),
         check_dags(root, mode=resolved_mode), check_gate_seals(root),
-        check_git_and_instincts(root), check_design_tokens(root),
+        check_git_and_instincts(root), check_design_tokens(root), check_spec_drift(root, mode=resolved_mode),
     ]
     if resolved_mode == "framework":
         checks.append(check_framework_unittest(root, min_tests=min_tests, tests_dir=tests_dir, skip_tests=skip_tests))

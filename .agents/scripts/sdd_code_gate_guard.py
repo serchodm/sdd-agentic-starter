@@ -23,6 +23,7 @@ for _p in (str(_SCRIPTS_DIR), str(_SCRIPTS_DIR.parent.parent / "scripts")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
+from sdd_drift import inspect_ownership_path  # noqa: E402
 from sdd_gate_seal import verify_work_item_gate_seals  # noqa: E402
 from sdd_immutable_feature_guard import (  # noqa: E402
     extract_target_path,
@@ -46,6 +47,8 @@ CODE_EXTENSIONS = {".py", ".ts", ".tsx", ".js", ".jsx", ".glsl", ".sql"}
 _ALLOWED_SPEC_BUCKETS: tuple[str, ...] = ("specs/features", "specs/changes", "specs/bugs", ".sdd/framework/work-items")
 _WORK_ITEM_ID_RE = re.compile(r"^((?:FEAT|CR|BUG|HOTFIX|FWK)-\d{3,4})(?:-[A-Za-z0-9._-]+)?$", re.IGNORECASE)
 _APP_PREFIX_RE = re.compile(r"^(src|backend|frontend|DDBB)(/|$)", re.IGNORECASE)
+_BROWNFIELD_PREFIX_RE = re.compile(r"^(app|lib|api|web|services|packages|cmd|internal)(/|$)", re.IGNORECASE)
+_NON_APP_ZONE_RE = re.compile(r"^(tests|scripts|\.agents|specs)(/|$)", re.IGNORECASE)
 _PROTECTED_PREFIX_RE = re.compile(r"^(src|backend|frontend|DDBB|tests|scripts)(/|$)", re.IGNORECASE)
 _PROTECTED_COMPOSE_RE = re.compile(r"(?:^|/)docker-compose[^/]*\.ya?ml$", re.IGNORECASE)
 _PROTECTED_AGENTS_RE = re.compile(r"^\.agents/(?:hooks\.json$|(?:scripts|rules)(/|$))", re.IGNORECASE)
@@ -414,6 +417,11 @@ def _validate_stack_md_edit(repo_root: pathlib.Path, tool_name: str, tool_input:
     return True, "OK"
 
 
+def _allow() -> int:
+    print(json.dumps({"decision": "allow"}))
+    return 0
+
+
 def _deny(reason: str) -> int:
     print(json.dumps({"decision": "deny", "reason": reason}))
     return 0
@@ -429,50 +437,46 @@ def main() -> int:
         base_repo = get_repo_root()
         repo_root, rel_posix, is_artifact = resolve_target_context(target_path, payload, base_repo)
         if is_artifact:
-            print(json.dumps({"decision": "allow"}))
-            return 0
-
-        rel_code_path = is_protected_code_path(rel_posix)
-        if not rel_code_path:
-            print(json.dumps({"decision": "allow"}))
-            return 0
+            return _allow()
 
         tool_name, tool_input = extract_tool_call(payload)
-        if _PROTECTED_STACK_RE.match(rel_code_path):
+        if _PROTECTED_STACK_RE.match(rel_posix):
             s_ok, s_reason = _validate_stack_md_edit(repo_root, tool_name, tool_input)
-            if not s_ok:
-                return _deny(s_reason)
-            print(json.dumps({"decision": "allow"}))
-            return 0
+            return _allow() if s_ok else _deny(s_reason)
 
-        is_app_code = bool(_APP_PREFIX_RE.match(rel_code_path) or _PROTECTED_COMPOSE_RE.match(rel_code_path))
+        matched_zone, legacy_zone_id = inspect_ownership_path(repo_root, rel_posix)
+        if legacy_zone_id is not None:
+            return _deny(f"SDD Strangler Fig Lock: Zone '{legacy_zone_id}' is marked 'legacy-readonly'. Migrate or promote it via CR/STACK.md before editing.")
+
+        stack_ok, stack_msg = check_stack_gate(repo_root)
+        is_brownfield = bool(stack_ok and _BROWNFIELD_PREFIX_RE.match(rel_posix))
+        rel_code_path = is_protected_code_path(rel_posix) or (rel_posix if (matched_zone or is_brownfield) else None)
+        if not rel_code_path:
+            return _allow()
+
+        is_app_code = bool(
+            _APP_PREFIX_RE.match(rel_code_path) or _PROTECTED_COMPOSE_RE.match(rel_code_path)
+            or is_brownfield or (matched_zone and not _NON_APP_ZONE_RE.match(rel_code_path))
+        )
         ok, active_or_reason = validate_active_work_item(repo_root)
         is_fwk_active = ok and active_or_reason.startswith("FWK-")
 
-        if is_app_code:
-            stack_ok, stack_msg = check_stack_gate(repo_root)
-            if not stack_ok:
-                return _deny(stack_msg)
-            if not ok:
-                return _deny(active_or_reason)
-            if is_fwk_active:
-                return _deny("SDD Gate 2 Code-Lock: FWK-* framework work items cannot modify application product code.")
-        else:
-            if not is_fwk_active:
-                stack_ok, stack_msg = check_stack_gate(repo_root)
-                if not stack_ok:
-                    return _deny(stack_msg)
-            if not ok:
-                return _deny(active_or_reason)
+        if (is_app_code or not is_fwk_active) and not stack_ok:
+            return _deny(stack_msg)
+        if not ok:
+            return _deny(active_or_reason)
+        if is_app_code and is_fwk_active:
+            return _deny("SDD Gate 2 Code-Lock: FWK-* framework work items cannot modify application product code.")
 
         ext = pathlib.Path(rel_code_path).suffix.lower()
-        if ext == ".md" and re.match(r"^(src|backend/src|frontend/src)/", rel_code_path, re.IGNORECASE):
+        is_governed_src = is_app_code and not _PROTECTED_COMPOSE_RE.match(rel_code_path)
+        if ext == ".md" and is_governed_src:
             return _deny(
                 f"Doc Sprawl Guard (RN-ECC-DOC-SPRAWL): Do not create markdown documentation files "
                 f"inside source code directories ({rel_code_path}). Place specs in `specs/` and living documentation in `docs/`."
             )
 
-        if ext in CODE_EXTENSIONS and re.match(r"^(src|backend/src|frontend/src)/", rel_code_path, re.IGNORECASE):
+        if ext in CODE_EXTENSIONS and is_governed_src:
             line_count = compute_resulting_lines(repo_root, rel_code_path, tool_name, tool_input)
             if line_count > MAX_SOURCE_LINES:
                 return _deny(
@@ -481,8 +485,7 @@ def main() -> int:
                     f"Decompose into smaller, high-cohesion modules (target 200-400 lines)."
                 )
 
-        print(json.dumps({"decision": "allow"}))
-        return 0
+        return _allow()
     except Exception as exc:
         return _deny(f"SDD Code Gate Guard (fail-closed): {exc}")
 
