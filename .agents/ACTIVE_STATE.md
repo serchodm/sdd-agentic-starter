@@ -1,15 +1,15 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-20 09:03 UTC
-- **Active Work Item:** `REL-1.3.0`
-- **Active Branch:** `release/v1.3.0`
+- **Timestamp:** 2026-11-20 09:36 UTC
+- **Active Work Item:** `IDLE (No Active Work Item)`
+- **Active Branch:** `develop`
 - **Spec Folder Path:** `N/A`
-- **Current Gate:** `RELEASE_STAGING`
+- **Current Gate:** `IDLE`
 - **Active Worktrees:** None
-- **Recommended Model Tier:** Fast / Execution Tier (`Gate 6 Release Readiness` vía `/gate6-release`)
-- **Last Completed Milestone:** `FWK-016-spec-drift-strangler-fig` (`RFC-008`, `v1.3.0`) integrado en `develop` (PR #17).
-- **Next Execution Target:** Ejecutar `/gate6-release` en un hilo nuevo desde `develop` para preparar `release/v1.3.0`, generar `REL-v1.3.0.md` + `CHANGELOG.md` y abrir la PR hacia `main`.
+- **Recommended Model Tier:** New Clean Session Required (`RN-SDD-SESSION-LIFECYCLE`)
+- **Last Completed Milestone:** Release `v1.3.0` (`REL-v1.3.0`, `RFC-008`: `FWK-015` + `FWK-016`) integrada en `main` (PR #18), tag `v1.3.0` publicado y sincronizado con `develop`.
+- **Next Execution Target:** Seleccionar próximo Work Item / RFC en `.sdd/framework/BACKLOG.md` (o `specs/BACKLOG.md` en proyectos derivados) en una nueva sesión limpia.
 - **Mandatory Context Files (MAX 4 FILES):**
   1. `AGENTS.md`
   2. `.sdd/framework/BACKLOG.md`
-  3. `.agents/workflows/gate6-release.md`
+  3. `specs/SDD_FRAMEWORK.md`
   4. `.agents/ACTIVE_STATE.md`
