@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "timestamp": "2026-11-14T20:59:47.450754+00:00",
-  "content_digest": "0e95c361235f01c8d82362f191500ab091c8371358afd30a5096e033e356301d",
+  "timestamp": "2026-11-17T17:11:57.474455+00:00",
+  "content_digest": "3819e83175b120a286af000d39688baed443d436afeb1557f3e7069f5d084fb7",
   "stack_approved": false,
   "gate00_approved": false,
   "preset": "compact",
@@ -54,7 +54,7 @@
       "kind": "agent"
     },
     ".agents/agents/orchestrator.md": {
-      "sha256": "d2f1248a05d606aa0d8961919109e9cbe59b2369b7662d8682a1a67ef9f4e5e9",
+      "sha256": "7f4a7f5194870f667c8ce2816cbeacc06441045ec27e2668445598b1e0a5f819",
       "owner": "core",
       "kind": "agent"
     },

@@ -32,6 +32,10 @@ _SEAL_VALID_TAG_RE = re.compile(
 )
 _SHA256_PREFIX_RE = re.compile(r"^sha256:[0-9a-f]{64}$", re.IGNORECASE)
 _SHA256_RAW_RE = re.compile(r"^[0-9a-f]{64}$", re.IGNORECASE)
+_BROWNFIELD_ORIGIN_RE = re.compile(
+    r"^(?:[-*]\s+)?(?:\*\*)?(?:Origin|Origen)(?:\*\*)?\s*:\s*`?brownfield-mined`?\s*$",
+    re.IGNORECASE | re.MULTILINE,
+)
 
 
 def compute_gate_doc_sha256(text: str) -> str:
@@ -139,6 +143,41 @@ def _normalize_seal_value(raw_val: object) -> str | None:
     return val if _SHA256_PREFIX_RE.match(val) else "INVALID"
 
 
+def is_brownfield_mined_baseline(spec_dir: pathlib.Path) -> bool:
+    """Return True if `01-spec.md` is a regular file declaring `Origin: brownfield-mined`."""
+    spec_doc = spec_dir / "01-spec.md"
+    if is_link_or_junction(spec_dir) or not spec_dir.is_dir() or is_link_or_junction(spec_doc) or not spec_doc.is_file():
+        return False
+    try:
+        cleaned = strip_non_normative_markdown(spec_doc.read_text(encoding="utf-8").lstrip("\ufeff"))
+    except (OSError, UnicodeDecodeError):
+        return False
+    return bool(_BROWNFIELD_ORIGIN_RE.search(cleaned))
+
+
+def validate_brownfield_baseline_docs(spec_dir: pathlib.Path, rel_dir: str) -> list[str]:
+    """Validate brownfield-mined baseline (`01-spec.md` and `02-tech-spec.md`) with Gate 1 & Gate 2 sign-offs."""
+    if is_link_or_junction(spec_dir) or not spec_dir.is_dir():
+        return [f"[SDD Brownfield Baseline] '{rel_dir}' is missing or a symlink/junction."]
+    errors: list[str] = []
+    for gate_num, fname in ((1, "01-spec.md"), (2, "02-tech-spec.md")):
+        try:
+            _validate_approved_gate_doc(spec_dir / fname, gate_num)
+        except (ValueError, OSError, UnicodeDecodeError) as exc:
+            errors.append(f"[SDD Brownfield Baseline] '{rel_dir}': {exc}")
+    return errors
+
+
+def _resolve_target_gates(
+    spec_dir: pathlib.Path, state: dict, gate_seals: dict, gate_files: dict[int, pathlib.Path | None]
+) -> tuple[int, ...]:
+    has_g3 = gate_seals.get("3") is not None or gate_seals.get(3) is not None or state.get("gate_3_sha256") is not None
+    tasks = spec_dir / "03-tasks.md"
+    if is_brownfield_mined_baseline(spec_dir) and gate_files.get(3) is None and not is_link_or_junction(tasks) and not tasks.exists() and not has_g3:
+        return (1, 2)
+    return (1, 2, 3)
+
+
 def verify_work_item_gate_seals(
     repo_root: pathlib.Path,
     state: dict | None = None,
@@ -174,7 +213,10 @@ def verify_work_item_gate_seals(
     must_enforce = bool(require_seals or state.get("enforce_gate_seals") is True or has_state_seals)
 
     gate_files = find_work_item_gate_files(spec_dir)
-    for g in (1, 2, 3):
+    target_gates = _resolve_target_gates(spec_dir, state, gate_seals, gate_files)
+    if target_gates == (1, 2) and (errs := validate_brownfield_baseline_docs(spec_dir, spec_dir.name)):
+        return False, f"SDD Gate Cryptographic Seal Violation: {errs[0]}"
+    for g in target_gates:
         doc_path = gate_files.get(g)
         if doc_path is None or is_link_or_junction(doc_path) or not doc_path.is_file():
             return False, f"SDD Gate Cryptographic Seal Violation: Missing Gate {g} artifact in '{spec_dir.name}'."
@@ -253,10 +295,17 @@ def seal_work_item_gates(
         raise ValueError(err_msg)
 
     gate_files = find_work_item_gate_files(spec_dir)
-    existing_seals = state.get("gate_seals") if isinstance(state.get("gate_seals"), dict) else {}
+    existing_raw = state.get("gate_seals")
+    if existing_raw is not None and not isinstance(existing_raw, dict):
+        raise ValueError("'gate_seals' in active_work_item.json must be a JSON object.")
+    existing_seals = existing_raw if isinstance(existing_raw, dict) else {}
     new_seals: dict[str, str] = {str(k): str(v) for k, v in existing_seals.items()}
 
-    for g in gates:
+    target_gates = _resolve_target_gates(spec_dir, state, existing_seals, gate_files) if tuple(gates) == (1, 2, 3) else tuple(gates)
+    if tuple(gates) == (1, 2, 3) and target_gates == (1, 2) and (errs := validate_brownfield_baseline_docs(spec_dir, spec_dir.name)):
+        raise ValueError(errs[0])
+
+    for g in target_gates:
         doc_path = gate_files.get(g)
         if doc_path is None:
             raise ValueError(f"Missing Gate {g} artifact in '{spec_dir}'.")
