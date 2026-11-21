@@ -144,6 +144,7 @@ flowchart TD
     S5 --> G5{Gate 5: ¿0DD y Trazabilidad Completa?}
     G5 -- Documentación incompleta --> S5
     G5 -- Cumplido --> S6[Cierre de Work Item & Git Push]
+    S6 --> G6[Gate 6: REL-vX.Y.Z Release Readiness & PR a main]
 ```
 
 ### Gate S0: Bloqueo de Stack (Stack Lock)
@@ -361,7 +362,7 @@ En proyectos con datos persistentes en uso:
 
 ### 8.4. Prevención de la Deriva de Especificaciones (Spec Drift)
 - **Principio de Fuente de Verdad:** Si el código en producción y la especificación en `specs/` difieren, **el código se considera erróneo o en desacato metodológico**, a menos que se trate de un bug del propio documento.
-- **Auditoría Continua:** En cada ciclo de revisión, se valida que los diagramas, contratos de endpoints y estructuras descritas en las specs reflejan con total exactitud el estado del repositorio.
+- **Auditoría Continua y Detección Offline (`./sdd drift`):** En cada ciclo de revisión y CI (`./sdd ci-verify`), `./sdd drift` (`scripts/sdd_drift.py`) verifica de forma determinista la cobertura de ficheros `governed` (`UNCOVERED_FILE`), la integridad de citas `SRC-###` (`MISSING_SOURCE_FILE`, `MISSING_SYMBOL`) y cambios Git sin trazabilidad en features `Done` (`UNLINKED_CODE_DRIFT`). Para adopción incremental de sistemas existentes (*brownfield*), `./sdd adopt` (`scripts/sdd_brownfield.py` + `/brownfield-adopt` + `@spec-miner`) admite zonas *Strangler Fig* (`governance: governed | legacy-readonly`) y baselines retroactivas ligeras (`Origin: brownfield-mined` con firma humana obligatoria en Gates 1 y 2).
 
 ### 8.5. Procedimiento de Hotfix de Emergencia
 Cuando ocurre una incidencia crítica S1 en un entorno productivo que requiere corrección inmediata:
