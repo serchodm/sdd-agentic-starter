@@ -8,7 +8,7 @@ Welcome to the living functional documentation of the **`sdd-agentic-starter`** 
 
 ---
 
-## Active Baseline
+## Active Baseline (`v1.3.0`)
 
 - **Completed / Verified Framework Work Items:**
   - `FWK-001` — *Reliable Pack Materialisation and Activation* (`RFC-001` v2, status `Verified` / `Done`).
@@ -20,9 +20,9 @@ Welcome to the living functional documentation of the **`sdd-agentic-starter`** 
   - `FWK-011`..`FWK-012` — *POSIX Portability / CI Determinism and `v1.1.1` Coherence Alignment: `sdd work-item`, `HOTFIX`/`SPIKE`, SDD `spec-miner`, and PR-First `release-finish`* (`RFC-005` & `RFC-006`, status `Verified` / `Done`).
   - `FWK-013` — *Portable CI-Agnostic Engine (`sdd ci-verify`), `framework` vs `project` Auto-Detection, Safe `STACK.md §2.5` Execution, and Multi-CI Templates* (`RFC-007`, status `Verified` / `Done`).
   - `FWK-014` — *`Gate 6` (`REL-vX.Y.Z`), Release Readiness Engine (`./sdd release prepare|changelog|verify` in `scripts/sdd_release.py`), Deterministic `CHANGELOG.md`, Fail-Closed `sdd_git.py` Preflight, `08-release-readiness.template.md` Template, and `gate6-release.md` Workflow* (`RFC-007`, status `Verified` / `Done`).
-  - `FWK-015` — *Brownfield Adoption Engine (`./sdd adopt --dry-run|--apply` in `scripts/sdd_brownfield.py`), Offline Deterministic Discovery, Fail-Closed Sanitisation, and `/brownfield-adopt` (`@spec-miner`) Workflow* (`RFC-008`, status `Verified` / `Done`, `150/150` offline tests across `14` suites).
-  - `FWK-016` — *Deterministic Offline Spec Drift Detector (`./sdd drift` in `scripts/sdd_drift.py`), Strangler Fig Zones (`governance: governed | legacy-readonly` in `sdd_ownership.py` and `sdd_code_gate_guard.py`), Light Retroactive Baseline (`Origin: brownfield-mined` with mandatory Gates 1 and 2 in `sdd_healthcheck.py` and `sdd_gate_seal.py`), and CI Integration (`check_spec_drift` in `sdd_ci.py`)* (`RFC-008`, status `Verified` / `Done`).
-- **Project Application:** Pending technology definition and human sign-off at **Gate S0** (`specs/STACK.md`, with legacy support for `Gate 00`). Until then, this documentation covers the operational behaviour of the starter's pack materialisation, activation, offline UI/UX vendoring, catalogue import engine, and unified agentic governance.
+  - `FWK-015` — *Brownfield Adoption Engine (`./sdd adopt --dry-run|--apply` in `scripts/sdd_brownfield.py`), Offline Deterministic Discovery, Fail-Closed Sanitisation, and `/brownfield-adopt` (`@spec-miner`) Workflow* (`RFC-008`, status `Verified` / `Done`).
+  - `FWK-016` — *Deterministic Offline Spec Drift Detector (`./sdd drift` in `scripts/sdd_drift.py`), Strangler Fig Zones (`governance: governed | legacy-readonly` in `sdd_ownership.py` and `sdd_code_gate_guard.py`), Light Retroactive Baseline (`Origin: brownfield-mined` with mandatory Gates 1 and 2 in `sdd_healthcheck.py` and `sdd_gate_seal.py`), and CI Integration (`check_spec_drift` in `sdd_ci.py`)* (`RFC-008`, status `Verified` / `Done`, `160/160` offline tests across `15` suites).
+- **Project Application:** Pending technology definition and human sign-off at **Gate S0** (`specs/STACK.md`, with legacy support for `Gate 00`). Until then, this documentation covers the operational behaviour of the starter's pack materialisation, activation, offline UI/UX vendoring, catalogue import engine, unified agentic governance, `Gate 6` release readiness, and brownfield / *Spec Drift* tooling.
 
 ---
 
@@ -33,7 +33,7 @@ Welcome to the living functional documentation of the **`sdd-agentic-starter`** 
 | **Master Index (`00-governance`)** | Normative entry point, artefact statuses, and active documentation scope. | [DOCUMENTATION-INDEX.md](./00-governance/DOCUMENTATION-INDEX.md) |
 | **Module `MOD-001` (`02-functional`)** | Functional and operational guide for pack materialisation (`sdd:stack-config`, Gate S0 / Gate 00, lazy loading, fail-closed cleanup, and catalogue import). | [pack-materialization.md](./02-functional/modules/MOD-001/pack-materialization.md) |
 | **Module `MOD-002` (`02-functional`)** | Functional guide for `capability-ui-design` (offline `ui-ux-pro-max@2.15.0` vendoring with `VENDOR.lock.json`, `uiux` pruning in `sdd-bootstrap`, Gate 2 review with `@ui-ux-designer` + `@a11y-architect`, `docs/design-system/` semver lifecycle, `sdd_tokens_validator.py` validator, and Gate 4 bi-level visual quality gates). | [capability-ui-design.md](./02-functional/modules/MOD-002/capability-ui-design.md) |
-| **Module `MOD-003` (`02-functional`)** | Unification of Gate terminology (`Gate S0`, `Gate 0..6`), statuses (`Candidate`..`Done`), DAG blocks (`Block`), session phases, fail-closed dual-accept support, CI-agnostic engine (`sdd ci-verify`), and hardening (`FWK-005`..`FWK-014`). | [gate-terminology-unification.md](./02-functional/modules/MOD-003/gate-terminology-unification.md) |
+| **Module `MOD-003` (`02-functional`)** | Unification of Gate terminology (`Gate S0`, `Gate 0..6`), statuses (`Candidate`..`Done`), DAG blocks (`Block`), session phases, fail-closed dual-accept support, CI-agnostic engine (`sdd ci-verify`), `Gate 6` (`sdd release`), brownfield (`sdd adopt`), *Spec Drift* (`sdd drift`), and hardening (`FWK-004`..`FWK-016`). | [gate-terminology-unification.md](./02-functional/modules/MOD-003/gate-terminology-unification.md) |
 | **Knowledge Base (`docs/knowledge/`)** | Architecture decision records (`ADR-001`..`ADR-014`), system topology, data models, and CLI/API catalogue (`./sdd release prepare|changelog|verify`, `./sdd adopt --dry-run|--apply`, `./sdd drift`). | [ADRS.md](../knowledge/ADRS.md) · [SYSTEM_TOPOLOGY.md](../knowledge/SYSTEM_TOPOLOGY.md) · [DATA_MODELS.md](../knowledge/DATA_MODELS.md) · [API_CATALOG.md](../knowledge/API_CATALOG.md) |
 | **Traceability Matrix (0DD)** | Bidirectional traceability for `FWK-001` through `FWK-016` from EARS requirements, business rules, and NFRs to code, offline tests, and documentation. | [TRACEABILITY-MATRIX.md](../traceability/TRACEABILITY-MATRIX.md) |
 
