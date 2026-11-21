@@ -1,19 +1,17 @@
 {
-  "active_work_item_id": "IDLE",
-  "branch": "develop",
+  "active_work_item_id": "FWK-017-portfolio-epics",
+  "spec_dir": ".sdd/framework/work-items/FWK-017-portfolio-epics",
+  "branch": "feat/fwk-017-portfolio-epics",
   "worktree": null,
-  "status": "IDLE",
-  "gate_1_approved": false,
-  "gate_2_approved": false,
-  "gate_3_approved": false,
-  "approved_by_human": false,
+  "status": "GATE_4_EXECUTION",
+  "gate_1_approved": true,
+  "gate_2_approved": true,
+  "gate_3_approved": true,
+  "approved_by_human": true,
   "enforce_gate_seals": true,
-  "gate_seals": {},
-  "git": {
-    "branch_name": "develop",
-    "worktree_path": null,
-    "status": "IDLE",
-    "updated_at": "2026-11-20T09:36:00+00:00",
-    "base_branch": "develop"
+  "gate_seals": {
+    "1": "sha256:e9ccde8c7cc9a06a4fe6fcc11c51316290bc5be752e67955c57a974d590cc055",
+    "2": "sha256:f4a4f0610c4a5cc0c092a2a4775316556f076f3a8b7bf9172d022269794378a4",
+    "3": "sha256:92d63a2d73b43d1d9e0fec315a9f324af9f563523e22f2429f8b29a2e604b50b"
   }
 }

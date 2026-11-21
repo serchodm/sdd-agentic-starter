@@ -12,6 +12,7 @@
 | [`RFC-006`](./rfcs/RFC-006-coherence-and-catalog-alignment.md) | Alineación de Coherencia v1.1.1 (CLI, `HOTFIX`/`SPIKE`, `spec-miner` SDD y `release-finish`) | v1 | Implementado / Done | 2026-11-16 |
 | [`RFC-007`](./rfcs/RFC-007-release-ops-ci-agnostic.md) | Motor CI-Agnóstico, `Gate 6` de Release Readiness y Changelog Determinista (`v1.2.0`) | v1 | Implementado / Done | 2026-11-16 |
 | [`RFC-008`](./rfcs/RFC-008-brownfield-adoption-and-spec-drift.md) | Adopción Brownfield Incremental (*Strangler Fig*), `sdd adopt` y Detección de *Spec Drift* (`v1.3.0`) | v1 | Implementado / Done | 2026-11-17 |
+| [`RFC-009`](./rfcs/RFC-009-portfolio-finops-multiservice.md) | Portfolio / Épicas, FinOps Agéntico y Contratos Multi-Servicio (`v1.4.0`) | v1 | Aceptado | 2026-11-21 |
 
 ## Work Items
 
@@ -33,5 +34,8 @@
 | `FWK-014` | RFC-007 | `Gate 6` (`REL-vX.Y.Z`), Motor de Release Readiness (`sdd_release.py`) y `CHANGELOG.md` Determinista | P1 | FWK-013 | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-015` | RFC-008 | Motor de Adopción Brownfield (`sdd adopt`), Descubrimiento Determinista y Workflow `@spec-miner` | P0 | — | [x] | [x] | [x] | [x] | [x] | Done |
 | `FWK-016` | RFC-008 | Detector de *Spec Drift* (`sdd drift`), Zonas *Strangler Fig* y Baseline Retroactiva Ligera | P1 | FWK-015 | [x] | [x] | [x] | [x] | [x] | Done |
+| `FWK-017` | RFC-009 | Portfolio, Épicas (`EPIC-XXX`), Roadmap y Dependencias entre Features (`sdd portfolio`) | P0 | — | [x] | [x] | [x] | [ ] | [ ] | In Progress |
+| `FWK-018` | RFC-009 | FinOps Agéntico: Imputación Acumulada, Coste por Work Item/Épica y Presupuestos (`sdd finops`) | P1 | FWK-017 | [ ] | [ ] | [ ] | [ ] | [ ] | Backlog |
+| `FWK-019` | RFC-009 | Multi-Servicio / Monorepo y Verificador de Contratos Compartidos (`sdd contracts`) | P1 | FWK-017 | [ ] | [ ] | [ ] | [ ] | [ ] | Backlog |
 
 *Estados: `Candidate` → `Backlog` → `In Progress` → `In Review` → `Done`. Los items de un RFC solo pasan a `In Progress` tras su aceptación.*

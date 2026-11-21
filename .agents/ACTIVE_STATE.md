@@ -1,15 +1,15 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-20 09:36 UTC
-- **Active Work Item:** `IDLE (No Active Work Item)`
-- **Active Branch:** `develop`
-- **Spec Folder Path:** `N/A`
-- **Current Gate:** `IDLE`
+- **Timestamp:** 2026-11-21 00:16 UTC
+- **Active Work Item:** `FWK-017-portfolio-epics`
+- **Active Branch:** `feat/fwk-017-portfolio-epics`
+- **Spec Folder Path:** `.sdd/framework/work-items/FWK-017-portfolio-epics`
+- **Current Gate:** `Gate 4 (Execution & QA — Gates 1..3 Approved & Sealed)`
 - **Active Worktrees:** None
-- **Recommended Model Tier:** New Clean Session Required (`RN-SDD-SESSION-LIFECYCLE`)
-- **Last Completed Milestone:** Release `v1.3.0` (`REL-v1.3.0`, `RFC-008`: `FWK-015` + `FWK-016`) integrada en `main` (PR #18), tag `v1.3.0` publicado y sincronizado con `develop`.
-- **Next Execution Target:** Seleccionar próximo Work Item / RFC en `.sdd/framework/BACKLOG.md` (o `specs/BACKLOG.md` en proyectos derivados) en una nueva sesión limpia.
+- **Recommended Model Tier:** Fast / Execution Tier (`Sesión B: Gate 4 & Gate 5`)
+- **Last Completed Milestone:** Gates 1–3 de `FWK-017` aprobados por PO (`2026-11-21T01:17:55+01:00`) y sellados SHA-256 (`RFC-009` aceptado).
+- **Next Execution Target:** Ejecutar Bloque A (`[PARALLEL: BLOCK_A]`: `T17.1`, `T17.2`), Bloque B (`T17.3`, `T17.4`) y Bloque C (`T17.5` Gate 5 0DD) de `.sdd/framework/work-items/FWK-017-portfolio-epics/03-tasks.md` en nueva sesión limpia (`/continue`).
 - **Mandatory Context Files (MAX 4 FILES):**
-  1. `AGENTS.md`
-  2. `.sdd/framework/BACKLOG.md`
-  3. `specs/SDD_FRAMEWORK.md`
+  1. `.sdd/framework/work-items/FWK-017-portfolio-epics/02-tech-spec.md`
+  2. `.sdd/framework/work-items/FWK-017-portfolio-epics/03-tasks.md`
+  3. `docs/knowledge/SYSTEM_TOPOLOGY.md`
   4. `.agents/ACTIVE_STATE.md`
