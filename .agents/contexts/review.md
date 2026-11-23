@@ -5,7 +5,7 @@ description: Contexto de Auditoría y Revisión Adversaria (GAN-Style Harness / 
 
 # Contexto: `review.md` (Auditoría & QA)
 
-- **Foco:** Verificar contratos espejo, seguridad, fallos silenciosos, rendimiento y cobertura antes de Gate 5 (`/santa-loop`, `/gan-build`).
+- **Foco:** Verificar contratos espejo, seguridad, fallos silenciosos, rendimiento y cobertura usando `/gan-build` (evaluación ponderada intra-bloque en Gate 4) y `/santa-loop` (doble certificación binaria independiente en fronteras `Pre-Gate 2`, cierre `Gate 4` post-DoD y cierre `Gate 5`).
 - **Reglas:**
   1. Contrastar línea por línea `02-tech-spec.md` frente al código implementado.
   2. Clasificar hallazgos en `CRITICAL` (bloqueante), `HIGH` (contrato/test), `MEDIUM` y `LOW`.

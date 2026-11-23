@@ -18,3 +18,4 @@ Resuelve la degradación de contexto y el sesgo de autocomplacencia separando ge
 4. **Verificación Empírica (20%):** Ejecución real en verde de las suites y build DoD definidas en `specs/STACK.md`.
 
 - **Regla de Decisión:** Score **$\ge 8.5 / 10$** (y cada eje $\ge 7.0$) $\rightarrow$ `PASS`; **$< 8.5 / 10$** $\rightarrow$ `ITERATE` con hallazgos `archivo:línea`.
+- **Frontera con `santa-method`:** Usar `gan-style-harness` (`/gan-build`) **durante la construcción** iterativa de bloques complejos en Gate 4 (evaluación gradual ponderada con 1 evaluador). Usar `santa-method` (`/santa-loop`) como **puerta de certificación binaria** (`NICE + NICE`, 2 revisores aislados) en fronteras de Gate (`Pre-Gate 2`, cierre `Gate 4`, cierre `Gate 5`); superar GAN en un bloque no exime de Santa si se activan sus triggers.
