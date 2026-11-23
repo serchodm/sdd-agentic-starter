@@ -96,7 +96,10 @@ specs/
 │   ├── 06-spike-report.template.md     # Plantilla para Spikes y PoCs (SPIKE)
 │   ├── 07-hotfix-fast-track.template.md # Plantilla Fast-Track para Hotfixes S1 (HOTFIX)
 │   ├── 08-release-readiness.template.md # Plantilla para Gate 6 (Release Readiness)
+│   ├── 09-epic-roadmap.template.md     # Plantilla para Épicas y Roadmap (EPIC)
 │   └── ci/                             # Plantillas agnósticas de CI (GitLab, Bitbucket, shell)
+├── epics/                              # Expedientes de Épicas y roadmap de portfolio (Pre-Gate-0)
+│   └── EPIC-XXX-<slug>.md              # Definición de Épica, MoSCoW/RICE y features asociadas
 ├── features/                           # Especificaciones vivas de funcionalidades
 │   └── <ID>-<kebab-case-name>/         # Ej: FEAT-001-core-scaffolding/
 │       ├── 01-spec.md                  # Gate 1: Requerimientos funcionales y US

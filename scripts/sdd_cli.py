@@ -177,6 +177,7 @@ DISPATCH_MAP = {
     "release": ROOT_DIR / "scripts" / "sdd_release.py",
     "adopt": ROOT_DIR / "scripts" / "sdd_brownfield.py",
     "drift": ROOT_DIR / "scripts" / "sdd_drift.py",
+    "portfolio": ROOT_DIR / "scripts" / "sdd_portfolio.py",
 }
 
 
@@ -204,6 +205,7 @@ Comandos Disponibles:
     release          Motor Gate 6 Release Readiness y CHANGELOG.md (prepare|changelog|verify)
     adopt            Motor de adopción brownfield no destructivo (--dry-run|--apply)
     drift            Auditoría de Spec Drift y migración Strangler Fig
+    portfolio        Gestión de Épicas, Roadmap RICE/MoSCoW y DAG de features (init|status|graph|validate)
     work-item        Consulta o activa el work item actual (.agents/active_work_item.json)
     setup-hooks      Activa los hooks nativos de Git en .githooks/
 
@@ -215,6 +217,8 @@ Ejemplos:
     ./sdd release prepare --version v1.2.0
     ./sdd release changelog --version v1.2.0
     ./sdd release verify --version v1.2.0
+    ./sdd portfolio status
+    ./sdd portfolio graph --format json
     ./sdd work-item show
     ./sdd work-item set FEAT-001
     ./sdd approve-gate --embed-inline

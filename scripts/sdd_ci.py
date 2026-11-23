@@ -25,12 +25,14 @@ try:
     from scripts.sdd_git_state import is_link_or_junction
     from scripts.sdd_ownership import OwnershipError, parse_ownership_map
     from scripts.sdd_pack_registry import StackConfigError, parse_stack_config
+    from scripts.sdd_portfolio import run_portfolio_ci_check
 except ImportError:
     from sdd_drift import run_drift_check
     from sdd_generator_tx import VerificationCommands, parse_verification_commands
     from sdd_git_state import is_link_or_junction
     from sdd_ownership import OwnershipError, parse_ownership_map
     from sdd_pack_registry import StackConfigError, parse_stack_config
+    from sdd_portfolio import run_portfolio_ci_check
 
 VALID_CHECK_STATUSES: frozenset[str] = frozenset({"PASS", "FAIL", "SKIPPED_OPT_IN", "SKIPPED_NO_APPLICABLE"})
 VALID_CI_MODES: frozenset[str] = frozenset({"auto", "framework", "project"})
@@ -40,10 +42,7 @@ _FORBIDDEN_SHELL_TOKENS: tuple[str, ...] = (";", "|", "`", "$(", ">", "<", "\n",
 _SINGLE_AMP_RE = re.compile(r"(?<!&)&(?!&)|&&&")
 _TEST_RAN_RE = re.compile(r"^Ran\s+(\d+)\s+tests?\s+in\s+", re.MULTILINE)
 _SCRIPT_EXTS: tuple[str, ...] = (".py", ".sh", ".ps1", ".cmd")
-_ODD_REQUIRED_FILES: tuple[str, ...] = (
-    "docs/knowledge/ADRS.md", "docs/knowledge/API_CATALOG.md", "docs/knowledge/DATA_MODELS.md",
-    "docs/knowledge/SYSTEM_TOPOLOGY.md", "docs/traceability/TRACEABILITY-MATRIX.md",
-)
+_ODD_REQUIRED_FILES: tuple[str, ...] = ("docs/knowledge/ADRS.md", "docs/knowledge/API_CATALOG.md", "docs/knowledge/DATA_MODELS.md", "docs/knowledge/SYSTEM_TOPOLOGY.md", "docs/traceability/TRACEABILITY-MATRIX.md")
 
 
 @dataclass(frozen=True)
@@ -183,8 +182,7 @@ def check_healthcheck(repo_root: Path) -> CheckResult:
 def check_odd_compliance(repo_root: Path) -> CheckResult:
     """Validate 0DD knowledge artifacts, bilingual docs (`es`/`en`), and Done feature traceability."""
     t0 = time.monotonic()
-    missing = [rel for rel in _ODD_REQUIRED_FILES if not (repo_root / rel).is_file() or not (repo_root / rel).read_text(encoding="utf-8", errors="replace").strip()]
-    if missing:
+    if missing := [rel for rel in _ODD_REQUIRED_FILES if not (repo_root / rel).is_file() or not (repo_root / rel).read_text(encoding="utf-8", errors="replace").strip()]:
         return _res("odd_compliance", "FAIL", f"Missing or empty 0DD artifacts: {', '.join(missing)}", t0)
     for lang in ("es", "en"):
         lang_dir = repo_root / "docs" / lang
@@ -193,8 +191,7 @@ def check_odd_compliance(repo_root: Path) -> CheckResult:
     backlog_path = repo_root / "specs" / "BACKLOG.md"
     done_features = sorted(parse_done_features_from_text(backlog_path.read_text(encoding="utf-8", errors="replace") if backlog_path.is_file() else ""))
     matrix_text = (repo_root / "docs" / "traceability" / "TRACEABILITY-MATRIX.md").read_text(encoding="utf-8", errors="replace")
-    untraced = [feat for feat in done_features if not re.search(rf"\b{re.escape(feat)}\b", matrix_text)]
-    if untraced:
+    if untraced := [feat for feat in done_features if not re.search(rf"\b{re.escape(feat)}\b", matrix_text)]:
         return _res("odd_compliance", "FAIL", f"0DD Violation: Done feature(s) missing from TRACEABILITY-MATRIX.md: {', '.join(untraced)}", t0, {"untraced": untraced})
     return _res("odd_compliance", "PASS", f"0DD compliance verified ({len(done_features)} Done feature(s) traced).", t0, {"done_features_count": len(done_features)})
 
@@ -276,10 +273,8 @@ def check_git_and_instincts(repo_root: Path) -> CheckResult:
     if has_local_inst:
         if (r := _run_script_check("git_and_instincts", inst_script, ("list",), repo_root, "ok", t0)).status == "FAIL":
             return r
-    elif (inst_file := repo_root / ".agents" / "instincts.json").is_file():
-        _, err = _load_json_object(inst_file, ".agents/instincts.json")
-        if err:
-            return _res("git_and_instincts", "FAIL", err, t0)
+    elif (inst_file := repo_root / ".agents" / "instincts.json").is_file() and (err := _load_json_object(inst_file, ".agents/instincts.json")[1]):
+        return _res("git_and_instincts", "FAIL", err, t0)
     return _res("git_and_instincts", "PASS", "Git orchestrator and atomic instincts verified.", t0)
 
 
@@ -306,6 +301,16 @@ def check_spec_drift(repo_root: Path, mode: str = "project") -> CheckResult:
     return _res("spec_drift", r.status, f"Spec drift verified ({r.citations_checked} citation(s), {r.governed_files} governed file(s))." if r.status == "PASS" else f"Spec drift detected {len(r.findings)} finding(s).", t0, data)
 
 
+def check_portfolio(repo_root: Path) -> CheckResult:
+    """Validate portfolio epics (`EPIC-*.md`) and feature dependencies via `sdd_portfolio`."""
+    t0 = time.monotonic()
+    try:
+        status, detail, data = run_portfolio_ci_check(repo_root)
+    except (ValueError, OSError) as exc:
+        return _res("portfolio", "FAIL", f"Portfolio check failed closed: {exc}", t0)
+    return _res("portfolio", status, detail, t0, data)
+
+
 def check_framework_unittest(repo_root: Path, min_tests: int = 120, *, tests_dir: str = "tests", skip_tests: bool = False) -> CheckResult:
     """Execute deterministic `unittest discover` suite and enforce `tests_run >= min_tests`."""
     t0 = time.monotonic()
@@ -328,12 +333,9 @@ def check_framework_unittest(repo_root: Path, min_tests: int = 120, *, tests_dir
 
 def split_safe_chained_command(cmd: str) -> list[list[str]]:
     """Validate and split a safe `&&`-chained command into argv lists without shell metacharacters."""
-    if not isinstance(cmd, str) or not cmd.strip():
-        raise ValueError("Verification command cannot be empty.")
-    if bad := next((tok for tok in _FORBIDDEN_SHELL_TOKENS if tok in cmd), None):
-        raise ValueError(f"Forbidden shell metacharacter {bad!r} in verification command.")
-    if _SINGLE_AMP_RE.search(cmd):
-        raise ValueError("Isolated '&' or '&&&' is forbidden in verification command.")
+    if not isinstance(cmd, str) or not cmd.strip(): raise ValueError("Verification command cannot be empty.")
+    if bad := next((tok for tok in _FORBIDDEN_SHELL_TOKENS if tok in cmd), None): raise ValueError(f"Forbidden shell metacharacter {bad!r} in verification command.")
+    if _SINGLE_AMP_RE.search(cmd): raise ValueError("Isolated '&' or '&&&' is forbidden in verification command.")
     segments, buf, quote, i, n = [], [], None, 0, len(cmd)
     while i < n:
         ch = cmd[i]
@@ -348,28 +350,22 @@ def split_safe_chained_command(cmd: str) -> list[list[str]]:
         else:
             buf.append(ch)
         i += 1
-    if quote is not None:
-        raise ValueError("Unclosed quote in verification command.")
+    if quote is not None: raise ValueError("Unclosed quote in verification command.")
     segments.append("".join(buf))
     argv_list: list[list[str]] = []
     for seg in segments:
-        if not (clean_seg := seg.strip()) or not (tokens := shlex.split(clean_seg, posix=True)):
-            raise ValueError("Empty command segment around '&&'.")
+        if not (clean_seg := seg.strip()) or not (tokens := shlex.split(clean_seg, posix=True)): raise ValueError("Empty command segment around '&&'.")
         argv_list.append(tokens)
     return argv_list
 
 
 def _resolve_requested_slots(include_integration: bool, stack_slots: Sequence[str] | None) -> tuple[str, ...]:
-    if not stack_slots:
-        return (*DEFAULT_STACK_SLOTS, "integration_test", "full_suite") if include_integration else DEFAULT_STACK_SLOTS
+    if not stack_slots: return (*DEFAULT_STACK_SLOTS, "integration_test", "full_suite") if include_integration else DEFAULT_STACK_SLOTS
     parsed: list[str] = []
     for slot in (s.strip() for raw in stack_slots for s in raw.split(",") if s.strip()):
-        if slot not in ALL_STACK_SLOTS:
-            raise ValueError(f"Unknown stack verification slot {slot!r}; expected one of {ALL_STACK_SLOTS}.")
-        if slot not in parsed:
-            parsed.append(slot)
-    if not parsed:
-        raise ValueError("--stack-slots provided without valid slot names.")
+        if slot not in ALL_STACK_SLOTS: raise ValueError(f"Unknown stack verification slot {slot!r}; expected one of {ALL_STACK_SLOTS}.")
+        if slot not in parsed: parsed.append(slot)
+    if not parsed: raise ValueError("--stack-slots provided without valid slot names.")
     return tuple(parsed)
 
 
@@ -424,10 +420,9 @@ def run_ci_verify(
     root = repo_root.resolve()
     resolved_mode = detect_ci_mode(root, requested=mode)
     checks: list[CheckResult] = [
-        check_hooks_json(root), check_healthcheck(root), check_odd_compliance(root),
-        check_architecture_boundaries(root), check_catalog_and_squad_lock(root, mode=resolved_mode),
-        check_dags(root, mode=resolved_mode), check_gate_seals(root),
-        check_git_and_instincts(root), check_design_tokens(root), check_spec_drift(root, mode=resolved_mode),
+        check_hooks_json(root), check_healthcheck(root), check_odd_compliance(root), check_architecture_boundaries(root),
+        check_catalog_and_squad_lock(root, mode=resolved_mode), check_dags(root, mode=resolved_mode), check_gate_seals(root),
+        check_git_and_instincts(root), check_design_tokens(root), check_spec_drift(root, mode=resolved_mode), check_portfolio(root),
     ]
     if resolved_mode == "framework":
         checks.append(check_framework_unittest(root, min_tests=min_tests, tests_dir=tests_dir, skip_tests=skip_tests))
@@ -454,7 +449,7 @@ def format_report_text(report: CiVerifyReport) -> str:
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser for `scripts/sdd_ci.py`."""
     p = argparse.ArgumentParser(description="CI-agnostic SDD governance and stack verification engine.")
-    specs: tuple[tuple[str, dict[str, Any]], ...] = (
+    for flag, kw in (
         ("--repo-root", {"type": Path, "default": _FRAMEWORK_ROOT, "help": "Repository root directory."}),
         ("--mode", {"choices": ("auto", "framework", "project"), "default": "auto", "help": "CI verification mode."}),
         ("--run-stack", {"action": "store_true", "help": "Execute STACK.md §2.5 commands (fail-closed if S0 unapproved)."}),
@@ -464,8 +459,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("--min-tests", {"type": int, "default": 120, "help": "Minimum unit test count in framework mode."}),
         ("--skip-tests", {"action": "store_true", "help": "Skip framework unittest execution."}),
         ("--format", {"dest": "output_format", "choices": ("text", "json"), "default": "text", "help": "Output format."}),
-    )
-    for flag, kw in specs:
+    ):
         p.add_argument(flag, **kw)
     return p
 
