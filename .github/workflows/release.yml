@@ -1,11 +1,9 @@
-name: Release Drafter & Tag Publishing
+name: Release Publisher & Drafter (Gate 6)
 
 on:
   push:
     branches:
       - main
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 permissions:
@@ -13,8 +11,113 @@ permissions:
   pull-requests: read
 
 jobs:
+  publish-gate6-release:
+    name: Publish Approved Gate 6 Release
+    runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.detect.outputs.should_publish }}
+      tag: ${{ steps.detect.outputs.tag }}
+    steps:
+      - name: Checkout main with full history & tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Detect unpublished Gate 6 approved release dossier
+        id: detect
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, re, subprocess, sys
+          sys.path.insert(0, str(pathlib.Path.cwd()))
+          from scripts.sdd_release import parse_gate6_approval
+
+          releases_dir = pathlib.Path("specs/releases")
+          candidates = []
+          for p in releases_dir.glob("REL-v*.md") if releases_dir.is_dir() else []:
+              m = re.fullmatch(r"REL-v(\d+)\.(\d+)\.(\d+)\.md", p.name)
+              if not m:
+                  continue
+              ver_tuple = tuple(int(x) for x in m.groups())
+              semver = f"{m.group(1)}.{m.group(2)}.{m.group(3)}"
+              candidates.append((ver_tuple, semver, f"v{semver}", p))
+
+          candidates.sort(reverse=True)
+          out_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          published_tag = None
+
+          for _, semver, tag, dossier in candidates:
+              ok, errs = parse_gate6_approval(dossier.read_text(encoding="utf-8"))
+              if not ok:
+                  print(f"[SKIP] {dossier.name} not Gate 6 approved: {'; '.join(errs)}")
+                  continue
+              tag_check = subprocess.run(
+                  ["git", "rev-parse", "--verify", "--quiet", f"refs/tags/{tag}"],
+                  capture_output=True, text=True, check=False,
+              )
+              if tag_check.returncode == 0:
+                  print(f"[INFO] Tag {tag} already exists.")
+                  break
+              published_tag = (semver, tag, dossier)
+              break
+
+          if not published_tag:
+              out_path.write_text("should_publish=false\ntag=\n", encoding="utf-8")
+              sys.exit(0)
+
+          semver, tag, dossier = published_tag
+          notes = f"Release {tag} ({dossier.name}).\n"
+          cl = pathlib.Path("CHANGELOG.md")
+          if cl.is_file():
+              norm = cl.read_text(encoding="utf-8").replace("\r\n", "\n")
+              m = re.search(rf"^##\s+\[v?{re.escape(semver)}\][^\n]*\n(.*?)(?=^##\s+\[|\Z)", norm, re.M | re.S)
+              if m and m.group(1).strip():
+                  notes = m.group(1).strip() + "\n"
+          pathlib.Path("/tmp/release-notes.md").write_text(notes, encoding="utf-8")
+          out_path.write_text(f"should_publish=true\ntag={tag}\n", encoding="utf-8")
+          print(f"[READY] Will tag and publish GitHub Release {tag}.")
+          PY
+
+      - name: Create annotated tag and publish GitHub Release
+        if: steps.detect.outputs.should_publish == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.detect.outputs.tag }}
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "refs/tags/$TAG"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --title "$TAG" --notes-file /tmp/release-notes.md --draft=false --latest
+          else
+            gh release create "$TAG" --title "$TAG" --notes-file /tmp/release-notes.md --latest
+          fi
+
+      - name: Best-effort back-merge main into develop
+        if: steps.detect.outputs.should_publish == 'true'
+        continue-on-error: true
+        env:
+          TAG: ${{ steps.detect.outputs.tag }}
+        shell: bash
+        run: |
+          if git ls-remote --exit-code --heads origin develop >/dev/null 2>&1; then
+            git fetch origin develop:develop
+            git checkout develop
+            git merge --no-ff main -m "chore(release): back-merge $TAG into develop [skip ci]"
+            git push origin develop
+          fi
+
   draft-release:
-    name: Draft Release Notes & Tagging
+    name: Draft Release Notes (Interim Commits)
+    needs: publish-gate6-release
+    if: needs.publish-gate6-release.outputs.published != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Draft Release via Release Drafter

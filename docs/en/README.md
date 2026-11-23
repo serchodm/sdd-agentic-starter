@@ -8,7 +8,7 @@ Welcome to the living functional documentation of the **`sdd-agentic-starter`** 
 
 ---
 
-## Active Baseline (`v1.3.0`)
+## Active Baseline (`v1.4.0`)
 
 - **Completed / Verified Framework Work Items:**
   - `FWK-001` — *Reliable Pack Materialisation and Activation* (`RFC-001` v2, status `Verified` / `Done`).
