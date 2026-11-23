@@ -1,15 +1,14 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-20 09:36 UTC
-- **Active Work Item:** `IDLE (No Active Work Item)`
-- **Active Branch:** `develop`
-- **Spec Folder Path:** `N/A`
-- **Current Gate:** `IDLE`
+- **Timestamp:** 2026-11-23 16:29 UTC
+- **Active Work Item:** `REL-1.4.0`
+- **Active Branch:** `release/v1.4.0`
+- **Spec Folder Path:** `.sdd/framework/work-items/FWK-017-portfolio-epics`
+- **Current Gate:** `RELEASE_STAGING`
 - **Active Worktrees:** None
-- **Recommended Model Tier:** New Clean Session Required (`RN-SDD-SESSION-LIFECYCLE`)
-- **Last Completed Milestone:** Release `v1.3.0` (`REL-v1.3.0`, `RFC-008`: `FWK-015` + `FWK-016`) integrada en `main` (PR #18), tag `v1.3.0` publicado y sincronizado con `develop`.
-- **Next Execution Target:** Seleccionar próximo Work Item / RFC en `.sdd/framework/BACKLOG.md` (o `specs/BACKLOG.md` en proyectos derivados) en una nueva sesión limpia.
+- **Recommended Model Tier:** High-Reasoning Tier (`Sesión A` para próximo Work Item)
+- **Last Completed Milestone:** `FWK-017-portfolio-epics` cerrado en Gate 5: bloques A/B/C completados (`174/174` tests offline OK, `ci-verify --mode framework` en `PASS`, `ADR-015`, docs bilingües y trazabilidad 0DD actualizados, sincronizado a `develop` en commit `40bfcdf`).
+- **Next Execution Target:** Abrir un hilo nuevo limpio (`RN-SDD-SESSION-LIFECYCLE`) para seleccionar el próximo Work Item desde `.sdd/framework/BACKLOG.md` o `specs/BACKLOG.md`.
 - **Mandatory Context Files (MAX 4 FILES):**
-  1. `AGENTS.md`
-  2. `.sdd/framework/BACKLOG.md`
-  3. `specs/SDD_FRAMEWORK.md`
-  4. `.agents/ACTIVE_STATE.md`
+  1. `.sdd/framework/BACKLOG.md`
+  2. `docs/knowledge/SYSTEM_TOPOLOGY.md`
+  3. `.agents/ACTIVE_STATE.md`
