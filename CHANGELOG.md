@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.0] - 2026-11-23
+
+### Framework
+- **FWK-017**: Portfolio, Épicas (EPIC-XXX), Roadmap y Dependencias entre Features (sdd portfolio) (RFC-009)
+
+### Governance & Skills
+- **santa-method**: Protocolo modular *Checking It Twice* (`SKILL.md` + `references/reviewer-prompt.md` + `references/sdd-rubrics.md`) con triggers objetivos por riesgo y volumen/contaminación de contexto para `Pre-Gate 2`, `Gate 4` y `Gate 5`, y frontera explícita con `gan-style-harness`
+
 ## [v1.3.0] - 2026-11-20
 
 ### Framework
