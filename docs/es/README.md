@@ -8,7 +8,7 @@ Bienvenido a la documentación funcional viva del repositorio **`sdd-agentic-sta
 
 ---
 
-## Baseline Activa (`v1.3.0`)
+## Baseline Activa (`v1.4.0`)
 
 - **Work Items de Framework Completados / Verificados:**
   - `FWK-001` — *Materialización y Activación Fiables de Packs* (`RFC-001` v2, estado `Verified` / `Done`).

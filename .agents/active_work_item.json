@@ -1,5 +1,5 @@
 {
-  "active_work_item_id": "REL-1.4.0",
+  "active_work_item_id": "IDLE",
   "branch": "develop",
   "worktree": null,
   "status": "IDLE",
@@ -10,10 +10,10 @@
   "enforce_gate_seals": true,
   "gate_seals": {},
   "git": {
-    "branch_name": "release/v1.4.0",
+    "branch_name": "develop",
     "worktree_path": null,
-    "status": "RELEASE_STAGING",
-    "updated_at": "2026-11-23T16:29:27+00:00",
+    "status": "IDLE",
+    "updated_at": "2026-11-23T17:10:00+00:00",
     "base_branch": "develop"
   }
 }

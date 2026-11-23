@@ -1,12 +1,12 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-23 16:29 UTC
-- **Active Work Item:** `REL-1.4.0`
-- **Active Branch:** `release/v1.4.0`
-- **Spec Folder Path:** `.sdd/framework/work-items/FWK-017-portfolio-epics`
-- **Current Gate:** `RELEASE_STAGING`
+- **Timestamp:** 2026-11-23 17:10 UTC
+- **Active Work Item:** `IDLE`
+- **Active Branch:** `develop`
+- **Spec Folder Path:** `None (Last completed: REL-v1.4.0 / FWK-017-portfolio-epics)`
+- **Current Gate:** `IDLE (v1.4.0 released to main — Ready for Next Work Item)`
 - **Active Worktrees:** None
 - **Recommended Model Tier:** High-Reasoning Tier (`Sesión A` para próximo Work Item)
-- **Last Completed Milestone:** `FWK-017-portfolio-epics` cerrado en Gate 5: bloques A/B/C completados (`174/174` tests offline OK, `ci-verify --mode framework` en `PASS`, `ADR-015`, docs bilingües y trazabilidad 0DD actualizados, sincronizado a `develop` en commit `40bfcdf`).
+- **Last Completed Milestone:** Release `v1.4.0` (`REL-v1.4.0` PR `#20`) integrada en `main` (`FWK-017` Portfolio/Épicas/DAG + actualización modular `santa-method`, `174/174` tests offline OK, `ci-verify` en `PASS`).
 - **Next Execution Target:** Abrir un hilo nuevo limpio (`RN-SDD-SESSION-LIFECYCLE`) para seleccionar el próximo Work Item desde `.sdd/framework/BACKLOG.md` o `specs/BACKLOG.md`.
 - **Mandatory Context Files (MAX 4 FILES):**
   1. `.sdd/framework/BACKLOG.md`
