@@ -17,17 +17,17 @@
 
 ### Bloque A: Gobernanza Core y Saneamiento ECC [PARALLEL: BLOCK_A]
 
-- [ ] `T-01` [`@architect`] `[PARALLEL: BLOCK_A]`: Crear la nueva skill Core `.agents/skills/sdd-security-audit/` (`SKILL.md <= 45L` + `references/stride-threat-model.md` y `references/owasp-asvs-checklist.md`) cubriendo modelado STRIDE en `Gate 2` y verificación OWASP Top 10 / ASVS v4+, BOLA/IDOR, secretos, SCA/SBOM y PII en `Gate 4` sin duplicar `05-security-and-secrets.md` ni `security-reviewer.md`.
+- [x] `T-01` [`@architect`] `[PARALLEL: BLOCK_A]`: Crear la nueva skill Core `.agents/skills/sdd-security-audit/` (`SKILL.md <= 45L` + `references/stride-threat-model.md` y `references/owasp-asvs-checklist.md`) cubriendo modelado STRIDE en `Gate 2` y verificación OWASP Top 10 / ASVS v4+, BOLA/IDOR, secretos, SCA/SBOM y PII en `Gate 4` sin duplicar `05-security-and-secrets.md` ni `security-reviewer.md`.
   - *Archivos exactos*: `.agents/skills/sdd-security-audit/SKILL.md`, `.agents/skills/sdd-security-audit/references/stride-threat-model.md`, `.agents/skills/sdd-security-audit/references/owasp-asvs-checklist.md`
   - *Contrato de referencia*: `02-tech-spec.md` §1.2, §2.1 (`RF-2001`, `CA-2001`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_cli.py healthcheck`
 
-- [ ] `T-02` [`@architect`] `[PARALLEL: BLOCK_A]`: Elevar de `L3` a `L4` las 4 skills Core (`sdd-silent-failure-audit`, `sdd-test-quality-audit`, `sdd-execution-guardrails`, `search-first`), manteniendo cada `SKILL.md <= 35L` y creando sus playbooks bajo demanda en `references/` (`polyglot-silent-failures.md`, `anti-mocking-and-mutation.md`, `worktree-lifecycle.md`, `reuse-vs-build-matrix.md`) dentro del presupuesto `< 15k` tokens de `references/`.
+- [x] `T-02` [`@architect`] `[PARALLEL: BLOCK_A]`: Elevar de `L3` a `L4` las 4 skills Core (`sdd-silent-failure-audit`, `sdd-test-quality-audit`, `sdd-execution-guardrails`, `search-first`), manteniendo cada `SKILL.md <= 35L` y creando sus playbooks bajo demanda en `references/` (`polyglot-silent-failures.md`, `anti-mocking-and-mutation.md`, `worktree-lifecycle.md`, `reuse-vs-build-matrix.md`) dentro del presupuesto `< 15k` tokens de `references/`.
   - *Archivos exactos*: `.agents/skills/sdd-silent-failure-audit/SKILL.md`, `.agents/skills/sdd-silent-failure-audit/references/polyglot-silent-failures.md`, `.agents/skills/sdd-test-quality-audit/SKILL.md`, `.agents/skills/sdd-test-quality-audit/references/anti-mocking-and-mutation.md`, `.agents/skills/sdd-execution-guardrails/SKILL.md`, `.agents/skills/sdd-execution-guardrails/references/worktree-lifecycle.md`, `.agents/skills/search-first/SKILL.md`, `.agents/skills/search-first/references/reuse-vs-build-matrix.md`
   - *Contrato de referencia*: `02-tech-spec.md` §1.2, §2.2 (`RF-2002`, `CA-2002`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_cli.py healthcheck`
 
-- [ ] `T-03` [`@back-engineer`] `[PARALLEL: BLOCK_A]`: Ejecutar el saneamiento exhaustivo de los 19 packs existentes en `.sdd/catalog/packs/` (sin tocar `capability-ui-design/vendor/ui-ux-pro-max/` ni romper `test_sdd_ui_design.py` Group 6): reparar las 5 cercas anidadas a ````text (`R0`), limpiar rutas `rules/ecc/`, `.claude/`, `~/.claude/` y `rules/<dir>/*` (`R1`), convertir los ~82 enlaces relativos inter-carpeta a rutas canónicas en código (`R2`) y sustituir agentes/skills huérfanos (`R3` y `R4`).
+- [x] `T-03` [`@back-engineer`] `[PARALLEL: BLOCK_A]`: Ejecutar el saneamiento exhaustivo de los 19 packs existentes en `.sdd/catalog/packs/` (sin tocar `capability-ui-design/vendor/ui-ux-pro-max/` ni romper `test_sdd_ui_design.py` Group 6): reparar las 5 cercas anidadas a ````text (`R0`), limpiar rutas `rules/ecc/`, `.claude/`, `~/.claude/` y `rules/<dir>/*` (`R1`), convertir los ~82 enlaces relativos inter-carpeta a rutas canónicas en código (`R2`) y sustituir agentes/skills huérfanos (`R3` y `R4`).
   - *Archivos exactos*: `.sdd/catalog/packs/**`
   - *Contrato de referencia*: `02-tech-spec.md` §2.3, §5.2 (`RF-2003`, `CA-2003`)
   - *Comando de verificación DoD*: `uv run pytest tests/test_sdd_ui_design.py -q`
@@ -115,4 +115,4 @@
 ## Aprobación Formal Gate 3 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 - [x] **Gate 3 Approved (Human Sign-off):** Revisado y validado por Stakeholder Humano (`2026-11-25T00:26:49+01:00` — `"Aprobado"`).
 
-<!-- sdd:gate-seal gate=3 sha256=14b36290fa28c0bd12ae2b5f63af3ea12fc23ebb362cf83773fd3fe5a36d93f8 -->
+<!-- sdd:gate-seal gate=3 sha256=eb6420b118742468575fcc6688fd6847605f0a98dfbb99b101ab72490a40265e -->
