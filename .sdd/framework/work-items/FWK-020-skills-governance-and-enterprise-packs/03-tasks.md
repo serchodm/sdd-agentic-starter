@@ -78,22 +78,22 @@
 
 ### Bloque D: Integración en Motor, Licencias, Pruebas y Gate 4 QA [PARALLEL: After BLOCK_C]
 
-- [ ] `T-12` [`@back-engineer`] `[PARALLEL: BLOCK_D]`: Actualizar `_API_FORBIDDEN_PACKS` y `_SPA_FORBIDDEN_PACKS` en `scripts/sdd_pack_registry.py` (`<= 500L`), implementar la preservación *fail-closed* de extensiones SDD en `scripts/sdd_catalog_import.py` (`<= 500L`), actualizar con simetría ES/EN y reglas de poda `.sdd/catalog/bootstrap-references/{question-catalog-es,question-catalog-en,stack-config-and-pruning}.md`, y enlazar `sdd-security-audit` en `.agents/skills/pipeline-run/SKILL.md` y `.agents/rules/05-security-and-secrets.md`.
+- [x] `T-12` [`@back-engineer`] `[PARALLEL: BLOCK_D]`: Actualizar `_API_FORBIDDEN_PACKS` y `_SPA_FORBIDDEN_PACKS` en `scripts/sdd_pack_registry.py` (`<= 500L`), implementar la preservación *fail-closed* de extensiones SDD en `scripts/sdd_catalog_import.py` (`<= 500L`), actualizar con simetría ES/EN y reglas de poda `.sdd/catalog/bootstrap-references/{question-catalog-es,question-catalog-en,stack-config-and-pruning}.md`, y enlazar `sdd-security-audit` en `.agents/skills/pipeline-run/SKILL.md` y `.agents/rules/05-security-and-secrets.md`.
   - *Archivos exactos*: `scripts/sdd_pack_registry.py`, `scripts/sdd_catalog_import.py`, `.sdd/catalog/bootstrap-references/question-catalog-es.md`, `.sdd/catalog/bootstrap-references/question-catalog-en.md`, `.sdd/catalog/bootstrap-references/stack-config-and-pruning.md`, `.agents/skills/pipeline-run/SKILL.md`, `.agents/rules/05-security-and-secrets.md`
   - *Contrato de referencia*: `02-tech-spec.md` §2.1, §4.1, §4.2, §4.3 (`RF-2001`, `RF-2007`, `RF-2008`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
 
-- [ ] `T-13` [`@documentator`] `[PARALLEL: BLOCK_D]`: Actualizar `.sdd/catalog/UPSTREAM.md` (tabla maestra de los `25` packs) y `THIRD_PARTY_NOTICES.md` con paridad 1:1 exacta de todos los repositorios y licencias (`MIT` / `Apache-2.0`) declarados en `upstream.repo` y `upstream.references` de los `25` `pack.json` (incluidos `nextlevelbuilder/ui-ux-pro-max-skill`, `asyncapi/spec` y los referentes Core).
+- [x] `T-13` [`@documentator`] `[PARALLEL: BLOCK_D]`: Actualizar `.sdd/catalog/UPSTREAM.md` (tabla maestra de los `25` packs) y `THIRD_PARTY_NOTICES.md` con paridad 1:1 exacta de todos los repositorios y licencias (`MIT` / `Apache-2.0`) declarados en `upstream.repo` y `upstream.references` de los `25` `pack.json` (incluidos `nextlevelbuilder/ui-ux-pro-max-skill`, `asyncapi/spec` y los referentes Core).
   - *Archivos exactos*: `.sdd/catalog/UPSTREAM.md`, `THIRD_PARTY_NOTICES.md`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §4.4 (`RF-2008`, `CA-2008`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_cli.py healthcheck`
 
-- [ ] `T-14` [`@qa-tester`] `[SEQUENTIAL: AFTER T-12, T-13]`: Crear `tests/test_sdd_enterprise_packs.py` (`<= 380L`, `CA-2004`..`CA-2008`), actualizar `tests/test_sdd_pack_materialization.py` (`<= 498L`), implementar `audit_catalog_pack_references` (`R0`–`R4`) y tests `CA-2001`..`CA-2003` + `CA-2009` en `tests/test_sdd_governance.py` (`<= 495L`), y aplicar el filtro `"references" not in p.parts` sobre el presupuesto activo en `tests/test_sdd_{release,brownfield,drift,portfolio}.py` (`<= 500L` en todos los `.py`).
+- [x] `T-14` [`@qa-tester`] `[SEQUENTIAL: AFTER T-12, T-13]`: Crear `tests/test_sdd_enterprise_packs.py` (`<= 380L`, `CA-2004`..`CA-2008`), actualizar `tests/test_sdd_pack_materialization.py` (`<= 498L`), implementar `audit_catalog_pack_references` (`R0`–`R4`) y tests `CA-2001`..`CA-2003` + `CA-2009` en `tests/test_sdd_governance.py` (`<= 495L`), y aplicar el filtro `"references" not in p.parts` sobre el presupuesto activo en `tests/test_sdd_{release,brownfield,drift,portfolio}.py` (`<= 500L` en todos los `.py`).
   - *Archivos exactos*: `tests/test_sdd_enterprise_packs.py`, `tests/test_sdd_pack_materialization.py`, `tests/test_sdd_governance.py`, `tests/test_sdd_release.py`, `tests/test_sdd_brownfield.py`, `tests/test_sdd_drift.py`, `tests/test_sdd_portfolio.py`
   - *Contrato de referencia*: `02-tech-spec.md` §1.2, §5.1, §5.2 (`CA-2001`..`CA-2009`)
   - *Comando de verificación DoD*: `uv run pytest tests/test_sdd_pack_materialization.py tests/test_sdd_enterprise_packs.py tests/test_sdd_governance.py tests/test_sdd_sync_and_modularity.py -q`
 
-- [ ] `T-15` [`@qa-tester`] `[SEQUENTIAL: AFTER T-14]`: Ejecutar la auditoría integral `Gate 4`: **Capa 1 Determinista** (`uv run pytest -q`, `uv run python scripts/sdd_cli.py ci-verify --mode framework`, `verify_architecture_boundaries.py`, `sdd_healthcheck.py`) seguida de **Capa 2 Semántica** (`/santa-loop` con rúbrica `GATE_4` y 2 revisores frescos aislados hasta veredicto unánime `NICE + NICE`).
+- [x] `T-15` [`@qa-tester`] `[SEQUENTIAL: AFTER T-14]`: Ejecutar la auditoría integral `Gate 4`: **Capa 1 Determinista** (`uv run pytest -q`, `uv run python scripts/sdd_cli.py ci-verify --mode framework`, `verify_architecture_boundaries.py`, `sdd_healthcheck.py`) seguida de **Capa 2 Semántica** (`/santa-loop` con rúbrica `GATE_4` y 2 revisores frescos aislados hasta veredicto unánime `NICE + NICE`).
   - *Archivos exactos*: N/A
   - *Contrato de referencia*: `02-tech-spec.md` §5, §6 (`RF-2009`, `CA-2009`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_cli.py ci-verify --mode framework`
@@ -115,4 +115,4 @@
 ## Aprobación Formal Gate 3 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 - [x] **Gate 3 Approved (Human Sign-off):** Revisado y validado por Stakeholder Humano (`2026-11-25T00:26:49+01:00` — `"Aprobado"`).
 
-<!-- sdd:gate-seal gate=3 sha256=19ec6a9188b327e9a44fb95bed6c3d0001de693df361ed12ee220dd4d7f403ef -->
+<!-- sdd:gate-seal gate=3 sha256=abc5581b6292b78413b20151188da46a8f634352376f9c096ec8f6a9db812601 -->
