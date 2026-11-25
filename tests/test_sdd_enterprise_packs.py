@@ -7,6 +7,7 @@ import contextlib
 import hashlib
 import io
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -312,10 +313,15 @@ class TestSddEnterprisePacks(unittest.TestCase):
                 ["supabase/agent-skills (MIT)", "agamm/claude-code-owasp (MIT)"],
             )
 
-            # Fail-closed negative tests: malformed pack.json and path traversal outside pack_dir
+            # Fail-closed negative tests: invalid pack.json schemas and path traversal outside pack_dir
             for label, payload in (
                 ("malformed_json", "{not valid json"),
                 ("escape_path", json.dumps({"skills": ["../outside-skill"]})),
+                ("skills_not_list", json.dumps({"skills": "skills/foo"})),
+                ("skills_empty_item", json.dumps({"skills": [" "]})),
+                ("upstream_not_dict", json.dumps({"skills": [], "upstream": "bad"})),
+                ("refs_not_list", json.dumps({"skills": [], "upstream": {"references": "bad"}})),
+                ("refs_empty_item", json.dumps({"skills": [], "upstream": {"references": [""]}})),
             ):
                 with self.subTest(case=label):
                     bad_dir = pathlib.Path(tmp) / f"bad_{label}"
@@ -326,6 +332,44 @@ class TestSddEnterprisePacks(unittest.TestCase):
                         contextlib.redirect_stderr(io.StringIO()),
                     ):
                         sdd_catalog_import.import_packs(fetcher=fake_fetcher, packs_dir=bad_dir)
+
+            # Fail-closed rejection of junction/symlink on packs/<pack>
+            junc_dir = pathlib.Path(tmp) / "bad_pack_link"
+            ext_pack = junc_dir / "capability-event-driven"
+            shutil.copytree(REAL_PACKS_DIR / "capability-event-driven", ext_pack)
+            ext_before = (ext_pack / "pack.json").read_bytes()
+            link_pack = junc_dir / "capability-devops"
+            if sys.platform == "win32":
+                import _winapi
+                _winapi.CreateJunction(str(ext_pack), str(link_pack))
+            else:
+                os.symlink(ext_pack, link_pack)
+            with (
+                self.assertRaises(ValueError),
+                contextlib.redirect_stdout(io.StringIO()),
+                contextlib.redirect_stderr(io.StringIO()),
+            ):
+                sdd_catalog_import.import_packs(fetcher=fake_fetcher, packs_dir=junc_dir)
+            self.assertEqual((ext_pack / "pack.json").read_bytes(), ext_before)
+
+            # Fail-closed rejection of symlink/link on pack.json
+            pj_link_dir = pathlib.Path(tmp) / "bad_pj_link"
+            target_pj = _write(pj_link_dir / "outside.json", json.dumps({"skills": []}))
+            link_pj = pj_link_dir / "capability-devops" / "pack.json"
+            link_pj.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                os.symlink(target_pj, link_pj)
+                ctx_patch = contextlib.nullcontext()
+            except OSError:
+                _write(link_pj, json.dumps({"skills": []}))
+                ctx_patch = mock.patch.object(sdd_catalog_import, "_is_link", side_effect=lambda p: p.name == "pack.json")
+            with (
+                ctx_patch,
+                self.assertRaises(ValueError),
+                contextlib.redirect_stdout(io.StringIO()),
+                contextlib.redirect_stderr(io.StringIO()),
+            ):
+                sdd_catalog_import.import_packs(fetcher=fake_fetcher, packs_dir=pj_link_dir)
 
 
 if __name__ == "__main__":

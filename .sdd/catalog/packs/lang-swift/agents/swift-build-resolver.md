@@ -172,5 +172,5 @@ Remaining errors: 3
 
 Final: `Build Status: SUCCESS/FAILED | Errors Fixed: N | Files Modified: list`
 
-For detailed Swift patterns and rules, see rules: `swift/coding-style`, `swift/patterns`, `swift/security`. See also skill: `swift-concurrency-6-2`, `swift-actor-persistence`.
+For detailed SDD engineering and security rules, see `.agents/rules/07-engineering-baseline.md` and `.agents/rules/05-security-and-secrets.md`. See also skill: `swift-concurrency-6-2`, `swift-actor-persistence`.
 

@@ -339,8 +339,12 @@ def _merge_prev_pack_manifest(
     pack_dir: pathlib.Path, meta: PackDefinition
 ) -> tuple[list[str], list[str] | None]:
     """Fail-closed merge of extra SDD skills and upstream.references from an existing pack.json."""
+    if _is_link(pack_dir):
+        raise ValueError(f"Symlink/junction no permitido en pack_dir: {pack_dir}")
     skills = list(meta["skills"])
     prev_path = pack_dir / "pack.json"
+    if _is_link(prev_path):
+        raise ValueError(f"Symlink/junction no permitido en pack.json: {prev_path}")
     if not prev_path.exists():
         return skills, None
     try:
@@ -359,8 +363,6 @@ def _merge_prev_pack_manifest(
             prev_refs = _require_str_list(prev_up["references"], "upstream.references", prev_path)
 
     pack_root = pack_dir.resolve()
-    if _is_link(pack_dir):
-        raise ValueError(f"Symlink/junction no permitido en pack_dir: {pack_dir}")
     meta_skills = set(meta["skills"])
     for s in prev_skills:
         if s in meta_skills:
@@ -394,6 +396,9 @@ def import_packs(
     print(f"\n[+] Importando y Estructurando Stack Packs en {packs_dir}...")
 
     for pack_dir_name, meta in STACK_PACKS.items():
+        raw_pack_dir = packs_dir / pack_dir_name
+        if _is_link(raw_pack_dir):
+            raise ValueError(f"Symlink/junction no permitido en pack_dir: {raw_pack_dir}")
         pack_dir = _safe_target(packs_dir, pack_dir_name)
         pack_dir.mkdir(parents=True, exist_ok=True)
         skills, prev_refs = _merge_prev_pack_manifest(pack_dir, meta)
@@ -415,7 +420,10 @@ def import_packs(
             "skills": skills,
             "workflows": list(meta["workflows"]),
         }
-        (pack_dir / "pack.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        pack_json_path = pack_dir / "pack.json"
+        if _is_link(pack_dir) or _is_link(pack_json_path):
+            raise ValueError(f"Symlink/junction no permitido al escribir {pack_json_path}")
+        pack_json_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
         _import_flat_assets(fetcher, pack_dir, pack_dir_name, "rules", meta["rules"], warnings)
 

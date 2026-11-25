@@ -152,14 +152,8 @@ class TestSDDGovernance(unittest.TestCase):
 
     def test_dynamic_web_remote_and_compare_url(self):
         """Verifica normalización SSH/HTTPS sin credenciales ni remotos hardcodeados."""
-        self.assertEqual(
-            format_web_remote_url("git@github.com:acme/project-x.git"),
-            "https://github.com/acme/project-x",
-        )
-        self.assertEqual(
-            format_web_remote_url("https://x-access-token:secret@gitlab.example.com:8443/team/app.git"),
-            "https://gitlab.example.com:8443/team/app",
-        )
+        self.assertEqual(format_web_remote_url("git@github.com:acme/project-x.git"), "https://github.com/acme/project-x")
+        self.assertEqual(format_web_remote_url("https://x-access-token:secret@gitlab.example.com:8443/team/app.git"), "https://gitlab.example.com:8443/team/app")
         self.assertIsNotNone(build_pr_compare_url("github", "develop", "feat/FEAT-100"))
 
     def test_fwk020_core_security_audit_and_l4_upgrades(self) -> None:
@@ -192,12 +186,16 @@ class TestSDDGovernance(unittest.TestCase):
             _write_gov_file(packs / "demo-pack" / "pack.json", json.dumps({"id": "demo:pack", "skills": ["skills/demo-skill"], "specialists": []}))
             _write_gov_file(
                 packs / "demo-pack" / "skills" / "demo-skill" / "SKILL.md",
-                "See rules/ecc/foo.md and [broken](../other/SKILL.md).\n"
-                "Agent: `code-reviewer` and Skill: `backend-patterns`.\n```python\nunclosed = True\n",
+                "See rules/ecc/foo.md, see rules: `swift/coding-style`, and [broken](../other/SKILL.md).\n"
+                "Agent: `code-reviewer`, `doc-updater`, and use the `ghost-flow` skill.\n"
+                "## Agents\n| `ghost-agent` | role |\n"
+                "## Related Skills\n- `ghost-skill` — desc\n"
+                "## Related Components\n| `configure-ecc` | setup |\n"
+                "```text\n```python\n```\n```python\nunclosed = True\n",
             )
             bad = audit_catalog_pack_references(ROOT_DIR, packs)
-            for rule in ("R0:", "R1:", "R2:", "R3:", "R4:"):
-                self.assertTrue(any(f.startswith(rule) for f in bad), f"Expected {rule} in {bad}")
+            for token in ("R0:", "nested fence", "unclosed fence", "R1:", "swift/coding-style", "R2:", "R3:", "ghost-agent", "doc-updater", "R4:", "ghost-skill", "configure-ecc", "ghost-flow"):
+                self.assertTrue(any(token in f for f in bad), f"Expected {token!r} in {bad}")
 
     def test_fwk020_agents_active_and_lazy_references_budget(self) -> None:
         """CA-2009: Active .agents/ < 25k tokens (<100KB) and lazy references/ < 15k tokens (<60KB)."""
@@ -215,10 +213,10 @@ class TestSDDGovernance(unittest.TestCase):
 
 _FENCE_RE = re.compile(r"^([ \t]*)(`{3,}|~{3,})(.*)$")
 _URL_RE, _INLINE_CODE_RE, _MD_LINK_RE = re.compile(r"https?://\S+"), re.compile(r"`[^`\n]+`"), re.compile(r"\[[^\]]*\]\(([^)]+)\)")
-_R1_RE = re.compile(r"(?:rules/ecc/|commands/ecc/|agents/ecc/|~/.claude/|(?:^|[\s(\[`])\.claude/|(?:^|[\s(\[`])rules/(?!0[0-7]-)[a-z0-9-]+/[a-z0-9_.*-]+)")
+_R1_RE = re.compile(r"(?:rules/ecc/|commands/ecc/|agents/ecc/|~/.claude/|(?:^|[\s(\[`])\.claude/|(?:^|[\s(\[`])rules/(?!0[0-7]-)[a-z0-9-]+/[a-z0-9_.*-]+|(?i:\bsee\s+rules:\s*`?[a-z0-9-]+/[a-z0-9_.*-]+))")
 _R3_RES = (
     re.compile(r"(?:^|[\s(\[*])(?i:agents?:\s*)`?(?:agents/)?([a-z0-9-]+)(?:\.md)?`?"),
-    re.compile(r"\b([a-z][a-z0-9-]+-(?:reviewer|resolver))\b"),
+    re.compile(r"\b([a-z][a-z0-9-]+-(?:reviewer|resolver|updater|lookup))\b"),
     re.compile(r"(?:^|[\s(\[`])@([a-z][a-z0-9-]+-(?:engineer|specialist|architect|analyst|tester|reviewer|resolver)|orchestrator|devops|documentator)\b"),
 )
 _R4_RES = (
@@ -226,8 +224,19 @@ _R4_RES = (
     re.compile(r"(?:^|[\s(\[`])skills/([a-z0-9-]+)(?:/|\b)"),
     re.compile(r"`([a-z][a-z0-9-]+)`\s+skill\b"),
     re.compile(r"\bskill\s+`([a-z][a-z0-9-]+)`"),
+    re.compile(r"(?i:\buse\s+(?:the\s+)?`?(?!(?:this|that|your|our|its|any|each|every|some|other|another|same|new|right)\b)([a-z][a-z0-9-]+)`?\s+skill\b)"),
 )
-_AGENT_TABLE_RE, _RELATED_BULLET_RE = re.compile(r"^\|\s*`([a-z][a-z0-9-]+)`\s*\|"), re.compile(r"^\s*[-*]\s+`([a-z][a-z0-9-]+)`\b")
+_AGENT_TABLE_RE, _RELATED_BULLET_RE = re.compile(r"^\|\s*`([a-z][a-z0-9-]+)`\s*\|"), re.compile(r"^\s*[-*]\s+`([a-z][a-z0-9-]+)`(?!\w)")
+
+
+def _has_link_segment(base: pathlib.Path, rel_t: str) -> bool:
+    is_junc = getattr(os.path, "isjunction", None)
+    cur = base
+    for part in pathlib.Path(rel_t).parts:
+        cur = cur / part
+        if cur.is_symlink() or (callable(is_junc) and bool(is_junc(cur))):
+            return True
+    return False
 
 
 def audit_catalog_pack_references(repo_root: pathlib.Path, packs_dir: pathlib.Path) -> list[str]:
@@ -249,9 +258,10 @@ def audit_catalog_pack_references(repo_root: pathlib.Path, packs_dir: pathlib.Pa
 
     findings: list[str] = []
     for md in sorted(packs_dir.rglob("*.md")):
-        if "vendor" in md.parts:
+        rel_p = md.relative_to(packs_dir)
+        if "vendor" in rel_p.parts:
             continue
-        rel, parts = md.relative_to(packs_dir).as_posix(), md.relative_to(packs_dir).parts
+        rel, parts = rel_p.as_posix(), rel_p.parts
         skill_dir = (packs_dir / parts[0] / "skills" / parts[2]).resolve() if len(parts) >= 4 and parts[1] == "skills" else None
         open_fence: tuple[str, int, int] | None = None
         in_agents, in_related = False, False
@@ -269,7 +279,7 @@ def audit_catalog_pack_references(repo_root: pathlib.Path, packs_dir: pathlib.Pa
                 continue
             if re.match(r"^#{1,3}\s+", line):
                 in_agents = bool(re.match(r"^#{2,3}\s+Agents?\b", line, re.IGNORECASE))
-                in_related = bool(re.match(r"^#{2,3}\s+Related(?:\s+Skills)?\b", line, re.IGNORECASE))
+                in_related = bool(re.match(r"^#{2,3}\s+Related\b", line, re.IGNORECASE))
             no_urls = _URL_RE.sub("", line)
             findings.extend(f"R1:{rel}:{lineno}: {m.group(0).strip()!r}" for m in _R1_RE.finditer(no_urls))
             for m in _MD_LINK_RE.finditer(_INLINE_CODE_RE.sub("", line)):
@@ -279,7 +289,7 @@ def audit_catalog_pack_references(repo_root: pathlib.Path, packs_dir: pathlib.Pa
                 rel_t = target.split("#", 1)[0].strip()
                 raw_p = (md.parent / rel_t) if rel_t else None
                 dest = raw_p.resolve() if raw_p else None
-                if not (skill_dir and raw_p and dest and not raw_p.is_symlink() and dest.exists() and dest.is_relative_to(skill_dir)):
+                if not (skill_dir and raw_p and dest and not _has_link_segment(md.parent, rel_t) and dest.exists() and dest.is_relative_to(skill_dir)):
                     findings.append(f"R2:{rel}:{lineno}: invalid relative link {target!r}")
             for rx in _R3_RES:
                 findings.extend(f"R3:{rel}:{lineno}: unknown agent {m.group(1)!r}" for m in rx.finditer(no_urls) if m.group(1).lower() not in official_agents)
@@ -287,8 +297,8 @@ def audit_catalog_pack_references(repo_root: pathlib.Path, packs_dir: pathlib.Pa
                 findings.append(f"R3:{rel}:{lineno}: unknown agent {tm.group(1)!r}")
             for rx in _R4_RES:
                 findings.extend(f"R4:{rel}:{lineno}: unknown skill {m.group(1)!r}" for m in rx.finditer(no_urls) if m.group(1).lower() not in official_skills)
-            if in_related and (bm := _RELATED_BULLET_RE.match(no_urls)) and bm.group(1).lower() not in (official_skills | official_agents):
-                findings.append(f"R4:{rel}:{lineno}: unknown related {bm.group(1)!r}")
+            if in_related and (rm := _RELATED_BULLET_RE.match(no_urls) or _AGENT_TABLE_RE.match(no_urls)) and rm.group(1).lower() not in (official_skills | official_agents):
+                findings.append(f"R4:{rel}:{lineno}: unknown related {rm.group(1)!r}")
         if open_fence is not None:
             findings.append(f"R0:{rel}:{open_fence[2]}: unclosed fence at EOF")
     return findings
@@ -445,13 +455,9 @@ class TestSDDCoherenceAlignment(unittest.TestCase):
             _write_gov_file(
                 ws / ".agents" / "active_work_item.json",
                 json.dumps({
-                    "active_work_item_id": "HOTFIX-001",
-                    "spec_dir": "specs/bugs/HOTFIX-001-auth-bypass",
-                    "status": "IN_PROGRESS",
-                    "gate_1_approved": True,
-                    "gate_2_approved": True,
-                    "gate_3_approved": True,
-                    "approved_by_human": True,
+                    "active_work_item_id": "HOTFIX-001", "spec_dir": "specs/bugs/HOTFIX-001-auth-bypass",
+                    "status": "IN_PROGRESS", "gate_1_approved": True, "gate_2_approved": True,
+                    "gate_3_approved": True, "approved_by_human": True,
                 }, indent=2),
             )
 
@@ -461,31 +467,18 @@ class TestSDDCoherenceAlignment(unittest.TestCase):
             self.assertTrue(ok, msg)
 
             payload = {"tool_name": "write_file", "tool_input": {"Path": "src/auth/fix.py", "Content": "def check(): return True\n"}}
-            allow_buf = io.StringIO()
-            with (
-                mock.patch.object(sdd_code_gate_guard, "get_repo_root", return_value=ws),
-                mock.patch.object(sdd_code_gate_guard, "read_hook_payload", return_value=payload),
-                contextlib.redirect_stdout(allow_buf),
-            ):
-                self.assertEqual(sdd_code_gate_guard.main(), 0)
-            self.assertEqual(json.loads(allow_buf.getvalue().strip())["decision"], "allow")
+            def _run_guard() -> dict:
+                buf = io.StringIO()
+                with mock.patch.object(sdd_code_gate_guard, "get_repo_root", return_value=ws), mock.patch.object(sdd_code_gate_guard, "read_hook_payload", return_value=payload), contextlib.redirect_stdout(buf):
+                    self.assertEqual(sdd_code_gate_guard.main(), 0)
+                return json.loads(buf.getvalue().strip())
 
-            _write_gov_file(
-                hf_dir / "02-fix-spec.md",
-                (hf_dir / "02-fix-spec.md").read_text(encoding="utf-8").replace("signature before lookup", "bypassed check"),
-            )
+            self.assertEqual(_run_guard()["decision"], "allow")
+            _write_gov_file(hf_dir / "02-fix-spec.md", (hf_dir / "02-fix-spec.md").read_text(encoding="utf-8").replace("signature before lookup", "bypassed check"))
             ok_tamper, msg_tamper = sdd_gate_seal.verify_work_item_gate_seals(ws, require_seals=True)
             self.assertFalse(ok_tamper)
             self.assertIn("SDD Gate Cryptographic Seal Violation", msg_tamper)
-
-            deny_buf = io.StringIO()
-            with (
-                mock.patch.object(sdd_code_gate_guard, "get_repo_root", return_value=ws),
-                mock.patch.object(sdd_code_gate_guard, "read_hook_payload", return_value=payload),
-                contextlib.redirect_stdout(deny_buf),
-            ):
-                self.assertEqual(sdd_code_gate_guard.main(), 0)
-            deny_decision = json.loads(deny_buf.getvalue().strip())
+            deny_decision = _run_guard()
             self.assertEqual(deny_decision["decision"], "deny")
             self.assertIn("SDD Gate Cryptographic Seal Violation", deny_decision["reason"])
 
