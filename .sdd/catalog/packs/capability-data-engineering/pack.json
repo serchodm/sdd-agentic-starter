@@ -1,0 +1,28 @@
+{
+  "id": "capability:data-engineering",
+  "family": "capability",
+  "requires": [],
+  "targets": [
+    "api",
+    "backend",
+    "database",
+    "db"
+  ],
+  "description": "Analytics data engineering with dbt layered modeling and enforced model contracts, Apache Airflow TaskFlow DAG orchestration with idempotent backfills, and data quality, lineage, and PII governance contracts.",
+  "upstream": {
+    "repo": "dbt-labs/dbt-agent-skills",
+    "license": "Apache-2.0",
+    "references": [
+      "GoogleCloudPlatform/data-agent-kit-plugin (Apache-2.0)",
+      "wshobson/agents (MIT)"
+    ]
+  },
+  "rules": [],
+  "specialists": [],
+  "skills": [
+    "skills/dbt-modeling-patterns",
+    "skills/airflow-dag-patterns",
+    "skills/data-quality-governance"
+  ],
+  "workflows": []
+}
