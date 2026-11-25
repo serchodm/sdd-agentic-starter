@@ -68,6 +68,8 @@ _API_FORBIDDEN_PACKS: frozenset[str] = frozenset({
     "framework:react",
     "framework-vue",
     "framework:vue",
+    "framework-nextjs",
+    "framework:nextjs",
 })
 _SPA_FORBIDDEN_PACKS: frozenset[str] = frozenset({
     "framework-fastapi",
@@ -76,6 +78,12 @@ _SPA_FORBIDDEN_PACKS: frozenset[str] = frozenset({
     "framework:django",
     "framework-spring",
     "framework:spring",
+    "framework-nestjs",
+    "framework:nestjs",
+    "capability-event-driven",
+    "capability:event-driven",
+    "capability-data-engineering",
+    "capability:data-engineering",
     "lang-sql",
     "lang:sql",
 })
