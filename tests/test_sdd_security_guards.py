@@ -135,8 +135,8 @@ class TestHooksJsonAndSkillsHygiene(unittest.TestCase):
         self.assertTrue(any("sdd_code_gate_guard.py" in c for c in commands))
         for cmd in commands:
             script_rel = next((t for t in shlex.split(cmd, posix=(os.name != "nt")) if t.endswith(".py")), "")
-            self.assertTrue(script_rel.startswith(".agents/scripts/"), f"Unexpected hook script path: {cmd}")
-            script_file = ROOT_DIR / script_rel
+            self.assertTrue(script_rel.startswith("scripts/"), f"Unexpected hook script path: {cmd}")
+            script_file = ROOT_DIR / ".agents" / script_rel
             self.assertTrue(script_file.is_file(), f"Hook target missing: {script_file}")
             self.assertEqual(_run_guard(script_file, ROOT_DIR, "").get("decision"), "deny")
 

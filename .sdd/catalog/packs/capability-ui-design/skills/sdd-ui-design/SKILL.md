@@ -5,7 +5,7 @@ description: "Adaptador metodológico SDD para ui-ux-pro-max offline. Gobierna l
 
 # Skill: `sdd-ui-design` (Adaptador Metodológico UI/UX SDD)
 
-Adapta el proveedor offline vendorizado `ui-ux-pro-max` (`2.15.0`, MIT) a las reglas de gobernanza SDD, el estándar [`FUNCTIONAL_DOCUMENTATION_STANDARD.md`](../../../../docs/standards/FUNCTIONAL_DOCUMENTATION_STANDARD.md) §18, `RN-SDD-IMMUTABLE-DONE` y `RN-SDD-1-TO-1-CR`.
+Adapta el proveedor offline vendorizado `ui-ux-pro-max` (`2.15.0`, MIT) a las reglas de gobernanza SDD, el estándar `docs/standards/FUNCTIONAL_DOCUMENTATION_STANDARD.md` §18, `RN-SDD-IMMUTABLE-DONE` y `RN-SDD-1-TO-1-CR`.
 
 ---
 

@@ -2,11 +2,14 @@
   "id": "capability:devops",
   "family": "capability",
   "requires": [],
-  "description": "Containerization, Kubernetes, deployment patterns, and healthchecks.",
+  "description": "Containerization, Kubernetes, Helm charts, GitOps continuous reconciliation, deployment patterns, and healthchecks.",
   "upstream": {
     "repo": "affaan-m/ecc",
     "license": "MIT",
-    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+    "copyright": "Copyright (c) 2026 Affaan Mustafa",
+    "references": [
+      "wshobson/agents (MIT)"
+    ]
   },
   "rules": [],
   "specialists": [],
@@ -14,7 +17,8 @@
     "skills/docker-patterns",
     "skills/kubernetes-patterns",
     "skills/deployment-patterns",
-    "skills/canary-watch"
+    "skills/canary-watch",
+    "skills/helm-gitops-patterns"
   ],
   "workflows": []
 }

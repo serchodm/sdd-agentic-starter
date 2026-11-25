@@ -5,7 +5,7 @@ paths:
 ---
 # Kotlin Patterns
 
-> This file extends [common/patterns.md](../common/patterns.md) with Kotlin and Android/KMP-specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with Kotlin and Android/KMP-specific content.
 
 ## Dependency Injection
 
@@ -143,4 +143,4 @@ val client = httpClient {
 ## References
 
 See skill: `kotlin-coroutines-flows` for detailed coroutine patterns.
-See skill: `android-clean-architecture` for module and layer patterns.
+See skill: `kotlin-patterns` for modular architecture and layer boundary patterns.

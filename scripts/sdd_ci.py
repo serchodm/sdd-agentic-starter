@@ -133,7 +133,8 @@ def _validate_hook_cmd(cmd: object, event_name: str, root_res: Path) -> str | No
     for rel in scripts:
         if not rel or ":" in rel or rel.startswith("/") or ".." in PurePosixPath(rel).parts:
             return f"Unsafe or escaping hook script path: {rel}"
-        cand = root_res / rel
+        agents_res = (root_res / ".agents").resolve()
+        cand = (agents_res / rel) if (agents_res / rel).exists() else (root_res / rel)
         if is_link_or_junction(cand) or not cand.resolve().is_relative_to(root_res) or not cand.resolve().is_file():
             return f"Hook script path missing or escapes repo: {rel}"
     return None

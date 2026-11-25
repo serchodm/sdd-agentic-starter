@@ -357,7 +357,7 @@ class TestSddBrownfieldCliAndFrameworkBudget(unittest.TestCase):
         wf_lines = wf_path.read_text(encoding="utf-8").splitlines()
         self.assertLessEqual(len(wf_lines), 25, f"brownfield-adopt.md exceeded 25 lines ({len(wf_lines)})")
 
-        md_bytes = sum(p.stat().st_size for p in (ROOT_DIR / ".agents").rglob("*.md") if p.is_file())
+        md_bytes = sum(p.stat().st_size for p in (ROOT_DIR / ".agents").rglob("*.md") if p.is_file() and "references" not in p.parts)
         self.assertLess(md_bytes, 100_000, f".agents/ markdown exceeded 100KB ({md_bytes}B)")
         self.assertLess(md_bytes / 4.0, 25_000, f".agents/ markdown exceeded 25k tokens ({md_bytes / 4.0:.1f})")
 

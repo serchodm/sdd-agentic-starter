@@ -1,0 +1,26 @@
+{
+  "id": "framework:nestjs",
+  "family": "framework",
+  "requires": [
+    "lang:typescript"
+  ],
+  "targets": [
+    "api",
+    "backend",
+    "server"
+  ],
+  "description": "NestJS production backend patterns: domain-oriented modules with explicit exports, cycle-free dependency injection, strict boundary request validation, deterministic request lifecycle pipeline, graceful shutdown, and TestingModule-based verification.",
+  "upstream": {
+    "repo": "nestjs/agent-skills",
+    "license": "MIT",
+    "references": [
+      "Kadajett/agent-nestjs-skills (MIT)"
+    ]
+  },
+  "rules": [],
+  "specialists": [],
+  "skills": [
+    "skills/nestjs-patterns"
+  ],
+  "workflows": []
+}

@@ -27,8 +27,8 @@ and output a complete optimized prompt the user can paste and run.
 
 - User wants the task done directly (just execute it)
 - User says "优化代码", "优化性能", "optimize this code", "optimize performance" — these are refactoring tasks, not prompt optimization
-- User is asking about ECC configuration (use `configure-ecc` instead)
-- User wants a skill inventory (use `skill-stocktake` instead)
+- User is asking about SDD stack configuration (use `sdd-bootstrap` instead)
+- User wants a spec or skill compliance audit (use `sdd-spec-compliance-audit` instead)
 - User says "just do it" or "直接做"
 
 ## How It Works
@@ -96,7 +96,7 @@ from the prompt description alone and mark the estimate as uncertain.
 | LOW | Single component or module | Single command or skill |
 | MEDIUM | Multiple components, same domain | Command chain + /verify |
 | HIGH | Cross-domain, 5+ files | /plan first, then phased execution |
-| EPIC | Multi-session, multi-PR, architectural shift | Use blueprint skill for multi-session plan |
+| EPIC | Multi-session, multi-PR, architectural shift | Use `pipeline-run` skill for multi-session plan |
 
 ### Phase 3: ECC Component Matching
 
@@ -106,16 +106,16 @@ Map intent + scope + tech stack (from Phase 0) to specific ECC components.
 
 | Intent | Commands | Skills | Agents |
 |--------|----------|--------|--------|
-| New Feature | /plan, /tdd, /code-review, /verify | tdd-workflow, verification-loop | planner, tdd-guide, code-reviewer |
-| Bug Fix | /tdd, /build-fix, /verify | tdd-workflow | tdd-guide, build-error-resolver |
-| Refactor | /refactor-clean, /code-review, /verify | verification-loop | refactor-cleaner, code-reviewer |
+| New Feature | /plan, /tdd, /code-review, /verify | sdd-test-quality-audit, santa-method | architect, tdd-guide, qa-tester |
+| Bug Fix | /tdd, /build-fix, /verify | sdd-test-quality-audit | tdd-guide, build-error-resolver |
+| Refactor | /refactor-clean, /code-review, /verify | santa-method | refactor-cleaner, qa-tester |
 | Research | /plan | search-first, iterative-retrieval | — |
-| Testing | /tdd, /e2e, /test-coverage | tdd-workflow, e2e-testing | tdd-guide, e2e-runner |
-| Review | /code-review | security-review | code-reviewer, security-reviewer |
-| Documentation | /update-docs, /update-codemaps | — | doc-updater |
+| Testing | /tdd, /e2e, /test-coverage | sdd-test-quality-audit, browser-qa | tdd-guide, e2e-runner |
+| Review | /code-review | sdd-security-audit | qa-tester, security-reviewer |
+| Documentation | /update-docs, /update-codemaps | — | documentator |
 | Infrastructure | /plan, /verify | docker-patterns, deployment-patterns, database-migrations | architect |
-| Design (MEDIUM-HIGH) | /plan | — | planner, architect |
-| Design (EPIC) | — | blueprint (invoke as skill) | planner, architect |
+| Design (MEDIUM-HIGH) | /plan | — | orchestrator, architect |
+| Design (EPIC) | — | pipeline-run | orchestrator, architect |
 
 #### By Tech Stack
 
@@ -124,14 +124,13 @@ Map intent + scope + tech stack (from Phase 0) to specific ECC components.
 | Python / Django | django-patterns, django-tdd, django-security, django-verification, python-patterns, python-testing | python-reviewer |
 | Go | golang-patterns, golang-testing | go-reviewer, go-build-resolver |
 | Spring Boot / Java | springboot-patterns, springboot-tdd, springboot-security, springboot-verification, java-coding-standards, jpa-patterns | java-reviewer |
-| Quarkus / Java | quarkus-patterns, quarkus-tdd, quarkus-security, quarkus-verification, java-coding-standards, jpa-patterns | java-reviewer |
-| Kotlin / Android | kotlin-coroutines-flows, compose-multiplatform-patterns, android-clean-architecture | kotlin-reviewer |
-| TypeScript / React | frontend-patterns, backend-patterns, coding-standards | code-reviewer |
-| Swift / iOS | swiftui-patterns, swift-concurrency-6-2, swift-actor-persistence, swift-protocol-di-testing | code-reviewer |
+| Quarkus / Java | java-coding-standards, jpa-patterns, sdd-security-audit | java-reviewer |
+| Kotlin / Android | kotlin-patterns, kotlin-coroutines-flows, kotlin-testing | kotlin-reviewer |
+| TypeScript / React | typescript-patterns, react-patterns, frontend-patterns | typescript-reviewer, react-reviewer |
+| Swift / iOS | swiftui-patterns, swift-concurrency-6-2, swift-actor-persistence, swift-protocol-di-testing | swift-reviewer |
 | PostgreSQL | postgres-patterns, database-migrations | database-reviewer |
-| Perl | perl-patterns, perl-testing, perl-security | code-reviewer |
-| C++ | cpp-coding-standards, cpp-testing | code-reviewer |
-| Other / Unlisted | coding-standards (universal) | code-reviewer |
+| C++ | cpp-coding-standards, cpp-testing | cpp-reviewer |
+| Other / Unlisted | sdd-spec-compliance-audit, sdd-test-quality-audit | qa-tester |
 
 ### Phase 4: Missing Context Detection
 
@@ -162,7 +161,7 @@ Determine where this prompt sits in the development lifecycle:
 Research → Plan → Implement (TDD) → Review → Verify → Commit
 ```
 
-For MEDIUM+ tasks, always start with /plan. For EPIC tasks, use blueprint skill.
+For MEDIUM+ tasks, always start with /plan. For EPIC tasks, use `pipeline-run` skill.
 
 **Model recommendation** (include in output):
 
@@ -171,7 +170,7 @@ For MEDIUM+ tasks, always start with /plan. For EPIC tasks, use blueprint skill.
 | TRIVIAL-LOW | Sonnet 5 | Fast, cost-efficient for simple tasks |
 | MEDIUM | Sonnet 5 | Best coding model for standard work |
 | HIGH | Sonnet 5 (main) + Opus 5 (planning) | Opus for architecture, Sonnet for implementation |
-| EPIC | Opus 5 (blueprint) + Sonnet 5 (execution) | Deep reasoning for multi-session planning |
+| EPIC | Opus 5 (architecture) + Sonnet 5 (execution) | Deep reasoning for multi-session planning |
 
 **Multi-prompt splitting** (for HIGH/EPIC scope):
 
@@ -206,8 +205,8 @@ If Phase 0 auto-detected the answer, state it instead of asking.
 | Type | Component | Purpose |
 |------|-----------|---------|
 | Command | /plan | Plan architecture before coding |
-| Skill | tdd-workflow | TDD methodology guidance |
-| Agent | code-reviewer | Post-implementation review |
+| Skill | sdd-test-quality-audit | TDD and test quality audit guidance |
+| Agent | qa-tester | Post-implementation review |
 | Model | Sonnet 5 | Recommended for this scope |
 
 ### Section 3: Optimized Prompt — Full Version
@@ -221,8 +220,8 @@ The prompt must be self-contained and ready to copy-paste. Include:
 - Verification steps
 - Scope boundaries (what NOT to do)
 
-For items that reference blueprint, write: "Use the blueprint skill to..."
-(not `/blueprint`, since blueprint is a skill, not a command).
+For items that reference multi-session orchestration, write: "Use the `pipeline-run` skill to..."
+(invoke `pipeline-run` as an SDD skill rather than a slash command).
 
 ### Section 4: Optimized Prompt — Quick Version
 
@@ -237,7 +236,7 @@ A compact version for experienced ECC users. Vary by intent type:
 | Testing | `/tdd [module]. /e2e for critical flows. /test-coverage.` |
 | Review | `/code-review. Then use security-reviewer agent.` |
 | Docs | `/update-docs. /update-codemaps.` |
-| EPIC | `Use blueprint skill for "[objective]". Execute phases with /verify gates.` |
+| EPIC | `Use pipeline-run skill for "[objective]". Execute phases with /verify gates.` |
 
 ### Section 5: Enhancement Rationale
 
@@ -350,16 +349,16 @@ Migrate our monolith to microservices
 
 **Optimized Prompt (Full):**
 ```
-Use the blueprint skill to plan: "Migrate monolith to microservices architecture"
+Use the pipeline-run skill to plan: "Migrate monolith to microservices architecture"
 
-Before executing, answer these questions in the blueprint:
+Before executing, answer these questions in the architecture plan:
 1. Which domain boundaries exist in the current monolith?
 2. Which service should be extracted first (lowest coupling)?
 3. Communication pattern: REST APIs, gRPC, or event-driven (Kafka/RabbitMQ)?
 4. Database strategy: shared DB initially or database-per-service from start?
 5. Deployment target: Kubernetes, Docker Compose, or serverless?
 
-The blueprint should produce phases like:
+The plan should produce phases like:
 - Phase 1: Identify service boundaries and create domain map
 - Phase 2: Set up infrastructure (API gateway, service mesh, CI/CD per service)
 - Phase 3: Extract first service (strangler fig pattern)
@@ -370,7 +369,7 @@ Each phase = 1 PR, with /verify gates between phases.
 Use /save-session between phases. Use /resume-session to continue.
 Use git worktrees for parallel service extraction when dependencies allow.
 
-Recommended: Opus 5 for blueprint planning, Sonnet 5 for phase execution.
+Recommended: Opus 5 for architecture planning, Sonnet 5 for phase execution.
 ```
 
 ---
@@ -379,9 +378,9 @@ Recommended: Opus 5 for blueprint planning, Sonnet 5 for phase execution.
 
 | Component | When to Reference |
 |-----------|------------------|
-| `configure-ecc` | User hasn't set up ECC yet |
-| `skill-stocktake` | Audit which components are installed (use instead of hardcoded catalog) |
+| `sdd-bootstrap` | User hasn't configured `specs/STACK.md` (Gate S0) yet |
+| `sdd-spec-compliance-audit` | Audit spec and skill compliance against contracts |
 | `search-first` | Research phase in optimized prompts |
-| `blueprint` | EPIC-scope optimized prompts (invoke as skill, not command) |
+| `pipeline-run` | EPIC-scope optimized prompts (invoke as an SDD skill) |
 | `strategic-compact` | Long session context management |
 | `cost-aware-llm-pipeline` | Token optimization recommendations |

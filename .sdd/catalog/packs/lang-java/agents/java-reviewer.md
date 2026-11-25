@@ -192,5 +192,5 @@ Read `pom.xml`, `build.gradle`, or `build.gradle.kts` to determine the build too
 
 For detailed patterns and examples:
 - **[SPRING]**: See `skill: springboot-patterns`
-- **[QUARKUS]**: See `skill: quarkus-patterns`
+- **[QUARKUS]**: Apply Quarkus CDI, Panache, and reactive REST conventions aligned with `java-coding-standards`
 

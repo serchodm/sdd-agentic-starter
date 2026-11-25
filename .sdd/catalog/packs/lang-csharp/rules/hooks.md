@@ -9,11 +9,11 @@ paths:
 ---
 # C# Hooks
 
-> This file extends [common/hooks.md](../common/hooks.md) with C#-specific content.
+> This file extends `.agents/hooks.json` with C#-specific content.
 
 ## PostToolUse Hooks
 
-Configure in `~/.claude/settings.json`:
+Configure in `.agents/hooks.json`:
 
 - **dotnet format**: Auto-format edited C# files and apply analyzer fixes
 - **dotnet build**: Verify the solution or project still compiles after edits

@@ -1,19 +1,24 @@
 {
-  "active_work_item_id": "IDLE",
-  "branch": "develop",
+  "active_work_item_id": "FWK-020-skills-governance-and-enterprise-packs",
+  "spec_dir": ".sdd/framework/work-items/FWK-020-skills-governance-and-enterprise-packs",
+  "branch": "feat/fwk-020-skills-governance-and-enterprise-packs",
   "worktree": null,
-  "status": "IDLE",
-  "gate_1_approved": false,
-  "gate_2_approved": false,
-  "gate_3_approved": false,
-  "approved_by_human": false,
+  "status": "IN_PROGRESS",
+  "gate_1_approved": true,
+  "gate_2_approved": true,
+  "gate_3_approved": true,
+  "approved_by_human": true,
   "enforce_gate_seals": true,
-  "gate_seals": {},
+  "gate_seals": {
+    "1": "sha256:f99e58c3c2cb6bc037c56a5c242b3411f00befb55b866aaa7ee539113b280192",
+    "2": "sha256:ce568223bcc607eebeafe239d7939ce18c58b474a507ed355412f159228fde38",
+    "3": "sha256:6c736de39f14e066510ba8b2f6a5556c2056820f8bfd5235e09746fd4e3c42c9"
+  },
   "git": {
-    "branch_name": "develop",
+    "branch_name": "feat/fwk-020-skills-governance-and-enterprise-packs",
     "worktree_path": null,
-    "status": "IDLE",
-    "updated_at": "2026-11-23T17:10:00+00:00",
+    "status": "IN_PROGRESS",
+    "updated_at": "2026-11-24T23:27:00+00:00",
     "base_branch": "develop"
   }
 }

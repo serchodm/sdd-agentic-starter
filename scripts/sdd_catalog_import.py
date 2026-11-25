@@ -9,6 +9,7 @@ import argparse
 from collections.abc import Callable
 import http.client
 import json
+import os
 import pathlib
 import re
 import sys
@@ -43,26 +44,10 @@ class PackDefinition(TypedDict):
 
 # Universal specialists that belong to baseline catalog
 UNIVERSAL_SPECIALISTS: list[str] = [
-    "code-explorer",
-    "spec-miner",
-    "code-architect",
-    "type-design-analyzer",
-    "security-reviewer",
-    "silent-failure-hunter",
-    "build-error-resolver",
-    "tdd-guide",
-    "performance-optimizer",
-    "e2e-runner",
-    "code-simplifier",
-    "refactor-cleaner",
-    "gan-planner",
-    "gan-generator",
-    "gan-evaluator",
-    "conversation-analyzer",
-    "docs-lookup",
-    "pr-test-analyzer",
-    "comment-analyzer",
-    "opensource-sanitizer",
+    "code-explorer", "spec-miner", "code-architect", "type-design-analyzer", "security-reviewer",
+    "silent-failure-hunter", "build-error-resolver", "tdd-guide", "performance-optimizer", "e2e-runner",
+    "code-simplifier", "refactor-cleaner", "gan-planner", "gan-generator", "gan-evaluator",
+    "conversation-analyzer", "docs-lookup", "pr-test-analyzer", "comment-analyzer", "opensource-sanitizer",
 ]
 
 # Stack packs definition
@@ -253,20 +238,11 @@ STACK_PACKS: dict[str, PackDefinition] = {
 def fetch_text(rel_url: str) -> str | None:
     """Download a UTF-8 text asset relative to RAW_BASE, logging transport failures."""
     url = f"{RAW_BASE}/{rel_url.lstrip('/')}"
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "sdd-agentic-starter-catalog-importer/1.0"}
-    )
+    req = urllib.request.Request(url, headers={"User-Agent": "sdd-agentic-starter-catalog-importer/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             return resp.read().decode("utf-8")
-    except (
-        urllib.error.URLError,
-        http.client.HTTPException,
-        TimeoutError,
-        OSError,
-        UnicodeDecodeError,
-        ValueError,
-    ) as exc:
+    except (urllib.error.URLError, http.client.HTTPException, TimeoutError, OSError, UnicodeDecodeError, ValueError) as exc:
         print(f"  -> [WARN] Error descargando '{url}': {exc}", file=sys.stderr)
         return None
 
@@ -282,29 +258,19 @@ def _safe_target(parent_dir: pathlib.Path, filename: str) -> pathlib.Path:
     return target
 
 
-def _fetch_or_warn(
-    fetcher: TextFetcher,
-    label: str,
-    rel_path: str,
-    warnings: list[str],
-) -> str | None:
+def _fetch_or_warn(fetcher: TextFetcher, label: str, rel_path: str, warnings: list[str]) -> str | None:
     """Fetch rel_path via fetcher and record an explicit [WARN] if it returns None."""
     txt = fetcher(rel_path)
     if txt is None:
         warn = f"[WARN] {label}: no se pudo descargar '{rel_path}'"
         print(f"  -> {warn}")
         warnings.append(warn)
-        return None
     return txt
 
 
 def _import_flat_assets(
-    fetcher: TextFetcher,
-    pack_dir: pathlib.Path,
-    pack_dir_name: str,
-    subdir_name: str,
-    entries: list[str],
-    warnings: list[str],
+    fetcher: TextFetcher, pack_dir: pathlib.Path, pack_dir_name: str,
+    subdir_name: str, entries: list[str], warnings: list[str],
 ) -> None:
     """Download flat pack assets (rules/workflows), creating subdir_name only when non-empty."""
     if not entries:
@@ -314,45 +280,19 @@ def _import_flat_assets(
     for entry in entries:
         txt = _fetch_or_warn(fetcher, f"({pack_dir_name}) {subdir_name}", entry, warnings)
         if txt is not None:
-            target = _safe_target(target_dir, pathlib.Path(entry).name)
-            target.write_text(txt, encoding="utf-8")
+            _safe_target(target_dir, pathlib.Path(entry).name).write_text(txt, encoding="utf-8")
 
 
 def adapt_agent_frontmatter(agent_name: str, content: str, read_only: bool = True) -> str:
     """Ensures consistent SDD Subagent frontmatter while preserving original Prompt Defense & Body."""
-    desc = f"Especialista ECC en auditoria y resolucion tecnica: {agent_name}."
-
-    # Extract description from existing frontmatter if present
     match_desc = re.search(r"description:\s*(.+)", content)
-    if match_desc:
-        desc = match_desc.group(1).strip()
-
-    body = content
-    # Strip any top YAML frontmatter from raw content
-    if body.startswith("---"):
-        parts = body.split("---", 2)
-        if len(parts) >= 3:
-            body = parts[2].lstrip()
-
-    tools_block = (
-        "  bash: true\n  write: false\n  edit: false"
-        if read_only
-        else "  bash: true\n  write: true\n  edit: true"
+    desc = match_desc.group(1).strip() if match_desc else f"Especialista ECC en auditoria y resolucion tecnica: {agent_name}."
+    body = content.split("---", 2)[2].lstrip() if content.startswith("---") and len(content.split("---", 2)) >= 3 else content
+    tools_block = "  bash: true\n  write: false\n  edit: false" if read_only else "  bash: true\n  write: true\n  edit: true"
+    return (
+        f"---\nname: {agent_name}\ndescription: {desc}\nmode: subagent\ntools:\n{tools_block}\n---\n\n"
+        f"<!-- Sourced from upstream affaan-m/ecc (MIT License, Copyright 2026 Affaan Mustafa) -->\n\n{body}\n"
     )
-
-    adapted = f"""---
-name: {agent_name}
-description: {desc}
-mode: subagent
-tools:
-{tools_block}
----
-
-<!-- Sourced from upstream affaan-m/ecc (MIT License, Copyright 2026 Affaan Mustafa) -->
-
-{body}
-"""
-    return adapted
 
 
 def import_specialists(
@@ -364,11 +304,7 @@ def import_specialists(
     """Import universal ECC specialists into default and opt-in catalog directories."""
     warnings: list[str] = []
     specialists_dir.mkdir(parents=True, exist_ok=True)
-    resolved_optin = (
-        optin_dir
-        if optin_dir is not None
-        else (SPECIALISTS_OPTIN_DIR if specialists_dir == SPECIALISTS_DIR else specialists_dir)
-    )
+    resolved_optin = optin_dir if optin_dir is not None else (SPECIALISTS_OPTIN_DIR if specialists_dir == SPECIALISTS_DIR else specialists_dir)
     resolved_optin.mkdir(parents=True, exist_ok=True)
     print(f"\n[+] Importando Especialistas Universales ECC a {specialists_dir} (opt-in: {resolved_optin})...")
     for name in UNIVERSAL_SPECIALISTS:
@@ -377,17 +313,77 @@ def import_specialists(
         if name in SDD_CUSTOMIZED_SPECIALISTS and target.exists() and not overwrite_sdd_custom:
             print(f"  -> [SKIP-SDD] Preservando especialista adaptado a SDD: {dest_dir.name}/{name}.md")
             continue
-
-        rel_path = f"agents/{name}.md"
-        content = _fetch_or_warn(fetcher, f"specialist '{name}'", rel_path, warnings)
+        content = _fetch_or_warn(fetcher, f"specialist '{name}'", f"agents/{name}.md", warnings)
         if content is None:
             continue
-
         read_only = name not in {"build-error-resolver", "code-simplifier", "refactor-cleaner"}
-        adapted = adapt_agent_frontmatter(name, content, read_only=read_only)
-        target.write_text(adapted, encoding="utf-8")
+        target.write_text(adapt_agent_frontmatter(name, content, read_only=read_only), encoding="utf-8")
         print(f"  -> [OK] Guardado especialista: {dest_dir.name}/{name}.md")
     return warnings
+
+
+def _is_link(path: pathlib.Path) -> bool:
+    """Return True if path is a symlink or Windows directory junction."""
+    is_junc = getattr(os.path, "isjunction", None)
+    return path.is_symlink() or (callable(is_junc) and bool(is_junc(path)))
+
+
+def _require_str_list(value: object, field: str, prev_path: pathlib.Path) -> list[str]:
+    """Fail-closed validation for a list of non-empty, non-whitespace strings."""
+    if not isinstance(value, list) or any(not isinstance(item, str) or not item.strip() for item in value):
+        raise ValueError(f"Campo '{field}' invalido en {prev_path}: se esperaba list[str] no vacios.")
+    return list(value)
+
+
+def _merge_prev_pack_manifest(
+    pack_dir: pathlib.Path, meta: PackDefinition
+) -> tuple[list[str], list[str] | None]:
+    """Fail-closed merge of extra SDD skills and upstream.references from an existing pack.json."""
+    if _is_link(pack_dir):
+        raise ValueError(f"Symlink/junction no permitido en pack_dir: {pack_dir}")
+    skills = list(meta["skills"])
+    prev_path = pack_dir / "pack.json"
+    if _is_link(prev_path):
+        raise ValueError(f"Symlink/junction no permitido en pack.json: {prev_path}")
+    if not prev_path.exists():
+        return skills, None
+    try:
+        prev = json.loads(prev_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"pack.json previo invalido en {prev_path}: {exc}") from exc
+    if not isinstance(prev, dict):
+        raise ValueError(f"La raiz de {prev_path} debe ser un objeto JSON.")
+    prev_skills = _require_str_list(prev.get("skills"), "skills", prev_path)
+    prev_refs: list[str] | None = None
+    if "upstream" in prev:
+        prev_up = prev["upstream"]
+        if not isinstance(prev_up, dict):
+            raise ValueError(f"Campo 'upstream' invalido en {prev_path}: se esperaba dict.")
+        if "references" in prev_up:
+            prev_refs = _require_str_list(prev_up["references"], "upstream.references", prev_path)
+
+    pack_root = pack_dir.resolve()
+    meta_skills = set(meta["skills"])
+    for s in prev_skills:
+        if s in meta_skills:
+            continue
+        rel = pathlib.Path(s)
+        posix_parts = pathlib.PurePosixPath(s.replace("\\", "/")).parts
+        if rel.is_absolute() or bool(rel.drive) or s.startswith(("/", "\\")) or ".." in posix_parts:
+            raise ValueError(f"Ruta de skill fuera de {pack_dir}: {s!r}")
+        cur = pack_dir
+        for part in rel.parts:
+            cur = cur / part
+            if _is_link(cur):
+                raise ValueError(f"Symlink/junction no permitido en ruta de skill: {cur}")
+        if _is_link(cur / "SKILL.md"):
+            raise ValueError(f"Symlink/junction no permitido en {cur / 'SKILL.md'}")
+        cand = cur.resolve()
+        if cand == pack_root or not cand.is_relative_to(pack_root):
+            raise ValueError(f"Ruta de skill escapa {pack_root}: {s!r}")
+        if (cand / "SKILL.md").is_file() and s not in skills:
+            skills.append(s)
+    return skills, prev_refs
 
 
 def import_packs(
@@ -400,25 +396,34 @@ def import_packs(
     print(f"\n[+] Importando y Estructurando Stack Packs en {packs_dir}...")
 
     for pack_dir_name, meta in STACK_PACKS.items():
+        raw_pack_dir = packs_dir / pack_dir_name
+        if _is_link(raw_pack_dir):
+            raise ValueError(f"Symlink/junction no permitido en pack_dir: {raw_pack_dir}")
         pack_dir = _safe_target(packs_dir, pack_dir_name)
         pack_dir.mkdir(parents=True, exist_ok=True)
-
+        skills, prev_refs = _merge_prev_pack_manifest(pack_dir, meta)
+        upstream: dict[str, object] = {
+            "repo": "affaan-m/ecc",
+            "license": "MIT",
+            "copyright": "Copyright (c) 2026 Affaan Mustafa",
+        }
+        if prev_refs is not None:
+            upstream["references"] = prev_refs
         manifest = {
             "id": meta["id"],
             "family": meta["family"],
-            "requires": meta["requires"],
+            "requires": list(meta["requires"]),
             "description": meta["description"],
-            "upstream": {
-                "repo": "affaan-m/ecc",
-                "license": "MIT",
-                "copyright": "Copyright (c) 2026 Affaan Mustafa",
-            },
-            "rules": meta["rules"],
-            "specialists": meta["specialists"],
-            "skills": meta["skills"],
-            "workflows": meta["workflows"],
+            "upstream": upstream,
+            "rules": list(meta["rules"]),
+            "specialists": list(meta["specialists"]),
+            "skills": skills,
+            "workflows": list(meta["workflows"]),
         }
-        (pack_dir / "pack.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        pack_json_path = pack_dir / "pack.json"
+        if _is_link(pack_dir) or _is_link(pack_json_path):
+            raise ValueError(f"Symlink/junction no permitido al escribir {pack_json_path}")
+        pack_json_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
         _import_flat_assets(fetcher, pack_dir, pack_dir_name, "rules", meta["rules"], warnings)
 
@@ -446,10 +451,7 @@ def import_packs(
                     s_target_dir.mkdir(parents=True, exist_ok=True)
                     (s_target_dir / "SKILL.md").write_text(txt, encoding="utf-8")
 
-        _import_flat_assets(
-            fetcher, pack_dir, pack_dir_name, "workflows", meta["workflows"], warnings
-        )
-
+        _import_flat_assets(fetcher, pack_dir, pack_dir_name, "workflows", meta["workflows"], warnings)
         print(f"  -> [OK] Pack configurado: {pack_dir_name} ({meta['id']})")
 
     return warnings
@@ -458,20 +460,12 @@ def import_packs(
 def main(argv: list[str] | None = None) -> None:
     """Run the CLI catalog import for universal specialists and STACK_PACKS."""
     parser = argparse.ArgumentParser(description="SDD Catalog Importer & Packager")
-    parser.add_argument(
-        "--overwrite-sdd-custom",
-        action="store_true",
-        help="Sobreescribir especialistas adaptados a SDD (p. ej. spec-miner.md).",
-    )
+    parser.add_argument("--overwrite-sdd-custom", action="store_true", help="Sobreescribir especialistas adaptados a SDD (p. ej. spec-miner.md).")
     args = parser.parse_args(argv)
     CATALOG_DIR.mkdir(parents=True, exist_ok=True)
-    warnings = import_specialists(overwrite_sdd_custom=args.overwrite_sdd_custom)
-    warnings.extend(import_packs())
+    warnings = import_specialists(overwrite_sdd_custom=args.overwrite_sdd_custom) + import_packs()
     if warnings:
-        print(
-            f"\n[WARN] Catalogo .sdd/catalog/ actualizado con {len(warnings)} advertencia(s).",
-            file=sys.stderr,
-        )
+        print(f"\n[WARN] Catalogo .sdd/catalog/ actualizado con {len(warnings)} advertencia(s).", file=sys.stderr)
     else:
         print("\n[SUCCESS] Catalogo .sdd/catalog/ inicializado con exito bajo Licencia MIT de ECC.")
 

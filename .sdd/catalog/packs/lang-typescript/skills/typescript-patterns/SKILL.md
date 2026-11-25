@@ -7,7 +7,7 @@ metadata:
 
 # TypeScript Development Patterns
 
-TypeScript patterns and best practices for building robust, type-safe, and maintainable applications. The compiler is most useful when it can prove your program's shape, so the guiding principle here is: push the type system to do real work instead of fighting it. This skill is the "how." For the "what" and "when" (the decisions about which pattern to reach for), see the TypeScript rules — `rules/typescript/coding-style.md` and `rules/typescript/patterns.md` in this repository, installed as `rules/ecc/typescript/coding-style.md` and `rules/ecc/typescript/patterns.md`.
+TypeScript patterns and best practices for building robust, type-safe, and maintainable applications. The compiler is most useful when it can prove your program's shape, so the guiding principle here is: push the type system to do real work instead of fighting it. This skill is the "how." For the "what" and "when" (the decisions about which pattern to reach for), see the TypeScript rules — `.agents/pack-rules/lang-typescript/coding-style.md` and `.agents/pack-rules/lang-typescript/patterns.md`.
 
 ## When to Activate
 
@@ -586,7 +586,7 @@ function lazyFails(): Promise<never> {
 
 ## Related Skills
 
-- `nestjs-patterns` — NestJS architecture patterns for TypeScript backends (modules, controllers, providers, DTO validation)
 - `frontend-patterns` — React and Next.js component and state patterns
-- TypeScript rules (`rules/typescript/`, installed as `rules/ecc/typescript/`) — the "what" and "when" this skill implements as the "how"
+- TypeScript rules (`.agents/pack-rules/lang-typescript/`) — the "what" and "when" this skill implements as the "how"
 - `prisma-patterns` — database access patterns used in TypeScript applications
+- TypeScript backend service architectures (modules, controllers, providers, DTO validation) follow `02-tech-spec.md` and `.agents/rules/07-engineering-baseline.md`

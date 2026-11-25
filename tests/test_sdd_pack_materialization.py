@@ -474,6 +474,7 @@ class TestSddPackMaterialization(unittest.TestCase):
         self.assertFalse(effective)
         self.assertEqual((cfg.gate00_approved, cfg.preset, cfg.packs), (False, "compact", ()))
         registry = load_catalog_registry(ROOT_DIR / ".sdd" / "catalog" / "packs")
+        self.assertEqual(len(registry), 25)
         self.assertTrue(set(sdd_catalog_import.STACK_PACKS.keys()).issubset(registry.keys()))
         for name, manifest in registry.items():
             self.assertEqual(len(resolve_pack_assets(manifest, ROOT_DIR / ".sdd" / "catalog" / "packs" / name).workflow_files), len(manifest.workflows))
@@ -481,7 +482,8 @@ class TestSddPackMaterialization(unittest.TestCase):
         for rel in (
             "scripts/sdd_pack_registry.py", "scripts/sdd_stack_parser.py", "scripts/sdd_generator_tx.py",
             "scripts/sdd_agent_generator.py", "scripts/sdd_ownership.py", "scripts/sdd_dag.py",
-            "scripts/sdd_catalog_import.py", "scripts/sdd_sync.py", "tests/test_sdd_pack_materialization.py",
+            "scripts/sdd_catalog_import.py", "scripts/sdd_sync.py",
+            "tests/test_sdd_pack_materialization.py", "tests/test_sdd_enterprise_packs.py",
         ):
             lines = len((ROOT_DIR / rel).read_text(encoding="utf-8").splitlines())
             self.assertLessEqual(lines, 500, f"{rel} exceeds 500-line warning limit ({lines})")

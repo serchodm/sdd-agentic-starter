@@ -134,11 +134,11 @@ Test Status: PASS ✓
 
 - `/flutter-build` — Fix build errors before running tests
 - `/flutter-review` — Review code after tests pass
-- `tdd-workflow` skill — Test-driven development workflow
+- `sdd-test-quality-audit` skill — Test-driven development and test quality audit
 
 ## Related
 
 - Agent: `agents/flutter-reviewer.md`
 - Agent: `agents/dart-build-resolver.md`
 - Skill: `skills/flutter-dart-code-review/`
-- Rules: `rules/dart/testing.md`
+- Rules: `.agents/rules/07-engineering-baseline.md`

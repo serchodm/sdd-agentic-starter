@@ -73,5 +73,5 @@ Fix: Exact change to make
 
 ## Reference
 
-Use `skills/seo` for the canonical ECC SEO workflow and implementation guidance.
+Apply the technical SEO checklist above alongside `frontend-patterns` and `accessibility` (structured data, metadata, semantic headings, and Core Web Vitals).
 

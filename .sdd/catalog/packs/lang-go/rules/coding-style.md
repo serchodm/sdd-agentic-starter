@@ -6,7 +6,7 @@ paths:
 ---
 # Go Coding Style
 
-> This file extends [common/coding-style.md](../common/coding-style.md) with Go specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with Go specific content.
 
 ## Formatting
 

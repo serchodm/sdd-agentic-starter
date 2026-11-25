@@ -7,7 +7,7 @@ paths:
 ---
 # TypeScript/JavaScript Security
 
-> This file extends [common/security.md](../common/security.md) with TypeScript/JavaScript specific content.
+> This file extends `.agents/rules/05-security-and-secrets.md` with TypeScript/JavaScript specific content.
 
 ## Secret Management
 
@@ -25,4 +25,4 @@ if (!apiKey) {
 
 ## Agent Support
 
-- Use **security-reviewer** skill for comprehensive security audits
+- Use `@security-reviewer` and the `sdd-security-audit` skill for comprehensive security audits

@@ -7,11 +7,11 @@ paths:
 ---
 # Java Hooks
 
-> This file extends [common/hooks.md](../common/hooks.md) with Java-specific content.
+> This file extends `.agents/hooks.json` with Java-specific content.
 
 ## PostToolUse Hooks
 
-Configure in `~/.claude/settings.json`:
+Configure in `.agents/hooks.json`:
 
 - **google-java-format**: Auto-format `.java` files after edit
 - **checkstyle**: Run style checks after editing Java files

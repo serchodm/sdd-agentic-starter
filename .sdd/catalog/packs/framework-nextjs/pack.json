@@ -1,0 +1,23 @@
+{
+  "id": "framework:nextjs",
+  "family": "framework",
+  "requires": [
+    "lang:typescript",
+    "framework:react"
+  ],
+  "targets": [
+    "web"
+  ],
+  "description": "Next.js App Router (15+) production patterns: React Server Components vs. minimal Client Component boundaries, fail-closed Server Actions with Zod validation and per-invocation AuthN/AuthZ, caching (use cache, revalidateTag, revalidatePath) and Partial Prerendering, lightweight middleware, and server-only protection of secrets and the Data Access Layer.",
+  "upstream": {
+    "repo": "vercel-labs/agent-skills",
+    "license": "MIT",
+    "references": []
+  },
+  "rules": [],
+  "specialists": [],
+  "skills": [
+    "skills/nextjs-patterns"
+  ],
+  "workflows": []
+}

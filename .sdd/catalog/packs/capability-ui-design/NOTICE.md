@@ -8,8 +8,8 @@ This pack vendors third-party design intelligence data and offline search script
 - **Upstream Package**: `ui-ux-pro-max-cli@2.15.0`
 - **License**: MIT License
 - **Copyright**: `Copyright (c) 2024 Next Level Builder`
-- **Full License Copy**: [`vendor/ui-ux-pro-max/LICENSE`](vendor/ui-ux-pro-max/LICENSE)
-- **Integrity Lock Manifest**: [`vendor/ui-ux-pro-max/VENDOR.lock.json`](vendor/ui-ux-pro-max/VENDOR.lock.json)
+- **Full License Copy**: `vendor/ui-ux-pro-max/LICENSE`
+- **Integrity Lock Manifest**: `vendor/ui-ux-pro-max/VENDOR.lock.json`
 
 ## 2. Exclusive Extraction Scope
 

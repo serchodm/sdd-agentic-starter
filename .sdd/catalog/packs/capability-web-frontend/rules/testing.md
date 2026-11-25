@@ -10,7 +10,7 @@ paths:
   - "**/*.vue"
   - "**/*.svelte"
 ---
-> This file extends [common/testing.md](../common/testing.md) with web-specific testing content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with web-specific testing content.
 
 # Web Testing Rules
 
@@ -33,7 +33,7 @@ paths:
 ### 3. Performance
 
 - Run Lighthouse or equivalent against meaningful pages
-- Keep CWV targets from [performance.md](performance.md)
+- Keep CWV targets from `.agents/pack-rules/capability-web-frontend/performance.md`
 
 ### 4. Cross-Browser
 
