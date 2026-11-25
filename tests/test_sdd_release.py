@@ -359,7 +359,7 @@ class TestSDDRelease(unittest.TestCase):
             self.assertEqual(next(c for c in fail_json["checks"] if c["name"] == "changelog")["status"], "FAIL")
 
         # .agents/ active prompt context budget (< 100 KB / < 25k tokens) & compact workflow
-        md_bytes = sum(p.stat().st_size for p in (ROOT_DIR / ".agents").rglob("*.md") if p.is_file())
+        md_bytes = sum(p.stat().st_size for p in (ROOT_DIR / ".agents").rglob("*.md") if p.is_file() and "references" not in p.parts)
         self.assertLess(md_bytes, 100_000, f".agents markdown context exceeded 100KB ({md_bytes}B)")
         self.assertLess(md_bytes / 4.0, 25_000, f".agents markdown context exceeded 25k est tokens ({md_bytes / 4.0})")
         wf_lines = (ROOT_DIR / ".agents" / "workflows" / "gate6-release.md").read_text(encoding="utf-8").splitlines()

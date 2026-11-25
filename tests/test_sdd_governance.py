@@ -4,15 +4,7 @@
 Pruebas unitarias de Gobernanza Git, CLI Universal, Instintos y Hooks SDD.
 """
 
-import contextlib
-import datetime
-import io
-import json
-import os
-import pathlib
-import sys
-import tempfile
-import unittest
+import contextlib, datetime, io, json, os, pathlib, re, sys, tempfile, unittest
 from unittest import mock
 
 ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
@@ -24,23 +16,12 @@ sys.path.insert(0, str(ROOT_DIR / ".agents" / "scripts"))
 import sdd_code_gate_guard  # noqa: E402
 import sdd_gate_seal  # noqa: E402
 import sdd_healthcheck  # noqa: E402
+from scripts.sdd_agent_generator import PRESET_CONFIGS  # noqa: E402
 from scripts.sdd_catalog_import import SDD_CUSTOMIZED_SPECIALISTS, import_specialists  # noqa: E402
 from scripts.sdd_cli import DISPATCH_MAP, cmd_work_item  # noqa: E402
-from scripts.sdd_git import (
-    DEFAULT_GOVERNANCE,
-    build_pr_compare_url,
-    format_web_remote_url,
-    load_git_governance,
-    resolve_branch_name,
-)
+from scripts.sdd_git import DEFAULT_GOVERNANCE, build_pr_compare_url, format_web_remote_url, load_git_governance, resolve_branch_name
 from scripts.sdd_hooks import CONFLICT_PATTERNS, SECRET_PATTERNS, validate_pre_push
-from scripts.sdd_instincts import (
-    calculate_decayed_confidence,
-    cosine_similarity,
-    get_repo_root,
-    load_instincts,
-    save_instincts,
-)
+from scripts.sdd_instincts import calculate_decayed_confidence, cosine_similarity, get_repo_root, load_instincts, save_instincts
 
 
 class TestSDDGovernance(unittest.TestCase):
@@ -180,6 +161,137 @@ class TestSDDGovernance(unittest.TestCase):
             "https://gitlab.example.com:8443/team/app",
         )
         self.assertIsNotNone(build_pr_compare_url("github", "develop", "feat/FEAT-100"))
+
+    def test_fwk020_core_security_audit_and_l4_upgrades(self) -> None:
+        """CA-2001 & CA-2002: 15 Core skills, sdd-security-audit + 4 L4 references."""
+        skills_dir = ROOT_DIR / ".agents" / "skills"
+        core_skills = sorted(p.name for p in skills_dir.iterdir() if p.is_dir() and not p.name.startswith("."))
+        self.assertEqual(len(core_skills), 15, f"Expected 15 Core skills, got {len(core_skills)}: {core_skills}")
+        sec_dir = skills_dir / "sdd-security-audit"
+        self.assertLessEqual(len((sec_dir / "SKILL.md").read_text(encoding="utf-8").splitlines()), 45)
+        for ref in ("stride-threat-model.md", "owasp-asvs-checklist.md"):
+            rp = sec_dir / "references" / ref
+            self.assertTrue(rp.is_file() and rp.stat().st_size > 0, f"Missing/empty {rp}")
+        self.assertIn("sdd-security-audit", (skills_dir / "pipeline-run" / "SKILL.md").read_text(encoding="utf-8"))
+        self.assertIn("sdd-security-audit/SKILL.md", (ROOT_DIR / ".agents" / "rules" / "05-security-and-secrets.md").read_text(encoding="utf-8"))
+        for slug, ref_file in (
+            ("sdd-silent-failure-audit", "polyglot-silent-failures.md"),
+            ("sdd-test-quality-audit", "anti-mocking-and-mutation.md"),
+            ("sdd-execution-guardrails", "worktree-lifecycle.md"),
+            ("search-first", "reuse-vs-build-matrix.md"),
+        ):
+            self.assertLessEqual(len((skills_dir / slug / "SKILL.md").read_text(encoding="utf-8").splitlines()), 35)
+            rp = skills_dir / slug / "references" / ref_file
+            self.assertTrue(rp.is_file() and rp.stat().st_size > 0, f"Missing/empty {rp}")
+
+    def test_fwk020_catalog_pack_references_audit_and_negative_fixtures(self) -> None:
+        """CA-2003: 0 findings on all 25 real packs + deterministic R0..R4 failure on corrupt fixture."""
+        self.assertEqual(audit_catalog_pack_references(ROOT_DIR, ROOT_DIR / ".sdd" / "catalog" / "packs"), [])
+        with tempfile.TemporaryDirectory() as tmp:
+            packs = pathlib.Path(tmp) / "packs"
+            _write_gov_file(packs / "demo-pack" / "pack.json", json.dumps({"id": "demo:pack", "skills": ["skills/demo-skill"], "specialists": []}))
+            _write_gov_file(
+                packs / "demo-pack" / "skills" / "demo-skill" / "SKILL.md",
+                "See rules/ecc/foo.md and [broken](../other/SKILL.md).\n"
+                "Agent: `code-reviewer` and Skill: `backend-patterns`.\n```python\nunclosed = True\n",
+            )
+            bad = audit_catalog_pack_references(ROOT_DIR, packs)
+            for rule in ("R0:", "R1:", "R2:", "R3:", "R4:"):
+                self.assertTrue(any(f.startswith(rule) for f in bad), f"Expected {rule} in {bad}")
+
+    def test_fwk020_agents_active_and_lazy_references_budget(self) -> None:
+        """CA-2009: Active .agents/ < 25k tokens (<100KB) and lazy references/ < 15k tokens (<60KB)."""
+        files = [
+            p for p in (ROOT_DIR / ".agents").rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts and p.suffix in {".md", ".json", ".yaml", ".yml"}
+        ]
+        active_b = sum(p.stat().st_size for p in files if "references" not in p.parts)
+        lazy_b = sum(p.stat().st_size for p in files if "references" in p.parts)
+        self.assertLess(active_b, 100_000, f"Active .agents/ exceeded 100KB ({active_b}B)")
+        self.assertLess(active_b / 4.0, 25_000, f"Active .agents/ exceeded 25k tokens ({active_b / 4.0:.1f})")
+        self.assertLess(lazy_b, 60_000, f"Lazy references/ exceeded 60KB ({lazy_b}B)")
+        self.assertLess(lazy_b / 4.0, 15_000, f"Lazy references/ exceeded 15k tokens ({lazy_b / 4.0:.1f})")
+
+
+_FENCE_RE = re.compile(r"^([ \t]*)(`{3,}|~{3,})(.*)$")
+_URL_RE, _INLINE_CODE_RE, _MD_LINK_RE = re.compile(r"https?://\S+"), re.compile(r"`[^`\n]+`"), re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+_R1_RE = re.compile(r"(?:rules/ecc/|commands/ecc/|agents/ecc/|~/.claude/|(?:^|[\s(\[`])\.claude/|(?:^|[\s(\[`])rules/(?!0[0-7]-)[a-z0-9-]+/[a-z0-9_.*-]+)")
+_R3_RES = (
+    re.compile(r"(?:^|[\s(\[*])(?i:agents?:\s*)`?(?:agents/)?([a-z0-9-]+)(?:\.md)?`?"),
+    re.compile(r"\b([a-z][a-z0-9-]+-(?:reviewer|resolver))\b"),
+    re.compile(r"(?:^|[\s(\[`])@([a-z][a-z0-9-]+-(?:engineer|specialist|architect|analyst|tester|reviewer|resolver)|orchestrator|devops|documentator)\b"),
+)
+_R4_RES = (
+    re.compile(r"(?i:\bskills?:\s*)`?(?:skills/)?([a-z0-9-]+)(?:/|/SKILL\.md)?`?"),
+    re.compile(r"(?:^|[\s(\[`])skills/([a-z0-9-]+)(?:/|\b)"),
+    re.compile(r"`([a-z][a-z0-9-]+)`\s+skill\b"),
+    re.compile(r"\bskill\s+`([a-z][a-z0-9-]+)`"),
+)
+_AGENT_TABLE_RE, _RELATED_BULLET_RE = re.compile(r"^\|\s*`([a-z][a-z0-9-]+)`\s*\|"), re.compile(r"^\s*[-*]\s+`([a-z][a-z0-9-]+)`\b")
+
+
+def audit_catalog_pack_references(repo_root: pathlib.Path, packs_dir: pathlib.Path) -> list[str]:
+    """Deterministic R0-R4 reference & fence auditor for .sdd/catalog/packs (FWK-020 §5.2)."""
+    official_agents: set[str] = {b["name"].lower() for cfg in PRESET_CONFIGS.values() for b in cfg["builders"]}
+    for folder in (repo_root / ".agents" / "agents", repo_root / ".sdd" / "catalog" / "specialists", repo_root / ".sdd" / "catalog" / "specialists-optin"):
+        if folder.is_dir():
+            official_agents.update(p.stem.lower() for p in folder.glob("*.md"))
+    if (arch_dir := repo_root / ".sdd" / "catalog" / "archetypes").is_dir():
+        official_agents.update(p.name.removesuffix(".archetype.md").removesuffix(".md").lower() for p in arch_dir.glob("*.md"))
+    official_skills: set[str] = (
+        {p.name.lower() for p in (repo_root / ".agents" / "skills").iterdir() if p.is_dir() and not p.name.startswith(".")}
+        if (repo_root / ".agents" / "skills").is_dir() else set()
+    )
+    for pj in sorted(packs_dir.glob("*/pack.json")):
+        data = json.loads(pj.read_text(encoding="utf-8"))
+        official_agents.update(pathlib.PurePosixPath(s).stem.lower() for s in data.get("specialists", []))
+        official_skills.update(pathlib.PurePosixPath(s.rstrip("/")).name.lower() for s in data.get("skills", []))
+
+    findings: list[str] = []
+    for md in sorted(packs_dir.rglob("*.md")):
+        if "vendor" in md.parts:
+            continue
+        rel, parts = md.relative_to(packs_dir).as_posix(), md.relative_to(packs_dir).parts
+        skill_dir = (packs_dir / parts[0] / "skills" / parts[2]).resolve() if len(parts) >= 4 and parts[1] == "skills" else None
+        open_fence: tuple[str, int, int] | None = None
+        in_agents, in_related = False, False
+        for lineno, line in enumerate(md.read_text(encoding="utf-8").splitlines(), 1):
+            fm = _FENCE_RE.match(line)
+            if open_fence is not None:
+                if fm and fm.group(2)[0] == open_fence[0] and len(fm.group(2)) >= open_fence[1]:
+                    if fm.group(3).strip() == "":
+                        open_fence = None
+                    else:
+                        findings.append(f"R0:{rel}:{lineno}: nested fence inside L{open_fence[2]}")
+                continue
+            if fm and not (fm.group(2)[0] == "`" and "`" in fm.group(3)):
+                open_fence = (fm.group(2)[0], len(fm.group(2)), lineno)
+                continue
+            if re.match(r"^#{1,3}\s+", line):
+                in_agents = bool(re.match(r"^#{2,3}\s+Agents?\b", line, re.IGNORECASE))
+                in_related = bool(re.match(r"^#{2,3}\s+Related(?:\s+Skills)?\b", line, re.IGNORECASE))
+            no_urls = _URL_RE.sub("", line)
+            findings.extend(f"R1:{rel}:{lineno}: {m.group(0).strip()!r}" for m in _R1_RE.finditer(no_urls))
+            for m in _MD_LINK_RE.finditer(_INLINE_CODE_RE.sub("", line)):
+                target = m.group(1).strip()
+                if target.startswith(("http://", "https://", "mailto:", "file:", "#")):
+                    continue
+                rel_t = target.split("#", 1)[0].strip()
+                raw_p = (md.parent / rel_t) if rel_t else None
+                dest = raw_p.resolve() if raw_p else None
+                if not (skill_dir and raw_p and dest and not raw_p.is_symlink() and dest.exists() and dest.is_relative_to(skill_dir)):
+                    findings.append(f"R2:{rel}:{lineno}: invalid relative link {target!r}")
+            for rx in _R3_RES:
+                findings.extend(f"R3:{rel}:{lineno}: unknown agent {m.group(1)!r}" for m in rx.finditer(no_urls) if m.group(1).lower() not in official_agents)
+            if in_agents and (tm := _AGENT_TABLE_RE.match(no_urls)) and tm.group(1).lower() not in official_agents:
+                findings.append(f"R3:{rel}:{lineno}: unknown agent {tm.group(1)!r}")
+            for rx in _R4_RES:
+                findings.extend(f"R4:{rel}:{lineno}: unknown skill {m.group(1)!r}" for m in rx.finditer(no_urls) if m.group(1).lower() not in official_skills)
+            if in_related and (bm := _RELATED_BULLET_RE.match(no_urls)) and bm.group(1).lower() not in (official_skills | official_agents):
+                findings.append(f"R4:{rel}:{lineno}: unknown related {bm.group(1)!r}")
+        if open_fence is not None:
+            findings.append(f"R0:{rel}:{open_fence[2]}: unclosed fence at EOF")
+    return findings
 
 
 def _write_gov_file(path: pathlib.Path, content: str) -> pathlib.Path:
