@@ -4,7 +4,7 @@ paths:
 ---
 # Java Testing
 
-> This file extends [common/testing.md](../common/testing.md) with Java-specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with Java-specific content.
 
 ## Test Framework
 
@@ -112,7 +112,7 @@ class OrderRepositoryIT {
 ```
 
 For Spring Boot integration tests, see skill: `springboot-tdd`.
-For Quarkus integration tests, see skill: `quarkus-tdd`.
+For Quarkus integration tests, use REST Assured with Dev Services and apply `sdd-test-quality-audit`.
 
 ## Test Naming
 
@@ -129,5 +129,5 @@ Use descriptive names with `@DisplayName`:
 ## References
 
 See skill: `springboot-tdd` for Spring Boot TDD patterns with MockMvc and Testcontainers.
-See skill: `quarkus-tdd` for Quarkus TDD patterns with REST Assured and Dev Services.
+See skill: `sdd-test-quality-audit` for BDD/TDD quality verification (including REST Assured and Dev Services suites in Quarkus).
 See skill: `java-coding-standards` for testing expectations.

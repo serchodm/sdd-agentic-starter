@@ -5,10 +5,10 @@
 **Governance-First, Multi-Agent, Stack-Agnostic Software Delivery Architecture**
 
 [![Governance](https://img.shields.io/badge/Governance-Gate_S0_to_Gate_6-blue)](#sdd-lifecycle-en)
-[![Release](https://img.shields.io/badge/Release-v1.4.0-teal)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/Release-v1.5.0-teal)](CHANGELOG.md)
 [![Base Agents](https://img.shields.io/badge/Base_Agents-9_Active_+_19_Opt--In-purple)](#agent-squad-en)
-[![Stack Packs](https://img.shields.io/badge/Stack_Packs-19_Packs_(30_Specialists)-emerald)](#stack-packs-en)
-[![Skills & Workflows](https://img.shields.io/badge/Skills_%26_Workflows-14_Base_Skills_%7C_15_Workflows-orange)](#skills-workflows-en)
+[![Stack Packs](https://img.shields.io/badge/Stack_Packs-25_Packs_(30_Specialists)-emerald)](#stack-packs-en)
+[![Skills & Workflows](https://img.shields.io/badge/Skills_%26_Workflows-15_Core_Skills_%7C_15_Workflows-orange)](#skills-workflows-en)
 [![Security](https://img.shields.io/badge/Hooks-Fail--Closed_PreToolUse-red)](#rfc003-hardening-en)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](#credits-en)
 
@@ -25,7 +25,7 @@
 ### Table of Contents
 - [1. Overview & Philosophy](#overview-en)
 - [2. The Golden SDD Lifecycle (Gate S0 -> Gate 6)](#sdd-lifecycle-en)
-- [3. Hardening, CI-Agnostic Verification, Gate 6 (`v1.2.0`), Brownfield (`v1.3.0`) & Portfolio / Epics (`v1.4.0`)](#rfc003-hardening-en)
+- [3. Hardening, CI-Agnostic Verification, Gate 6 (`v1.2.0`), Brownfield (`v1.3.0`), Portfolio (`v1.4.0`) & Enterprise Packs (`v1.5.0`)](#rfc003-hardening-en)
 - [4. Multi-Agent Squad & Opt-In Catalog](#agent-squad-en)
 - [5. Stack Packs & Layer Archetypes](#stack-packs-en)
 - [6. Base Skills, Workflows, Brownfield & Fast-Track Flows](#skills-workflows-en)
@@ -46,8 +46,8 @@ Key principles:
 1. **Zero Code Without Approved Specs (`RN-SDD-GATE-S0-STACK-LOCK` & `RN-SDD-GATE2-CODE-LOCK`):** Production edits fail closed when `specs/STACK.md` or the active work item's `Gate 1/2/3` sign-offs are missing.
 2. **Immutable Done History (`RN-SDD-IMMUTABLE-DONE`):** Once a feature reaches `Done`, `specs/features/FEAT-XXX-*/` becomes read-only; evolutions require a `1:1` Change Request (`specs/changes/CR-XXX-*/`).
 3. **Zero Documentation Debt (`RN-SDD-0DD`):** No work item reaches `Done` until `@documentator` synchronizes `docs/es/`, `docs/en/`, `docs/knowledge/`, `domains/`, and `docs/traceability/TRACEABILITY-MATRIX.md`.
-4. **Compact Starter Context:** Only **9 active base agents**, **8 governance rules**, and **14 core skills** load by default; stack packs, **19 opt-in specialists**, and `domains/` cards materialize strictly on demand.
-5. **Release, Brownfield & Portfolio Governance (`v1.2.0`–`v1.4.0`):** Supports PR-first `Gate 6` release readiness (`./sdd release`), portable CI-agnostic checks (`./sdd ci-verify`), non-destructive brownfield adoption (`./sdd adopt` + `/brownfield-adopt`), *Strangler Fig* `legacy-readonly` zone locking, offline *Spec Drift* detection (`./sdd drift`), and Portfolio/Epics roadmap + feature dependency DAGs (`./sdd portfolio`).
+4. **Compact Starter Context:** Only **9 active base agents**, **8 governance rules**, and **15 core skills** (with on-demand `references/` playbooks) load by default; **25 opt-in stack packs** (**86** catalogue skills = **101** total skills), **19 opt-in specialists**, and `domains/` cards materialize strictly on demand.
+5. **Release, Brownfield, Portfolio & Enterprise Governance (`v1.2.0`–`v1.5.0`):** Supports PR-first `Gate 6` release readiness (`./sdd release`), portable CI-agnostic checks (`./sdd ci-verify`), non-destructive brownfield adoption (`./sdd adopt` + `/brownfield-adopt`), *Strangler Fig* `legacy-readonly` zone locking, offline *Spec Drift* detection (`./sdd drift`), Portfolio/Epics roadmap + feature dependency DAGs (`./sdd portfolio`), and `L4/L5` security/enterprise pack governance (`sdd-security-audit`, `R0`–`R4` sanitisation).
 
 ---
 
@@ -84,9 +84,9 @@ flowchart LR
 
 <a id="rfc003-hardening-en"></a>
 
-### 3. Hardening, CI-Agnostic Verification, Gate 6 (`v1.2.0`), Brownfield (`v1.3.0`) & Portfolio / Epics (`v1.4.0`)
+### 3. Hardening, CI-Agnostic Verification, Gate 6 (`v1.2.0`), Brownfield (`v1.3.0`), Portfolio (`v1.4.0`) & Enterprise Packs (`v1.5.0`)
 
-The framework enforces engineering discipline through verifiable Python tooling under `.agents/scripts/` and `scripts/` (`RFC-003`..`RFC-009`):
+The framework enforces engineering discipline through verifiable Python tooling under `.agents/scripts/` and `scripts/` (`RFC-003`..`RFC-010`):
 
 - **Fail-Closed `PreToolUse` & Git Hooks (`RFC-003`–`RFC-005`):**
   - `sdd_code_gate_guard.py` & `sdd_gate_seal.py` (`./sdd approve-gate`, `./sdd verify-gates`): Blocks writes to `src/` unless `Gate S0` is approved, `specs/BACKLOG.md` tracks an active `In Progress` work item, `01..03` documents carry valid `[x] Gate 1/2/3 Approved` markers and intact SHA-256 cryptographic gate seals (`gate_seals`), and the target path is not inside a `legacy-readonly` zone.
@@ -103,6 +103,7 @@ The framework enforces engineering discipline through verifiable Python tooling 
   - `scripts/sdd_brownfield.py` (`./sdd adopt --dry-run|--apply`, `--with-repo-map`) performs 100% offline discovery of manifests, ecosystems, candidate ownership zones, and safe DoD commands, creating non-destructive draft `specs/STACK.md` (with `Gate S0` locked), `docs/knowledge/BROWNFIELD_INVENTORY.md`, and `specs/BACKLOG.md` for `/brownfield-adopt` + `@spec-miner`.
   - `scripts/sdd_drift.py` (`./sdd drift`) detects `UNCOVERED_FILE`, `MISSING_SOURCE_FILE`, `MISSING_SYMBOL`, and `UNLINKED_CODE_DRIFT` offline across `governed` zones and `SRC-###` citations; `sdd:ownership-map` supports `governance: governed | legacy-readonly` (*Strangler Fig* lock enforced by `sdd_code_gate_guard.py`); and `Origin: brownfield-mined` allows light retroactive baselines with mandatory human `Gate 1` & `Gate 2` sign-offs.
 - **Portfolio, Epics (`EPIC-XXX`) & Feature Dependency DAG (`RFC-009` / `FWK-017`, `v1.4.0`):** `scripts/sdd_portfolio.py` (`./sdd portfolio init|status|graph|validate`) manages atomic epic dossiers under `specs/epics/` (`09-epic-roadmap.template.md`), *MoSCoW*/*RICE* prioritisation, deterministic progress rollups, fail-closed feature DAG cycle detection, critical-path calculation, and CI integration (`check_portfolio` in `sdd_ci.py`).
+- **Core `L4/L5` Governance & Enterprise Packs (`RFC-010` / `FWK-020`, `v1.5.0`):** Adds `sdd-security-audit` (STRIDE in `Gate 2` + OWASP Top 10 / ASVS v4+ in `Gate 4`), upgrades 4 Core skills (`sdd-silent-failure-audit`, `sdd-test-quality-audit`, `sdd-execution-guardrails`, `search-first`) to `L4` with on-demand `references/`, enforces deterministic `R0`–`R4` anti-orphan reference auditing (`audit_catalog_pack_references` in `test_sdd_governance.py`), expands the opt-in catalogue to **25 packs / 86 skills** (`101` total skills, `OVER_500=0` across all `.py` files), and enforces fail-closed `api-only`/`spa-only` pruning plus non-ECC pack preservation in `sdd_catalog_import.py`.
 
 ---
 
@@ -125,11 +126,11 @@ The starter keeps **9 active base agents** loaded by default (`1` default univer
 
 ### 5. Stack Packs & Layer Archetypes
 
-`specs/STACK.md` declares active technologies from **19 Stack Packs** (`.sdd/catalog/packs/`), which materialize **30 dynamic specialists** and **70 specialized pack skills (`SKILL.md`)** along with **12 unique canonical layer archetypes** in `.sdd/catalog/archetypes/` (`cli-tool`, `front-logic`, `front-test`, `front-ui`, `layer-api`, `layer-db`, `layer-domain`, `layer-infra`, `layer-test`, `mobile-app`, `tier-backend`, `tier-frontend`).
+`specs/STACK.md` declares active technologies from **25 Stack Packs** (`.sdd/catalog/packs/`), which materialize **30 dynamic specialists** and **86 specialized pack skills (`SKILL.md`)** along with **12 unique canonical layer archetypes** in `.sdd/catalog/archetypes/` (`cli-tool`, `front-logic`, `front-test`, `front-ui`, `layer-api`, `layer-db`, `layer-domain`, `layer-infra`, `layer-test`, `mobile-app`, `tier-backend`, `tier-frontend`).
 
 - **Languages (`lang-*`):** Python, TypeScript, Go, Rust, Java, C#.
 - **Frameworks (`framework-*`):** FastAPI, Django, Next.js, React, Spring Boot, Angular, Vue, NestJS, Astro, Flutter, React Native.
-- **Capabilities (`capability-*`):** UI Design (Stitch MCP & Sub-Gate 2V), DevOps CI/CD & Containers.
+- **Capabilities (`capability-*`):** UI Design (Stitch MCP & Sub-Gate 2V), Web Frontend, Database (`+multi-tenant-isolation`), DevOps CI/CD & Containers (`+helm-gitops-patterns`), Event-Driven & Microservices, API Governance (OpenAPI/gRPC/AsyncAPI), IaC & Cloud (Terraform/OpenTofu, IAM, FinOps), and Data Engineering (dbt, Airflow, Data Quality).
 
 ---
 
@@ -137,7 +138,7 @@ The starter keeps **9 active base agents** loaded by default (`1` default univer
 
 ### 6. Base Skills, Workflows, Brownfield & Fast-Track Flows
 
-#### 14 Base Starter Skills (`.agents/skills/`)
+#### 15 Core Starter Skills (`.agents/skills/`, 4 L4 + `sdd-security-audit` with on-demand `references/`)
 1. `sdd-bootstrap` — Guided Gate S0 stack & ownership configuration (`specs/STACK.md`).
 2. `sdd-change-gate` — Enforces `RN-SDD-IMMUTABLE-DONE` and 1:1 `CR-XXX` creation.
 3. `pipeline-run` — Autonomous DAG lifecycle execution (`Gate 0` -> `Gate 5`).
@@ -152,6 +153,7 @@ The starter keeps **9 active base agents** loaded by default (`1` default univer
 12. `gan-style-harness` — Generator-evaluator harness for high-complexity deliverables.
 13. `continuous-learning-v2` — Instincts capture and reusable workflow evolution.
 14. `sdd-execution-guardrails` — Operational guardrails for Python on Windows, worktree isolation, branch checks, and human gate ownership.
+15. `sdd-security-audit` — Cross-cutting security governance (`STRIDE` in `Gate 2` + `OWASP Top 10 / ASVS v4+`, IDOR, secrets, SCA/SBOM, PII in `Gate 4`).
 
 #### 15 Slash Command Workflows (`.agents/workflows/`)
 `/pipeline-run` · `/opsx-delegate` · `/opsx-pickup` · `/bug-fast-track` · `/brownfield-adopt` · `/gate6-release` · `/build-fix` · `/checkpoint` · `/continue` · `/gate5` · `/harness-audit` · `/santa-loop` · `/gan-build` · `/learn` · `/evolve`
@@ -196,7 +198,7 @@ uv run python scripts/sdd_cli.py release verify --version X.Y.Z --stage finish
 uv run python scripts/sdd_cli.py portfolio status
 uv run python scripts/sdd_cli.py portfolio validate
 
-# 6. Inspect all CLI subcommands & run the full 174-test offline suite (16 modules)
+# 6. Inspect all CLI subcommands & run the full 182-test offline suite (17 modules)
 uv run python scripts/sdd_cli.py --help
 uv run python -m unittest discover -s tests -v
 ```
@@ -220,14 +222,14 @@ Inside your AI coding session:
 ├── .agents/
 │   ├── agents/                     # 9 active base agents (compiled via STACK.md)
 │   ├── rules/                      # 8 always-on governance rules (00..07)
-│   ├── skills/                     # 14 base starter skills (SKILL.md)
+│   ├── skills/                     # 15 core starter skills (SKILL.md + on-demand references/)
 │   ├── workflows/                  # 15 slash command workflows (incl. /brownfield-adopt, /gate6-release)
 │   ├── scripts/                    # Guards (PreToolUse, Strangler Fig), healthcheck, repo-map, token usage
 │   ├── hooks.json                  # PreToolUse & git hook configuration
 │   └── squad.lock.json             # SHA-256 lockfile for materialized packs/specialists
 ├── .sdd/
-│   ├── catalog/                    # Opt-in catalog: 19 universal specialists, 19 packs, 12 canonical archetypes
-│   └── framework/                  # Internal framework governance (RFC-001..009, FWK-001..017)
+│   ├── catalog/                    # Opt-in catalog: 19 universal specialists, 25 packs (86 skills), 12 canonical archetypes
+│   └── framework/                  # Internal framework governance (RFC-001..010, FWK-001..020)
 ├── scripts/                        # Unified CLI (sdd_cli.py), ci-verify, release, adopt, drift, portfolio, dag, git
 ├── domains/                        # On-demand bounded-context docs & _template/
 ├── specs/
@@ -241,7 +243,7 @@ Inside your AI coding session:
 │   ├── spikes/                     # Timeboxed SPIKE-XXX-* reports
 │   └── releases/                   # REL-vX.Y.Z Gate 6 Release Readiness dossiers
 ├── docs/                           # Bilingual guides (es/, en/), knowledge/, standards/, traceability/
-└── tests/                          # 174 offline regression, security, CI, release, brownfield & portfolio tests (16 modules)
+└── tests/                          # 182 offline regression, security, CI, release, brownfield, portfolio & enterprise pack tests (17 modules)
 ```
 
 ---
@@ -261,7 +263,7 @@ Released under the **MIT License**. Built with curated governance, verification,
 ### Tabla de Contenidos
 - [1. Visión General y Filosofía](#overview-es)
 - [2. Ciclo de Vida SDD (`Gate S0` -> `Gate 6`)](#sdd-lifecycle-es)
-- [3. Endurecimiento, Verificación CI-Agnóstica, `Gate 6` (`v1.2.0`), Brownfield (`v1.3.0`) y Portfolio / Épicas (`v1.4.0`)](#rfc003-hardening-es)
+- [3. Endurecimiento, Verificación CI-Agnóstica, `Gate 6` (`v1.2.0`), Brownfield (`v1.3.0`), Portfolio (`v1.4.0`) y Packs Enterprise (`v1.5.0`)](#rfc003-hardening-es)
 - [4. Escuadrón Base y Catálogo Opt-In](#agent-squad-es)
 - [5. Stack Packs y Arquetipos de Capa](#stack-packs-es)
 - [6. Skills Base, Workflows, Brownfield y Flujos Fast-Track](#skills-workflows-es)
@@ -282,8 +284,8 @@ Pilares clave:
 1. **Cero Código sin Especificación Aprobada (`RN-SDD-GATE-S0-STACK-LOCK` y `RN-SDD-GATE2-CODE-LOCK`):** Los hooks bloquean ediciones en `src/` si falta `Gate S0` o las firmas `Gate 1/2/3` del work item activo.
 2. **Inmutabilidad de Features Completadas (`RN-SDD-IMMUTABLE-DONE`):** Al pasar a `Done`, `specs/features/FEAT-XXX-*/` es de solo lectura; cualquier evolución exige un `CR-XXX` independiente (`1:1`).
 3. **Deuda Cero de Documentación (`RN-SDD-0DD`):** Ningún work item cierra en `Done` sin que `@documentator` actualice `docs/es/`, `docs/en/`, `docs/knowledge/`, `domains/` y `docs/traceability/TRACEABILITY-MATRIX.md`.
-4. **Contexto Base Compacto:** Por defecto solo se activan **9 agentes base**, **8 reglas de gobernanza** y **14 skills base**; los packs, **19 especialistas opt-in** y las fichas en `domains/` se cargan estrictamente bajo demanda.
-5. **Gobernanza de Release, Brownfield y Portfolio (`v1.2.0`–`v1.4.0`):** Soporta *Release Readiness* PR-first en `Gate 6` (`./sdd release`), verificación CI-agnóstica portable (`./sdd ci-verify`), adopción brownfield no destructiva (`./sdd adopt` + `/brownfield-adopt`), bloqueo de zonas *Strangler Fig* `legacy-readonly`, detección offline de *Spec Drift* (`./sdd drift`) y gestión de Portfolio/Épicas y grafo DAG entre features (`./sdd portfolio`).
+4. **Contexto Base Compacto:** Por defecto solo se activan **9 agentes base**, **8 reglas de gobernanza** y **15 skills Core** (con playbooks `references/` bajo demanda); los **25 packs opt-in** (**86** skills de catálogo = **101** skills totales), **19 especialistas opt-in** y las fichas en `domains/` se cargan estrictamente bajo demanda.
+5. **Gobernanza de Release, Brownfield, Portfolio y Packs Enterprise (`v1.2.0`–`v1.5.0`):** Soporta *Release Readiness* PR-first en `Gate 6` (`./sdd release`), verificación CI-agnóstica portable (`./sdd ci-verify`), adopción brownfield no destructiva (`./sdd adopt` + `/brownfield-adopt`), bloqueo de zonas *Strangler Fig* `legacy-readonly`, detección offline de *Spec Drift* (`./sdd drift`), gestión de Portfolio/Épicas y grafo DAG entre features (`./sdd portfolio`), y gobernanza `L4/L5` de seguridad y packs enterprise (`sdd-security-audit`, saneamiento `R0`–`R4`).
 
 ---
 
@@ -309,9 +311,9 @@ Estados documentales: **`Draft` -> `In Review` -> `Approved` -> `Done`**.
 
 <a id="rfc003-hardening-es"></a>
 
-### 3. Endurecimiento, Verificación CI-Agnóstica, `Gate 6` (`v1.2.0`), Brownfield (`v1.3.0`) y Portfolio / Épicas (`v1.4.0`)
+### 3. Endurecimiento, Verificación CI-Agnóstica, `Gate 6` (`v1.2.0`), Brownfield (`v1.3.0`), Portfolio (`v1.4.0`) y Packs Enterprise (`v1.5.0`)
 
-El framework verifica el cumplimiento mediante herramientas Python deterministas en `.agents/scripts/` y `scripts/` (`RFC-003`..`RFC-009`):
+El framework verifica el cumplimiento mediante herramientas Python deterministas en `.agents/scripts/` y `scripts/` (`RFC-003`..`RFC-010`):
 
 - **Hooks `PreToolUse` y Guardias *Fail-Closed* (`RFC-003`–`RFC-005`):**
   - `sdd_code_gate_guard.py` y `sdd_gate_seal.py` (`./sdd approve-gate`, `./sdd verify-gates`): Impiden modificar `src/` sin `Gate S0` aprobado, work item `In Progress` en `specs/BACKLOG.md`, marcadores `[x] Gate 1/2/3 Approved` y sellos criptográficos SHA-256 intactos (`gate_seals`), o si la ruta pertenece a una zona `legacy-readonly`.
@@ -328,6 +330,7 @@ El framework verifica el cumplimiento mediante herramientas Python deterministas
   - `scripts/sdd_brownfield.py` (`./sdd adopt --dry-run|--apply`, `--with-repo-map`) ejecuta descubrimiento 100% offline de manifiestos, ecosistemas, zonas candidatas y comandos DoD seguros, creando borradores no destructivos de `specs/STACK.md` (con `Gate S0` bloqueado), `docs/knowledge/BROWNFIELD_INVENTORY.md` y `specs/BACKLOG.md` para `/brownfield-adopt` + `@spec-miner`.
   - `scripts/sdd_drift.py` (`./sdd drift`) detecta offline `UNCOVERED_FILE`, `MISSING_SOURCE_FILE`, `MISSING_SYMBOL` y `UNLINKED_CODE_DRIFT` en zonas `governed` y citas `SRC-###`; `sdd:ownership-map` admite `governance: governed | legacy-readonly` (bloqueado por `sdd_code_gate_guard.py`); y `Origin: brownfield-mined` habilita baselines retroactivas ligeras con firma humana obligatoria en `Gate 1` y `Gate 2`.
 - **Portfolio, Épicas (`EPIC-XXX`) y Grafo DAG entre Features (`RFC-009` / `FWK-017`, `v1.4.0`):** `scripts/sdd_portfolio.py` (`./sdd portfolio init|status|graph|validate`) gestiona expedientes atómicos de épicas bajo `specs/epics/` (`09-epic-roadmap.template.md`), priorización *MoSCoW*/*RICE*, *rollups* deterministas de progreso, detección *fail-closed* de ciclos en el DAG, ruta crítica e integración CI (`check_portfolio` en `sdd_ci.py`).
+- **Gobernanza Core `L4/L5` y Packs Enterprise (`RFC-010` / `FWK-020`, `v1.5.0`):** Incorpora `sdd-security-audit` (STRIDE en `Gate 2` + OWASP Top 10 / ASVS v4+ en `Gate 4`), eleva 4 skills Core (`sdd-silent-failure-audit`, `sdd-test-quality-audit`, `sdd-execution-guardrails`, `search-first`) a `L4` con `references/` bajo demanda, impone auditoría determinista anti-huérfanos `R0`–`R4` (`audit_catalog_pack_references` en `test_sdd_governance.py`), amplía el catálogo opt-in a **25 packs / 86 skills** (`101` skills totales, `OVER_500=0` en todos los `.py`), e implementa poda `api-only`/`spa-only` y preservación *fail-closed* de packs no-ECC en `sdd_catalog_import.py`.
 
 ---
 
@@ -348,9 +351,9 @@ El starter arranca con **9 agentes base activos** (`1` revisor universal por def
 
 ### 5. Stack Packs y Arquetipos de Capa
 
-Al completar `specs/STACK.md`, el motor materializa bajo demanda desde **19 Stack Packs** (`.sdd/catalog/packs/`):
+Al completar `specs/STACK.md`, el motor materializa bajo demanda desde **25 Stack Packs** (`.sdd/catalog/packs/`):
 - **30 especialistas dinámicos de stack** (Python, TypeScript, Go, Rust, Java, C#, FastAPI, Django, Next.js, React, Spring Boot, Angular, Vue, NestJS, Astro, Flutter, React Native, UI Design y DevOps).
-- **70 skills especializadas de pack (`SKILL.md`)**.
+- **86 skills especializadas de pack (`SKILL.md`)** (incluyendo `capability-event-driven`, `capability-api-governance`, `capability-iac-cloud`, `framework-nextjs`, `framework-nestjs`, `capability-data-engineering`, y ampliaciones en `capability-devops` y `capability-database`).
 - **12 arquetipos canónicos únicos de capa** en `.sdd/catalog/archetypes/` (`cli-tool`, `front-logic`, `front-test`, `front-ui`, `layer-api`, `layer-db`, `layer-domain`, `layer-infra`, `layer-test`, `mobile-app`, `tier-backend`, `tier-frontend`).
 
 ---
@@ -359,7 +362,7 @@ Al completar `specs/STACK.md`, el motor materializa bajo demanda desde **19 Stac
 
 ### 6. Skills Base, Workflows, Brownfield y Flujos Fast-Track
 
-- **14 Skills Base (`.agents/skills/`):** `sdd-bootstrap`, `sdd-change-gate`, `pipeline-run`, `opsx-delegate`, `opsx-pickup`, `search-first`, `strategic-compact`, `sdd-silent-failure-audit`, `sdd-spec-compliance-audit`, `sdd-test-quality-audit`, `santa-method`, `gan-style-harness`, `continuous-learning-v2` y `sdd-execution-guardrails`.
+- **15 Skills Core (`.agents/skills/`, 4 L4 + `sdd-security-audit` con `references/` bajo demanda):** `sdd-bootstrap`, `sdd-change-gate`, `pipeline-run`, `opsx-delegate`, `opsx-pickup`, `search-first`, `strategic-compact`, `sdd-silent-failure-audit`, `sdd-spec-compliance-audit`, `sdd-test-quality-audit`, `santa-method`, `gan-style-harness`, `continuous-learning-v2`, `sdd-execution-guardrails` y `sdd-security-audit`.
 - **15 Slash Command Workflows (`.agents/workflows/`):** `/pipeline-run`, `/opsx-delegate`, `/opsx-pickup`, `/bug-fast-track`, `/brownfield-adopt`, `/gate6-release`, `/build-fix`, `/checkpoint`, `/continue`, `/gate5`, `/harness-audit`, `/santa-loop`, `/gan-build`, `/learn`, `/evolve`.
 - **Flujo `/bug-fast-track` (`BUG-XXX` / `HOTFIX-XXX`) y `SPIKE-XXX`:** Utiliza `specs/bugs/<ID>-<slug>/` (`05-bug-fast-track.template.md` / `07-hotfix-fast-track.template.md`) con `01-bug-report.md`, `02-fix-spec.md` y `03-tasks.md` Test-First (`Red -> Fix -> Green`), preservando `Gate S0`, `specs/BACKLOG.md`, sellos SHA-256 y firmas humanas `[x] Gate 1/2/3 Approved`. Los PoCs acotados usan `specs/spikes/SPIKE-XXX-<slug>/SPIKE_REPORT.md` (`06-spike-report.template.md`).
 - **Adopción Brownfield (`/brownfield-adopt`):** Combina `./sdd adopt --dry-run|--apply` con `./sdd repo-map` y `@spec-miner` para generar `specs/STACK.md` (bloqueado), `docs/knowledge/BROWNFIELD_INVENTORY.md` y specs `Origin: brownfield-mined` junto a zonas *Strangler Fig* `legacy-readonly` y auditoría `./sdd drift`.
@@ -398,7 +401,7 @@ uv run python scripts/sdd_cli.py release verify --version X.Y.Z --stage finish
 uv run python scripts/sdd_cli.py portfolio status
 uv run python scripts/sdd_cli.py portfolio validate
 
-# 6. Consultar todos los subcomandos CLI y ejecutar la suite de 174 tests offline (16 módulos)
+# 6. Consultar todos los subcomandos CLI y ejecutar la suite de 182 tests offline (17 módulos)
 uv run python scripts/sdd_cli.py --help
 uv run python -m unittest discover -s tests -v
 ```

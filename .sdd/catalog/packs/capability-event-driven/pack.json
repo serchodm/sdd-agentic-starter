@@ -1,0 +1,28 @@
+{
+  "id": "capability:event-driven",
+  "family": "capability",
+  "requires": [],
+  "targets": [
+    "api",
+    "backend",
+    "server",
+    "microservice"
+  ],
+  "description": "Event-driven architecture, Apache Kafka streaming, asynchronous messaging (Outbox/Inbox/Sagas/DLQ), and resilient microservices bounded contexts.",
+  "upstream": {
+    "repo": "confluentinc/agent-skills",
+    "license": "Apache-2.0",
+    "references": [
+      "lensesio/agentic-engineering-for-apache-kafka (Apache-2.0)",
+      "wshobson/agents (MIT)"
+    ]
+  },
+  "rules": [],
+  "specialists": [],
+  "skills": [
+    "skills/kafka-streaming-patterns",
+    "skills/async-messaging-patterns",
+    "skills/microservices-boundaries"
+  ],
+  "workflows": []
+}

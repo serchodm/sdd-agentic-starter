@@ -281,5 +281,5 @@ class FakeItemRepository : ItemRepository {
 
 ## References
 
-See skill: `compose-multiplatform-patterns` for UI consumption of Flows.
-See skill: `android-clean-architecture` for where coroutines fit in layers.
+See skill: `kotlin-patterns` for UI flow consumption and modular layer architecture patterns.
+See skill: `kotlin-testing` for coroutine and Flow testing with `runTest` and virtual time.

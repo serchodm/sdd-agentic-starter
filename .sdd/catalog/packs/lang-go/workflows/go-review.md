@@ -68,7 +68,7 @@ govulncheck ./...
 
 ## Example Usage
 
-```text
+````text
 User: /go-review
 
 Agent:
@@ -125,7 +125,7 @@ return fmt.Errorf("get user %s: %w", userID, err)
 - MEDIUM: 0
 
 Recommendation: FAIL: Block merge until CRITICAL issue is fixed
-```
+````
 
 ## Approval Criteria
 

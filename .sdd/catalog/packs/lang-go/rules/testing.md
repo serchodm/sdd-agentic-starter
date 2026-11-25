@@ -6,7 +6,7 @@ paths:
 ---
 # Go Testing
 
-> This file extends [common/testing.md](../common/testing.md) with Go specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with Go specific content.
 
 ## Framework
 

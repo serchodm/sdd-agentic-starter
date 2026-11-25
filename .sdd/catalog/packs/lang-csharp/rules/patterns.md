@@ -5,7 +5,7 @@ paths:
 ---
 # C# Patterns
 
-> This file extends [common/patterns.md](../common/patterns.md) with C#-specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with C#-specific content.
 
 ## API Response Pattern
 

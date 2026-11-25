@@ -12,3 +12,6 @@
 - **SQL/NoSQL:** Solo consultas parametrizadas / ORMs seguros (cero concatenación de strings).
 - **Path Traversal:** Validar rutas con contención estricta (`Path.resolve().is_relative_to(...)`).
 - **Fail-Closed:** Rechazar errores auth/authz en la frontera externa (HTTP 401/403) sin filtrar trazas internas.
+
+## 4. Auditoría Transversal por Gate
+- Cargar `.agents/skills/sdd-security-audit/SKILL.md` en **Gate 2** (modelado de amenazas **STRIDE** en `02-tech-spec.md`) y en **Gate 4** (auditoría **OWASP Top 10 / ASVS v4+** en Capa 1 junto a `@security-reviewer`).

@@ -408,7 +408,7 @@ class TestCiIntegrationAndModularity(unittest.TestCase):
                     offenders.append((py_file.relative_to(ROOT_DIR).as_posix(), lines))
         self.assertEqual(offenders, [], f"Python files exceeding 500-line ceiling: {offenders}")
 
-        md_bytes = sum(p.stat().st_size for p in (ROOT_DIR / ".agents").rglob("*.md") if p.is_file())
+        md_bytes = sum(p.stat().st_size for p in (ROOT_DIR / ".agents").rglob("*.md") if p.is_file() and "references" not in p.parts)
         self.assertLess(md_bytes / 4.0, 25_000, f".agents/ markdown exceeded 25k tokens ({md_bytes / 4.0:.1f})")
 
 

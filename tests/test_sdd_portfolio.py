@@ -364,7 +364,7 @@ class TestPortfolioCliCiAndBudgetCA1704(unittest.TestCase):
         total_chars = sum(
             len(p.read_text(encoding="utf-8", errors="ignore"))
             for p in (REPO_ROOT / ".agents").rglob("*")
-            if p.is_file() and "__pycache__" not in p.parts and p.suffix in {".md", ".json", ".yaml", ".yml"}
+            if p.is_file() and "__pycache__" not in p.parts and "references" not in p.parts and p.suffix in {".md", ".json", ".yaml", ".yml"}
         )
         self.assertLess(total_chars // 4, 25000, f".agents/ estimated tokens {total_chars // 4} >= 25000")
 

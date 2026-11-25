@@ -7,7 +7,7 @@ paths:
 ---
 # C# Security
 
-> This file extends [common/security.md](../common/security.md) with C#-specific content.
+> This file extends `.agents/rules/05-security-and-secrets.md` with C#-specific content.
 
 ## Secret Management
 
@@ -55,4 +55,4 @@ await connection.QueryAsync<Order>(sql, new { customerId });
 
 ## References
 
-See skill: `security-review` for broader application security review checklists.
+See skill: `sdd-security-audit` for broader application security review checklists.

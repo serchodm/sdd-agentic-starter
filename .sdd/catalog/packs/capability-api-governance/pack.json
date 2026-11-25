@@ -1,0 +1,25 @@
+{
+  "id": "capability:api-governance",
+  "family": "capability",
+  "requires": [],
+  "targets": [
+    "all"
+  ],
+  "description": "Contract-first API governance for OpenAPI 3.1, gRPC/Protobuf (Buf), and AsyncAPI 3.0 / CloudEvents with backward-compatibility guards.",
+  "upstream": {
+    "repo": "bufbuild/claude-plugins",
+    "license": "Apache-2.0",
+    "references": [
+      "speakeasy-api/sdk-generation-skills (Apache-2.0)",
+      "asyncapi/spec (Apache-2.0)"
+    ]
+  },
+  "rules": [],
+  "specialists": [],
+  "skills": [
+    "skills/openapi-contract-governance",
+    "skills/grpc-protobuf-patterns",
+    "skills/asyncapi-event-contracts"
+  ],
+  "workflows": []
+}

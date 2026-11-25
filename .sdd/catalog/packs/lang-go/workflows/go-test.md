@@ -260,9 +260,9 @@ go test -race -cover ./...
 
 - `/go-build` - Fix build errors
 - `/go-review` - Review code after implementation
-- `verification-loop` skill - Run full verification loop
+- `sdd-test-quality-audit` skill - Run full verification and test quality audit
 
 ## Related
 
 - Skill: `skills/golang-testing/`
-- Skill: `skills/tdd-workflow/`
+- Skill: `skills/sdd-test-quality-audit/`

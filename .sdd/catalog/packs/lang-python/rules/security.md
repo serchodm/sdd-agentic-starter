@@ -5,7 +5,7 @@ paths:
 ---
 # Python Security
 
-> This file extends [common/security.md](../common/security.md) with Python specific content.
+> This file extends `.agents/rules/05-security-and-secrets.md` with Python specific content.
 
 ## Secret Management
 

@@ -8,7 +8,7 @@ paths:
 ---
 # React Security
 
-> This file extends [typescript/security.md](../typescript/security.md) and [common/security.md](../common/security.md) with React specific content.
+> This file extends `.agents/pack-rules/lang-typescript/security.md` and `.agents/rules/05-security-and-secrets.md` with React specific content.
 
 ## XSS via `dangerouslySetInnerHTML`
 

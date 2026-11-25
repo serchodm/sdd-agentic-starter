@@ -125,7 +125,7 @@ See the commit-pinned [CLI](https://github.com/berkayyalcin7/locakit/blob/3af4bd
 ## Hook Integration
 
 For a separately requested reminder, follow the repository's
-[hook documentation](../../hooks/README.md). This skill does not install or
+`.agents/hooks.json` configuration. This skill does not install or
 modify hooks automatically.
 
 ## Out of Scope
@@ -136,6 +136,6 @@ modify hooks automatically.
 
 ## Related
 
-- [frontend-patterns](../frontend-patterns/SKILL.md)
-- [seo](../seo/SKILL.md)
+- `frontend-patterns`
+- `@seo-specialist` (localized metadata, `hreflang`, and crawlable locale routes)
 - [Locakit package reference](https://www.npmjs.com/package/locakit)

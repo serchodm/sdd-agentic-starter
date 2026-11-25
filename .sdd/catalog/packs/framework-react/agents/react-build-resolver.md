@@ -25,7 +25,7 @@ You are an expert React build error resolution specialist. Your mission is to fi
 
 ## Scope
 
-This agent owns **React build / bundler / runtime hydration** failures. For pure TypeScript type errors with no React involvement (no JSX/TSX, no `react` import), defer to a future `typescript-build-resolver` or fix inline only when the error blocks the React build.
+This agent owns **React build / bundler / runtime hydration** failures. For pure TypeScript type errors with no React involvement (no JSX/TSX, no `react` import), defer to `build-error-resolver` (and `typescript-reviewer` for type design) or fix inline only when the error blocks the React build.
 
 ## Core Responsibilities
 
@@ -215,7 +215,7 @@ Final: `Build Status: SUCCESS | Errors Fixed: N | Files Modified: <list>` or `Bu
 ## Related
 
 - Agent: `react-reviewer` for code review after build is green
-- Rules: `rules/react/coding-style.md`, `rules/react/patterns.md`
+- Rules: `.agents/pack-rules/framework-react/coding-style.md`, `.agents/pack-rules/framework-react/patterns.md`
 - Skills: `skills/react-patterns/`, `skills/frontend-patterns/`
 - Commands: `/react-build`, `/react-review`
 

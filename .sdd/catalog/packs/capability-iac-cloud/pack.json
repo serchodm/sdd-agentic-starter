@@ -1,0 +1,25 @@
+{
+  "id": "capability:iac-cloud",
+  "family": "capability",
+  "requires": [],
+  "targets": [
+    "all"
+  ],
+  "description": "Infrastructure as Code (Terraform and OpenTofu), cloud IAM least-privilege security, network segmentation, and cloud FinOps cost guardrails across AWS, GCP, and Azure.",
+  "upstream": {
+    "repo": "antonbabenko/terraform-skill",
+    "license": "Apache-2.0",
+    "references": [
+      "BagelHole/DevOps-Security-Agent-Skills (MIT)",
+      "trailofbits/skills (Apache-2.0)"
+    ]
+  },
+  "rules": [],
+  "specialists": [],
+  "skills": [
+    "skills/terraform-opentofu-patterns",
+    "skills/cloud-iam-security",
+    "skills/cloud-finops-guardrails"
+  ],
+  "workflows": []
+}

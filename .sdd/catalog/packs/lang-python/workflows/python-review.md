@@ -76,7 +76,7 @@ pytest --cov=app --cov-report=term-missing
 
 ## Example Usage
 
-```text
+````text
 User: /python-review
 
 Agent:
@@ -159,7 +159,7 @@ Recommendation: FAIL: Block merge until CRITICAL issue is fixed
 
 ## Formatting Required
 Run: `black app/routes/user.py app/services/auth.py`
-```
+````
 
 ## Approval Criteria
 
@@ -171,7 +171,7 @@ Run: `black app/routes/user.py app/services/auth.py`
 
 ## Integration with Other Commands
 
-- Use the `tdd-workflow` skill first to ensure tests pass
+- Use the `python-testing` and `sdd-test-quality-audit` skills first to ensure tests pass
 - Use `/code-review` for non-Python specific concerns
 - Use `/python-review` before committing
 - Use `/build-fix` if static analysis tools fail

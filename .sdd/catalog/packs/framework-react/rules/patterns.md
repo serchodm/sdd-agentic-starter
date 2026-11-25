@@ -9,7 +9,7 @@ paths:
 ---
 # React Patterns
 
-> This file extends [typescript/patterns.md](../typescript/patterns.md) and [common/patterns.md](../common/patterns.md) with React specific content. For hook-specific rules see [hooks.md](./hooks.md).
+> This file extends `.agents/pack-rules/lang-typescript/patterns.md` and `.agents/rules/07-engineering-baseline.md` with React specific content. For hook-specific rules see `.agents/pack-rules/framework-react/hooks.md`.
 
 ## Container / Presentational Split
 
@@ -180,13 +180,13 @@ Older codebases on React 18 still need `forwardRef`.
 ### Next.js (App Router)
 
 - Server Actions, Route Handlers, Middleware, Parallel/Intercepted Routes, streaming Metadata
-- Treated as a separate framework concern — when adding deep Next-specific patterns, propose a dedicated `rules/nextjs/` track
+- Treated as a separate framework concern — when adding deep Next-specific patterns, activate the `framework:nextjs` pack
 - For now follow Next.js official docs for App Router specifics
 
 ### React Native
 
 - Platform-specific imports (`Platform.OS`, `.ios.tsx` / `.android.tsx`), `StyleSheet`, navigation libraries (React Navigation, Expo Router)
-- Treated as a separate track — `rules/react-native/` is not yet present
+- Treated as a separate track — dedicated React Native pack rules are not yet present
 - React core hooks/patterns from this file still apply
 
 ## Skill Reference

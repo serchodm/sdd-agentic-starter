@@ -142,5 +142,5 @@ Switch(
 
 - `frontend-patterns`
 - `design-system`
-- `liquid-glass-design`
+- `frontend-a11y`
 - `swiftui-patterns`

@@ -4,7 +4,7 @@ paths:
 ---
 # Java Security
 
-> This file extends [common/security.md](../common/security.md) with Java-specific content.
+> This file extends `.agents/rules/05-security-and-secrets.md` with Java-specific content.
 
 ## Secrets Management
 
@@ -97,5 +97,5 @@ try {
 ## References
 
 See skill: `springboot-security` for Spring Security authentication and authorization patterns.
-See skill: `quarkus-security` for Quarkus security with JWT/OIDC, RBAC, and CDI.
-See skill: `security-review` for general security checklists.
+For Quarkus applications, enforce JWT/OIDC, RBAC, and CDI security policies aligned with `.agents/rules/05-security-and-secrets.md`.
+See skill: `sdd-security-audit` for general security checklists.

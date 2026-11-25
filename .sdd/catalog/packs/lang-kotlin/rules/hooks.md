@@ -6,11 +6,11 @@ paths:
 ---
 # Kotlin Hooks
 
-> This file extends [common/hooks.md](../common/hooks.md) with Kotlin-specific content.
+> This file extends `.agents/hooks.json` with Kotlin-specific content.
 
 ## PostToolUse Hooks
 
-Configure in `~/.claude/settings.json`:
+Configure in `.agents/hooks.json`:
 
 - **ktfmt/ktlint**: Auto-format `.kt` and `.kts` files after edit
 - **detekt**: Run static analysis after editing Kotlin files

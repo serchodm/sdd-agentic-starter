@@ -4,7 +4,7 @@ paths:
 ---
 # Java Patterns
 
-> This file extends [common/patterns.md](../common/patterns.md) with Java-specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with Java-specific content.
 
 ## Repository Pattern
 
@@ -143,5 +143,5 @@ public record ApiResponse<T>(boolean success, T data, String error) {
 ## References
 
 See skill: `springboot-patterns` for Spring Boot architecture patterns.
-See skill: `quarkus-patterns` for Quarkus architecture patterns with REST, Panache, and messaging.
+For Quarkus applications (REST, Panache, and reactive messaging), apply CDI, Panache repository, and reactive-endpoint conventions aligned with `java-coding-standards`.
 See skill: `jpa-patterns` for entity design and query optimization.

@@ -6,7 +6,7 @@ paths:
 ---
 # C# Testing
 
-> This file extends [common/testing.md](../common/testing.md) with C#-specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with C#-specific content.
 
 ## Test Framework
 

@@ -5,7 +5,7 @@ paths:
 
 # Vue Coding Style
 
-> This file extends [common/coding-style.md](../common/coding-style.md) with Vue specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with Vue specific content.
 
 ## SFC Structure
 
