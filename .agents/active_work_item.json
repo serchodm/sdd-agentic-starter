@@ -12,7 +12,7 @@
   "gate_seals": {
     "1": "sha256:f99e58c3c2cb6bc037c56a5c242b3411f00befb55b866aaa7ee539113b280192",
     "2": "sha256:ce568223bcc607eebeafe239d7939ce18c58b474a507ed355412f159228fde38",
-    "3": "sha256:abc5581b6292b78413b20151188da46a8f634352376f9c096ec8f6a9db812601"
+    "3": "sha256:6c736de39f14e066510ba8b2f6a5556c2056820f8bfd5235e09746fd4e3c42c9"
   },
   "git": {
     "branch_name": "feat/fwk-020-skills-governance-and-enterprise-packs",

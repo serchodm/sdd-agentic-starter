@@ -100,7 +100,7 @@
 
 ### Bloque E: Documentación Viva 0DD (Gate 5) y Release `v1.5.0` (Gate 6) [SEQUENTIAL: AFTER T-15]
 
-- [ ] `T-16` [`@documentator`] `[SEQUENTIAL: AFTER T-15]`: Actualizar en paridad bilingüe `docs/es/README.md`, `docs/en/README.md`, `docs/knowledge/SYSTEM_TOPOLOGY.md`, `docs/traceability/TRACEABILITY-MATRIX.md`, `README.md` y marcar `FWK-020` como `Done` (`RFC-010` -> `Implementado / Done`) en `.sdd/framework/BACKLOG.md`; ejecutar `/santa-loop` (`GATE_5` -> `NICE + NICE`), verificar `ci-verify` en verde y hacer `git commit` + `git push origin feat/fwk-020-skills-governance-and-enterprise-packs` + PR a `develop`.
+- [x] `T-16` [`@documentator`] `[SEQUENTIAL: AFTER T-15]`: Actualizar en paridad bilingüe `docs/es/README.md`, `docs/en/README.md`, `docs/knowledge/SYSTEM_TOPOLOGY.md`, `docs/traceability/TRACEABILITY-MATRIX.md`, `README.md` y marcar `FWK-020` como `Done` (`RFC-010` -> `Implementado / Done`) en `.sdd/framework/BACKLOG.md`; ejecutar `/santa-loop` (`GATE_5` -> `NICE + NICE`), verificar `ci-verify` en verde y hacer `git commit` + `git push origin feat/fwk-020-skills-governance-and-enterprise-packs` + PR a `develop`.
   - *Archivos exactos*: `docs/es/README.md`, `docs/en/README.md`, `docs/knowledge/SYSTEM_TOPOLOGY.md`, `docs/traceability/TRACEABILITY-MATRIX.md`, `README.md`, `.sdd/framework/BACKLOG.md`
   - *Contrato de referencia*: `AGENTS.md` (`RN-SDD-0DD`, `RN-SDD-BRANCH-SYNC`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_cli.py ci-verify --mode framework`
@@ -115,4 +115,4 @@
 ## Aprobación Formal Gate 3 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 - [x] **Gate 3 Approved (Human Sign-off):** Revisado y validado por Stakeholder Humano (`2026-11-25T00:26:49+01:00` — `"Aprobado"`).
 
-<!-- sdd:gate-seal gate=3 sha256=abc5581b6292b78413b20151188da46a8f634352376f9c096ec8f6a9db812601 -->
+<!-- sdd:gate-seal gate=3 sha256=6c736de39f14e066510ba8b2f6a5556c2056820f8bfd5235e09746fd4e3c42c9 -->

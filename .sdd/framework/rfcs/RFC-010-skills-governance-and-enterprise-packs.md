@@ -2,7 +2,7 @@
 
 - **ID:** `RFC-010`
 - **Versión objetivo:** `v1.5.0` *(SemVer MINOR — 100% retrocompatible con proyectos `v1.x` y `sdd sync`)*
-- **Estado:** `Aceptado` *(Autorización explícita PO: `2026-11-24T13:35:02+01:00` — "Aprobado")*
+- **Estado:** `Implementado / Done` *(Autorización explícita PO: `2026-11-24T13:35:02+01:00` — "Aprobado"; `FWK-020` completado hasta Gate 5)*
 - **Rama base:** `develop` (`feat/fwk-020-skills-governance-and-enterprise-packs`)
 - **Antecedentes:** [`RFC-001`](RFC-001-ui-ux-pro-max.md), [`RFC-003`](RFC-003-audit-remediation-and-hardening.md) (`FWK-006`, `FWK-007`), [`RFC-007`](RFC-007-release-ops-ci-agnostic.md) (`FWK-013`, `FWK-014`), [`RFC-009`](RFC-009-portfolio-finops-multiservice.md) (`FWK-017`)
 

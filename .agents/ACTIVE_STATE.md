@@ -1,15 +1,15 @@
 # SDD Starter — Active Session Pointer (Managed by @orchestrator)
-- **Timestamp:** 2026-11-25 11:00 UTC
-- **Active Work Item:** `FWK-020-skills-governance-and-enterprise-packs`
+- **Timestamp:** 2026-11-25 13:35 UTC
+- **Active Work Item:** `IDLE` *(Pending human PR review/merge `feat/fwk-020-skills-governance-and-enterprise-packs` -> `develop`; next: `T-17` `/gate6-release` `REL-v1.5.0`)*
 - **Active Branch:** `feat/fwk-020-skills-governance-and-enterprise-packs`
 - **Spec Folder Path:** `.sdd/framework/work-items/FWK-020-skills-governance-and-enterprise-packs`
-- **Current Gate:** `Gate 4 PASSED (Oleada 3 / Bloque D: T-12..T-15 Completed) -> Handoff to Gate 5 (Oleada 4)`
+- **Current Gate:** `Gate 5 PASSED (Oleada 4 / Bloque E: T-16 Completed) -> Handoff to Gate 6 (T-17 REL-v1.5.0 after PR merge to develop)`
 - **Active Worktrees:** None
-- **Recommended Model Tier:** **Oleada 4 (`/gate5`: Bloque E — `T-16`, `T-17`)** — `Gemini 4 Hydrogen (Low–Medium)` para `@documentator` (`T-16`) y `@devops` (`T-17`) + `Santa GATE_5` (`Gemini 4 Carbon (High)` + `Gemini 4 Neon (High)`).
-- **Last Completed Milestone:** **Sesión B — Oleada 3 completada al 100% (`Bloque D: T-12..T-15`)**: `T-12` (`b1790ef`, registry `_API_FORBIDDEN_PACKS`/`_SPA_FORBIDDEN_PACKS`, preservación fail-closed en `sdd_catalog_import.py`, paridad ES/EN bootstrap-references y enlaces `sdd-security-audit`), `T-13` (`e3e7271`, paridad 1:1 de `25` packs / `19` repos en `UPSTREAM.md` y `THIRD_PARTY_NOTICES.md`), `T-14` (`2de7717`, `test_sdd_enterprise_packs.py`, `audit_catalog_pack_references` `R0`–`R4` y filtro activo `references`), y `T-15` (**Capa 1 Determinista** `182 passed / 140 subtests`, `ci-verify --mode framework [PASS]`, `verify_architecture_boundaries.py PASSED`, `healthcheck PASSED`, `OVER_500=0` + **Capa 2 Santa `GATE_4`** Ronda 1 `NAUGHTY` -> fix estricto `5437902` -> Ronda 2 unánime **`NICE + NICE`** con `Gemini 4 Carbon High` + `Gemini 4 Neon High`).
-- **Next Execution Target:** Abrir hilo limpio con `/gate5` para ejecutar **Oleada 4 (Bloque E — `T-16` y `T-17`)**: documentación viva bilingüe 0DD (`docs/es/README.md`, `docs/en/README.md`, `docs/knowledge/SYSTEM_TOPOLOGY.md`, `docs/traceability/TRACEABILITY-MATRIX.md`, `README.md`, `.sdd/framework/BACKLOG.md`), Santa `GATE_5` (`NICE + NICE`), `ci-verify --mode framework`, `git push origin feat/fwk-020-skills-governance-and-enterprise-packs` + PR a `develop`, y posterior `/gate6-release` (`REL-v1.5.0`, `T-17`).
+- **Recommended Model Tier:** **Gate 6 (`/gate6-release`: `T-17` `REL-v1.5.0`)** — `Gemini 4 Hydrogen (Low–Medium)` para `@devops` sobre rama `release/v1.5.0` desde `develop` tras merge humano del PR.
+- **Last Completed Milestone:** **Sesión B — Oleada 4 (`T-16` Gate 5 Living Docs 0DD) completada al 100%**: paridad bilingüe `v1.5.0` en `README.md`, `docs/es/README.md`, `docs/en/README.md`, `docs/knowledge/SYSTEM_TOPOLOGY.md`, `docs/traceability/TRACEABILITY-MATRIX.md` (`RF-2001`..`RF-2009`), `FWK-020` -> `Done` / `RFC-010` -> `Implementado / Done` en `.sdd/framework/BACKLOG.md` y `RFC-010`, `[x] T-16` en `03-tasks.md` con sello Gate 3 refrescado, `ci-verify --mode framework [PASS]` (`182` tests offline, `OVER_500=0`), Santa `GATE_5` unánime **`NICE + NICE`**, commit + push a `feat/fwk-020-skills-governance-and-enterprise-packs` y PR abierto hacia `develop`.
+- **Next Execution Target:** Tras revisión y merge humano del PR hacia `develop`, abrir hilo limpio con `/gate6-release` para ejecutar **`T-17` (`REL-v1.5.0`)** sobre `release/v1.5.0` desde `develop` (`sdd release prepare --version v1.5.0`, `sdd release changelog --version v1.5.0`, sign-off humano `Gate 6`, `sdd release verify --version v1.5.0` y PR hacia `main`).
 - **Mandatory Context Files (MAX 4 FILES):**
-  1. `.sdd/framework/work-items/FWK-020-skills-governance-and-enterprise-packs/02-tech-spec.md`
-  2. `.sdd/framework/work-items/FWK-020-skills-governance-and-enterprise-packs/03-tasks.md`
-  3. `docs/knowledge/SYSTEM_TOPOLOGY.md`
+  1. `.sdd/framework/work-items/FWK-020-skills-governance-and-enterprise-packs/03-tasks.md`
+  2. `.agents/workflows/gate6-release.md`
+  3. `.sdd/framework/BACKLOG.md`
   4. `.agents/ACTIVE_STATE.md`
