@@ -5,7 +5,7 @@ paths:
 
 # Vue Testing
 
-> This file extends [common/testing.md](../common/testing.md) with Vue specific content.
+> This file extends `.agents/rules/07-engineering-baseline.md` with Vue specific content.
 
 ## Stack
 

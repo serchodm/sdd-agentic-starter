@@ -7,7 +7,7 @@ paths:
 
 # Vue Hooks
 
-> This file extends [common/hooks.md](../common/hooks.md) with Vue specific content.
+> This file extends `.agents/hooks.json` with Vue specific content.
 
 ## PostToolUse Targets
 

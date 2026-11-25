@@ -178,10 +178,10 @@ The agent will stop and report if:
 - `/react-test` — run tests after the build is green
 - `/react-review` — review code quality after the build succeeds
 - `/build-fix` — generic build fixer (non-React)
-- `verification-loop` skill — full verification loop
+- `sdd-test-quality-audit` skill — full verification and test quality audit
 
 ## Related
 
 - Agent: `agents/react-build-resolver.md`
 - Skills: `skills/react-patterns/`, `skills/frontend-patterns/`
-- Rules: `rules/react/coding-style.md`, `rules/react/patterns.md`
+- Rules: `.agents/pack-rules/framework-react/coding-style.md`, `.agents/pack-rules/framework-react/patterns.md`

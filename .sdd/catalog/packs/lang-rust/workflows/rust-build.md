@@ -179,7 +179,7 @@ The agent will stop and report if:
 
 - `/rust-test` - Run tests after build succeeds
 - `/rust-review` - Review code quality
-- `verification-loop` skill - Full verification loop
+- `sdd-test-quality-audit` skill - Full verification and test quality audit
 
 ## Related
 

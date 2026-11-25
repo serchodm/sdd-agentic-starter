@@ -43,7 +43,7 @@ go mod tidy -v
 
 ## Example Session
 
-```text
+````text
 User: /go-build
 
 Agent:
@@ -141,7 +141,7 @@ ok      project/internal/handler   0.023s
 | Remaining issues | 0 |
 
 Build Status: PASS: SUCCESS
-```
+````
 
 ## Common Errors Fixed
 
@@ -175,7 +175,7 @@ The agent will stop and report if:
 
 - `/go-test` - Run tests after build succeeds
 - `/go-review` - Review code quality
-- `verification-loop` skill - Full verification loop
+- `sdd-test-quality-audit` skill - Full verification and test quality audit
 
 ## Related
 

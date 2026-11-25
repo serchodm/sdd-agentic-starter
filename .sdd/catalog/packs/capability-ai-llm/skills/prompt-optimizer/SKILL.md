@@ -106,16 +106,16 @@ Map intent + scope + tech stack (from Phase 0) to specific ECC components.
 
 | Intent | Commands | Skills | Agents |
 |--------|----------|--------|--------|
-| New Feature | /plan, /tdd, /code-review, /verify | tdd-workflow, verification-loop | planner, tdd-guide, code-reviewer |
-| Bug Fix | /tdd, /build-fix, /verify | tdd-workflow | tdd-guide, build-error-resolver |
-| Refactor | /refactor-clean, /code-review, /verify | verification-loop | refactor-cleaner, code-reviewer |
+| New Feature | /plan, /tdd, /code-review, /verify | sdd-test-quality-audit, santa-method | architect, tdd-guide, qa-tester |
+| Bug Fix | /tdd, /build-fix, /verify | sdd-test-quality-audit | tdd-guide, build-error-resolver |
+| Refactor | /refactor-clean, /code-review, /verify | santa-method | refactor-cleaner, qa-tester |
 | Research | /plan | search-first, iterative-retrieval | — |
-| Testing | /tdd, /e2e, /test-coverage | tdd-workflow, e2e-testing | tdd-guide, e2e-runner |
-| Review | /code-review | security-review | code-reviewer, security-reviewer |
-| Documentation | /update-docs, /update-codemaps | — | doc-updater |
+| Testing | /tdd, /e2e, /test-coverage | sdd-test-quality-audit, browser-qa | tdd-guide, e2e-runner |
+| Review | /code-review | sdd-security-audit | qa-tester, security-reviewer |
+| Documentation | /update-docs, /update-codemaps | — | documentator |
 | Infrastructure | /plan, /verify | docker-patterns, deployment-patterns, database-migrations | architect |
-| Design (MEDIUM-HIGH) | /plan | — | planner, architect |
-| Design (EPIC) | — | blueprint (invoke as skill) | planner, architect |
+| Design (MEDIUM-HIGH) | /plan | — | orchestrator, architect |
+| Design (EPIC) | — | pipeline-run | orchestrator, architect |
 
 #### By Tech Stack
 
@@ -124,14 +124,13 @@ Map intent + scope + tech stack (from Phase 0) to specific ECC components.
 | Python / Django | django-patterns, django-tdd, django-security, django-verification, python-patterns, python-testing | python-reviewer |
 | Go | golang-patterns, golang-testing | go-reviewer, go-build-resolver |
 | Spring Boot / Java | springboot-patterns, springboot-tdd, springboot-security, springboot-verification, java-coding-standards, jpa-patterns | java-reviewer |
-| Quarkus / Java | quarkus-patterns, quarkus-tdd, quarkus-security, quarkus-verification, java-coding-standards, jpa-patterns | java-reviewer |
-| Kotlin / Android | kotlin-coroutines-flows, compose-multiplatform-patterns, android-clean-architecture | kotlin-reviewer |
-| TypeScript / React | frontend-patterns, backend-patterns, coding-standards | code-reviewer |
-| Swift / iOS | swiftui-patterns, swift-concurrency-6-2, swift-actor-persistence, swift-protocol-di-testing | code-reviewer |
+| Quarkus / Java | java-coding-standards, jpa-patterns, sdd-security-audit | java-reviewer |
+| Kotlin / Android | kotlin-patterns, kotlin-coroutines-flows, kotlin-testing | kotlin-reviewer |
+| TypeScript / React | typescript-patterns, react-patterns, frontend-patterns | typescript-reviewer, react-reviewer |
+| Swift / iOS | swiftui-patterns, swift-concurrency-6-2, swift-actor-persistence, swift-protocol-di-testing | swift-reviewer |
 | PostgreSQL | postgres-patterns, database-migrations | database-reviewer |
-| Perl | perl-patterns, perl-testing, perl-security | code-reviewer |
-| C++ | cpp-coding-standards, cpp-testing | code-reviewer |
-| Other / Unlisted | coding-standards (universal) | code-reviewer |
+| C++ | cpp-coding-standards, cpp-testing | cpp-reviewer |
+| Other / Unlisted | sdd-spec-compliance-audit, sdd-test-quality-audit | qa-tester |
 
 ### Phase 4: Missing Context Detection
 
@@ -206,8 +205,8 @@ If Phase 0 auto-detected the answer, state it instead of asking.
 | Type | Component | Purpose |
 |------|-----------|---------|
 | Command | /plan | Plan architecture before coding |
-| Skill | tdd-workflow | TDD methodology guidance |
-| Agent | code-reviewer | Post-implementation review |
+| Skill | sdd-test-quality-audit | TDD and test quality audit guidance |
+| Agent | qa-tester | Post-implementation review |
 | Model | Sonnet 5 | Recommended for this scope |
 
 ### Section 3: Optimized Prompt — Full Version

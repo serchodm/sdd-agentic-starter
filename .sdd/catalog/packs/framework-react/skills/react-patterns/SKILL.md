@@ -53,7 +53,7 @@ React has no inheritance model for components. Compose with `children`, render p
 
 ## Hooks Discipline
 
-See [rules/react/hooks.md](../../rules/react/hooks.md) for the full ruleset. Highlights:
+See `.agents/pack-rules/framework-react/hooks.md` for the full ruleset. Highlights:
 
 - Top-level only, never conditional
 - Cleanup every subscription, interval, listener
@@ -250,8 +250,8 @@ Wrap a component in `React.memo` only when:
 - Every interactive element must be reachable by keyboard
 - Form inputs need labels — `<label htmlFor>` or `aria-label` if visually labeled by an icon
 - Manage focus on route changes and modal open/close
-- Run `axe` in component tests (see [skills/react-testing](../react-testing/SKILL.md))
-- Cross-link: [skills/accessibility/SKILL.md](../accessibility/SKILL.md) covers WCAG criteria and pattern libraries
+- Run `axe` in component tests (see `react-testing`)
+- Cross-link: `accessibility` covers WCAG criteria and pattern libraries
 
 ## Routing
 
@@ -260,13 +260,13 @@ This skill is router-agnostic. The patterns above work with React Router, TanSta
 ## Out of Scope (Pointer Sections)
 
 - **Next.js specifics**: App Router data loading, Route Handlers, Middleware, Parallel Routes — separate concern, use Next.js docs
-- **React Native**: Platform-specific patterns differ enough to warrant a separate `react-native-patterns` skill (not present yet)
+- **React Native**: Platform-specific mobile patterns differ enough to require a dedicated React Native track (not present yet)
 - **Remix**: Loader/action conventions overlap with RSC but follow Remix docs
 
 ## Related
 
-- Rules: [rules/react/](../../rules/react/) — coding-style, hooks, patterns, security, testing
-- Skills: [react-performance](../react-performance/SKILL.md) for the Vercel-derived performance ruleset, [frontend-patterns](../frontend-patterns/SKILL.md) for cross-framework UI concerns, [accessibility](../accessibility/SKILL.md), [angular-developer](../angular-developer/SKILL.md) for framework comparison
+- Rules: `.agents/pack-rules/framework-react/` — coding-style, hooks, patterns, security, testing
+- Skills: `react-performance` for the Vercel-derived performance ruleset, `frontend-patterns` for cross-framework UI concerns, `accessibility` for WCAG compliance
 - Agents: `react-reviewer` for code review, `react-build-resolver` for build/bundler errors
 - Commands: `/react-review`, `/react-build`, `/react-test`
 

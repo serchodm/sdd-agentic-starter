@@ -113,4 +113,4 @@ Verdict: BLOCK — HIGH issues must be fixed before merge.
 
 - Agent: `agents/flutter-reviewer.md`
 - Skill: `skills/flutter-dart-code-review/`
-- Rules: `rules/dart/`
+- Rules: `.agents/rules/07-engineering-baseline.md`

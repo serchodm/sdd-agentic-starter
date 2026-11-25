@@ -447,4 +447,4 @@ import.meta.hot.data.count = 0                 // CORRECT
 
 - `frontend-patterns` — React component patterns
 - `docker-patterns` — containerized dev with Vite
-- `nextjs-turbopack` — alternative bundler for Next.js
+- `react-performance` — bundle splitting, lazy loading, and runtime optimization for React/Vite apps

@@ -39,7 +39,7 @@ cppcheck --enable=all src/
 
 ## Example Session
 
-```text
+````text
 User: /cpp-build
 
 Agent:
@@ -130,7 +130,7 @@ All tests passed.
 | Remaining issues | 0 |
 
 Build Status: PASS: SUCCESS
-```
+````
 
 ## Common Errors Fixed
 
@@ -165,7 +165,7 @@ The agent will stop and report if:
 
 - `/cpp-test` - Run tests after build succeeds
 - `/cpp-review` - Review code quality
-- `verification-loop` skill - Full verification loop
+- `sdd-test-quality-audit` skill - Full verification and test quality audit
 
 ## Related
 

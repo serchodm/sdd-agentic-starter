@@ -752,5 +752,5 @@ spec:
 
 - `docker-patterns` — Multi-stage Dockerfiles and image security
 - `deployment-patterns` — CI/CD pipelines, rollback strategy, health check endpoints
-- `security-review` — Broader security hardening context
-- `git-workflow` — GitOps integration with K8s (ArgoCD / Flux patterns)
+- `sdd-security-audit` — Broader security hardening context
+- `sdd-execution-guardrails` — Branch safety, worktrees, and GitOps deployment discipline (ArgoCD / Flux patterns)
