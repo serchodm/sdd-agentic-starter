@@ -46,32 +46,32 @@
 
 ### Bloque C: Punto 5 — IaC/Cloud, GitOps, Frameworks TS, Data y Multi-Tenancy [PARALLEL: After BLOCK_B]
 
-- [ ] `T-06` [`@devops`] `[PARALLEL: BLOCK_C]`: Crear el pack `.sdd/catalog/packs/capability-iac-cloud/` (`pack.json` con `id: "capability:iac-cloud"`, `targets: ["all"]`, `upstream.repo: "antonbabenko/terraform-skill"`, `license: "Apache-2.0"`) y sus 3 skills `L4` (`terraform-opentofu-patterns`, `cloud-iam-security`, `cloud-finops-guardrails`) cumpliendo `R0`–`R4`.
+- [x] `T-06` [`@devops`] `[PARALLEL: BLOCK_C]`: Crear el pack `.sdd/catalog/packs/capability-iac-cloud/` (`pack.json` con `id: "capability:iac-cloud"`, `targets: ["all"]`, `upstream.repo: "antonbabenko/terraform-skill"`, `license: "Apache-2.0"`) y sus 3 skills `L4` (`terraform-opentofu-patterns`, `cloud-iam-security`, `cloud-finops-guardrails`) cumpliendo `R0`–`R4`.
   - *Archivos exactos*: `.sdd/catalog/packs/capability-iac-cloud/**`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §3.2 (`RF-2005`, `CA-2005`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
 
-- [ ] `T-07` [`@devops`] `[PARALLEL: BLOCK_C]`: Ampliar `.sdd/catalog/packs/capability-devops/` añadiendo `skills/helm-gitops-patterns/SKILL.md` (`L4`, `R0`–`R4`) y actualizando `capability-devops/pack.json` (`4 -> 5` skills + `upstream.references: ["wshobson/agents (MIT)"]`).
+- [x] `T-07` [`@devops`] `[PARALLEL: BLOCK_C]`: Ampliar `.sdd/catalog/packs/capability-devops/` añadiendo `skills/helm-gitops-patterns/SKILL.md` (`L4`, `R0`–`R4`) y actualizando `capability-devops/pack.json` (`4 -> 5` skills + `upstream.references: ["wshobson/agents (MIT)"]`).
   - *Archivos exactos*: `.sdd/catalog/packs/capability-devops/skills/helm-gitops-patterns/SKILL.md`, `.sdd/catalog/packs/capability-devops/pack.json`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §3.2 (`RF-2006`, `CA-2006`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
 
-- [ ] `T-08` [`@front-engineer`] `[PARALLEL: BLOCK_C]`: Crear el pack `.sdd/catalog/packs/framework-nextjs/` (`pack.json` con `id: "framework:nextjs"`, `requires: ["lang:typescript", "framework:react"]`, `targets: ["web"]`, `upstream.repo: "vercel-labs/agent-skills"`, `license: "MIT"`) y su skill `L4` `skills/nextjs-patterns/SKILL.md` cumpliendo `R0`–`R4`.
+- [x] `T-08` [`@front-engineer`] `[PARALLEL: BLOCK_C]`: Crear el pack `.sdd/catalog/packs/framework-nextjs/` (`pack.json` con `id: "framework:nextjs"`, `requires: ["lang:typescript", "framework:react"]`, `targets: ["web"]`, `upstream.repo: "vercel-labs/agent-skills"`, `license: "MIT"`) y su skill `L4` `skills/nextjs-patterns/SKILL.md` cumpliendo `R0`–`R4`.
   - *Archivos exactos*: `.sdd/catalog/packs/framework-nextjs/**`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §3.2 (`RF-2005`, `CA-2005`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
 
-- [ ] `T-09` [`@back-engineer`] `[PARALLEL: BLOCK_C]`: Crear el pack `.sdd/catalog/packs/framework-nestjs/` (`pack.json` con `id: "framework:nestjs"`, `requires: ["lang:typescript"]`, `targets: ["api", "backend", "server"]`, `upstream.repo: "nestjs/agent-skills"`, `license: "MIT"`) y su skill `L4` `skills/nestjs-patterns/SKILL.md` cumpliendo `R0`–`R4`.
+- [x] `T-09` [`@back-engineer`] `[PARALLEL: BLOCK_C]`: Crear el pack `.sdd/catalog/packs/framework-nestjs/` (`pack.json` con `id: "framework:nestjs"`, `requires: ["lang:typescript"]`, `targets: ["api", "backend", "server"]`, `upstream.repo: "nestjs/agent-skills"`, `license: "MIT"`) y su skill `L4` `skills/nestjs-patterns/SKILL.md` cumpliendo `R0`–`R4`.
   - *Archivos exactos*: `.sdd/catalog/packs/framework-nestjs/**`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §3.2 (`RF-2005`, `CA-2005`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
 
-- [ ] `T-10` [`@back-engineer`] `[PARALLEL: BLOCK_C]`: Crear el pack `.sdd/catalog/packs/capability-data-engineering/` (`pack.json` con `id: "capability:data-engineering"`, `targets: ["api", "backend", "database", "db"]`, `upstream.repo: "dbt-labs/dbt-agent-skills"`, `license: "Apache-2.0"`) y sus 3 skills `L4` (`dbt-modeling-patterns`, `airflow-dag-patterns`, `data-quality-governance`) cumpliendo `R0`–`R4`.
+- [x] `T-10` [`@back-engineer`] `[PARALLEL: BLOCK_C]`: Crear el pack `.sdd/catalog/packs/capability-data-engineering/` (`pack.json` con `id: "capability:data-engineering"`, `targets: ["api", "backend", "database", "db"]`, `upstream.repo: "dbt-labs/dbt-agent-skills"`, `license: "Apache-2.0"`) y sus 3 skills `L4` (`dbt-modeling-patterns`, `airflow-dag-patterns`, `data-quality-governance`) cumpliendo `R0`–`R4`.
   - *Archivos exactos*: `.sdd/catalog/packs/capability-data-engineering/**`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §3.2 (`RF-2005`, `CA-2005`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
 
-- [ ] `T-11` [`@back-engineer`] `[PARALLEL: BLOCK_C]`: Ampliar `.sdd/catalog/packs/capability-database/` añadiendo `skills/multi-tenant-isolation/SKILL.md` (`L4`, RLS Postgres + propagación `tenant_id` + tests negativos anti-IDOR, cumpliendo `R0`–`R4`) y actualizando `capability-database/pack.json` (`6 -> 7` skills, conservando `agents/database-reviewer.md` + `upstream.references`).
+- [x] `T-11` [`@back-engineer`] `[PARALLEL: BLOCK_C]`: Ampliar `.sdd/catalog/packs/capability-database/` añadiendo `skills/multi-tenant-isolation/SKILL.md` (`L4`, RLS Postgres + propagación `tenant_id` + tests negativos anti-IDOR, cumpliendo `R0`–`R4`) y actualizando `capability-database/pack.json` (`6 -> 7` skills, conservando `agents/database-reviewer.md` + `upstream.references`).
   - *Archivos exactos*: `.sdd/catalog/packs/capability-database/skills/multi-tenant-isolation/SKILL.md`, `.sdd/catalog/packs/capability-database/pack.json`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §3.2 (`RF-2006`, `CA-2006`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
@@ -115,4 +115,4 @@
 ## Aprobación Formal Gate 3 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 - [x] **Gate 3 Approved (Human Sign-off):** Revisado y validado por Stakeholder Humano (`2026-11-25T00:26:49+01:00` — `"Aprobado"`).
 
-<!-- sdd:gate-seal gate=3 sha256=0d5987b70bfa3f45e3243a1afa10575b83be1e3739a20f336e5b1b159df2a866 -->
+<!-- sdd:gate-seal gate=3 sha256=19ec6a9188b327e9a44fb95bed6c3d0001de693df361ed12ee220dd4d7f403ef -->
