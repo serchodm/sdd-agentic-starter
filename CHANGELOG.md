@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.0] - 2026-11-25
+
+### Framework
+- **FWK-020**: Gobernanza Core (sdd-security-audit + references/ L4), Saneamiento ECC y Expansión de Packs Enterprise (v1.5.0) (RFC-010)
+
 ## [v1.4.0] - 2026-11-23
 
 ### Framework
