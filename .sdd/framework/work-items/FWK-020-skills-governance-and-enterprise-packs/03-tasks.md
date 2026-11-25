@@ -34,12 +34,12 @@
 
 ### Bloque B: Punto 3 — Microservicios, Event-Driven y Gobierno de APIs [PARALLEL: After BLOCK_A]
 
-- [ ] `T-04` [`@back-engineer`] `[PARALLEL: BLOCK_B]`: Crear el pack `.sdd/catalog/packs/capability-event-driven/` (`pack.json` con `id: "capability:event-driven"`, `targets: ["api", "backend", "server", "microservice"]`, `upstream` uniforme `Apache-2.0`/`MIT`) y sus 3 skills `L4` (`kafka-streaming-patterns`, `async-messaging-patterns`, `microservices-boundaries`) cumpliendo `R0`–`R4`.
+- [x] `T-04` [`@back-engineer`] `[PARALLEL: BLOCK_B]`: Crear el pack `.sdd/catalog/packs/capability-event-driven/` (`pack.json` con `id: "capability:event-driven"`, `targets: ["api", "backend", "server", "microservice"]`, `upstream` uniforme `Apache-2.0`/`MIT`) y sus 3 skills `L4` (`kafka-streaming-patterns`, `async-messaging-patterns`, `microservices-boundaries`) cumpliendo `R0`–`R4`.
   - *Archivos exactos*: `.sdd/catalog/packs/capability-event-driven/**`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §3.2 (`RF-2004`, `CA-2004`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
 
-- [ ] `T-05` [`@back-engineer`] `[PARALLEL: BLOCK_B]`: Crear el pack `.sdd/catalog/packs/capability-api-governance/` (`pack.json` con `id: "capability:api-governance"`, `targets: ["all"]`, `upstream` uniforme `Apache-2.0`) y sus 3 skills `L4` (`openapi-contract-governance`, `grpc-protobuf-patterns`, `asyncapi-event-contracts`) alineadas con `API_CATALOG.md` y `santa-method` (`R0`–`R4`).
+- [x] `T-05` [`@back-engineer`] `[PARALLEL: BLOCK_B]`: Crear el pack `.sdd/catalog/packs/capability-api-governance/` (`pack.json` con `id: "capability:api-governance"`, `targets: ["all"]`, `upstream` uniforme `Apache-2.0`) y sus 3 skills `L4` (`openapi-contract-governance`, `grpc-protobuf-patterns`, `asyncapi-event-contracts`) alineadas con `API_CATALOG.md` y `santa-method` (`R0`–`R4`).
   - *Archivos exactos*: `.sdd/catalog/packs/capability-api-governance/**`
   - *Contrato de referencia*: `02-tech-spec.md` §3.1, §3.2 (`RF-2004`, `CA-2004`)
   - *Comando de verificación DoD*: `uv run python scripts/sdd_agent_generator.py --verify`
@@ -115,4 +115,4 @@
 ## Aprobación Formal Gate 3 (`RN-SDD-HUMAN-GATE-OWNERSHIP`)
 - [x] **Gate 3 Approved (Human Sign-off):** Revisado y validado por Stakeholder Humano (`2026-11-25T00:26:49+01:00` — `"Aprobado"`).
 
-<!-- sdd:gate-seal gate=3 sha256=eb6420b118742468575fcc6688fd6847605f0a98dfbb99b101ab72490a40265e -->
+<!-- sdd:gate-seal gate=3 sha256=0d5987b70bfa3f45e3243a1afa10575b83be1e3739a20f336e5b1b159df2a866 -->
