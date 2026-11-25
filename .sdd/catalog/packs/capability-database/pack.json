@@ -2,11 +2,15 @@
   "id": "capability:database",
   "family": "capability",
   "requires": [],
-  "description": "Relational and vector database modeling, migrations, and performance.",
+  "description": "Relational and vector database modeling, migrations, performance, and multi-tenant isolation.",
   "upstream": {
     "repo": "affaan-m/ecc",
     "license": "MIT",
-    "copyright": "Copyright (c) 2026 Affaan Mustafa"
+    "copyright": "Copyright (c) 2026 Affaan Mustafa",
+    "references": [
+      "supabase/agent-skills (MIT)",
+      "agamm/claude-code-owasp (MIT)"
+    ]
   },
   "rules": [],
   "specialists": [
@@ -18,7 +22,8 @@
     "skills/mysql-patterns",
     "skills/redis-patterns",
     "skills/clickhouse-io",
-    "skills/prisma-patterns"
+    "skills/prisma-patterns",
+    "skills/multi-tenant-isolation"
   ],
   "workflows": []
 }
